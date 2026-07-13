@@ -7,9 +7,9 @@ export interface AIResponse {
 const MOCK_ANSWERS: Record<string, AIResponse> = {
   seat: {
     answer:
-      "Your reserved seat is located in Section 112, Row M, Seat 42. I've loaded your digital ticket so you can see entry details.",
-    actionType: 'TICKET',
-    actionPayload: { gate: 'D', section: '112', row: 'M', seat: '42' },
+      "Your reserved seat is located in Section 112, Row M, Seat 42. I've loaded the indoor path overlay map for you.",
+    actionType: 'NAVIGATE',
+    actionPayload: { destId: 'seat' },
   },
   ticket: {
     answer: "I've fetched your digital entry pass! FIFA World Cup 2026™ Match 14: BRA vs ARG.",
@@ -18,25 +18,27 @@ const MOCK_ANSWERS: Record<string, AIResponse> = {
   },
   gate: {
     answer:
-      "Your ticket designates Gate D for stadium entry. I\'ve loaded your smart ticket so you can see full gate and route details.",
-    actionType: 'TICKET',
-    actionPayload: { destination: 'Gate D' },
+      "Your ticket designates Gate D for stadium entry. I\'ve marked it on the map and drawn the walking route.",
+    actionType: 'NAVIGATE',
+    actionPayload: { destId: 'gate_d' },
   },
   washroom: {
     answer:
-      'The nearest washroom is 30 meters to your left, right next to the Section 112 concessions stand.',
+      "The nearest washroom is 30 meters to your left. I've marked the walking route on the map overlay.",
     actionType: 'NAVIGATE',
-    actionPayload: { destination: 'Washroom Sec 112' },
+    actionPayload: { destId: 'washroom' },
   },
   food: {
     answer:
-      'Section 112 concessions offers Classic Stadium Hot Dogs, Pretzels, Nachos, and cold beverages. You can order directly to your seat using the Food Delivery module!',
-    actionType: 'FOOD',
+      'Section 112 concessions offers Classic Stadium Hot Dogs, Pretzels, Nachos, and cold beverages. Let me show you where it is.',
+    actionType: 'NAVIGATE',
+    actionPayload: { destId: 'food' },
   },
   parking: {
     answer:
-      'Your vehicle is parked in Zone B (East Parking Lot). There are currently 550 open spots in Zone B.',
-    actionType: 'PARKING',
+      'Your vehicle is parked in Zone B (East Parking Lot). Let me guide you to the exit route.',
+    actionType: 'NAVIGATE',
+    actionPayload: { destId: 'parking_b' },
   },
   match: {
     answer: "Today's feature match: BRA vs ARG (LIVE - 68'). Next match: USA vs ENG at 21:00.",
@@ -54,8 +56,9 @@ const MOCK_ANSWERS: Record<string, AIResponse> = {
   },
   merchandise: {
     answer:
-      'The official FIFA Store is at Gate A. Open now. Show your smart ticket for a 10% discount on team jerseys!',
-    actionType: 'MERCHANDISE',
+      "The official FIFA Store is at Gate A. Open now. I've loaded the indoor route map to the store for you.",
+    actionType: 'NAVIGATE',
+    actionPayload: { destId: 'store' },
   },
   rules: {
     answer:

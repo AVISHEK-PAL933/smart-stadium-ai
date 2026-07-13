@@ -59,7 +59,10 @@ export default function AIMatchAssistant() {
   const handleAction = (actionType: string, actionPayload?: any) => {
     switch (actionType) {
       case 'NAVIGATE':
-        router.push('/(modules)/navigation');
+        router.push({
+          pathname: '/(modules)/navigation',
+          params: actionPayload?.destId ? { destId: actionPayload.destId } : undefined,
+        });
         break;
       case 'TICKET':
         router.push('/(modules)/smart-ticket');

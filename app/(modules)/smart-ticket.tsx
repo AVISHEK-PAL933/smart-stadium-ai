@@ -240,8 +240,17 @@ export default function SmartTicket() {
           </Text>
           <PrimaryButton
             title="Navigate to Gate D"
-            onPress={() => router.push('/(modules)/navigation')}
+            onPress={() =>
+              router.push({ pathname: '/(modules)/navigation', params: { destId: 'gate_d' } })
+            }
             style={styles.navGateBtn}
+          />
+          <PrimaryButton
+            title="Navigate to Seat 42"
+            onPress={() =>
+              router.push({ pathname: '/(modules)/navigation', params: { destId: 'seat' } })
+            }
+            style={[styles.navGateBtn, { marginTop: 10 }]}
           />
         </GlassCard>
       </ScrollView>
