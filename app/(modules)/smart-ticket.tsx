@@ -30,6 +30,7 @@ export default function SmartTicket() {
   const themeColors = Colors[theme];
 
   const [isOfflineMode, setIsOfflineMode] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ticketStatus, setTicketStatus] = useState('VALID'); // VALID, USED
 
   const qrPulse = useSharedValue(1);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';

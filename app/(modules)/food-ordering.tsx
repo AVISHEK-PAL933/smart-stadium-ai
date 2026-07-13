@@ -22,14 +22,9 @@ import { CartItem } from '../../components/CartItem';
 import { DeliveryTracker, DeliveryStatus } from '../../components/DeliveryTracker';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { useCart, CartCustomization } from '../../hooks/useCart';
-import {
-  FOOD_CATEGORIES,
-  FOOD_ITEMS,
-  getFilteredFoodItems,
-  FoodItem,
-} from '../../services/foodService';
+import Animated, { SlideInDown } from 'react-native-reanimated';
 import { useLocalSearchParams } from 'expo-router';
-import Animated, { FadeInUp, SlideInDown } from 'react-native-reanimated';
+import { FOOD_CATEGORIES, FOOD_ITEMS, FoodItem } from '../../services/foodService';
 
 export default function FoodOrdering() {
   const colorScheme = useColorScheme();

@@ -1,12 +1,11 @@
 import React from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Marker } from './Marker';
 import { RouteOverlay } from './RouteOverlay';
 import { Theme } from '../constants/theme';
 import {
-  MapCoordinate,
   NavigationRoute,
   CURRENT_LOCATION,
   STADIUM_DESTINATIONS,

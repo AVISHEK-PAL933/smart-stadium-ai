@@ -45,7 +45,7 @@ export const useChat = () => {
         actionPayload: response.actionPayload,
       };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (e) {
+    } catch {
       const errorMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         text: 'Sorry, I had trouble connecting to the stadium system. Please try again.',

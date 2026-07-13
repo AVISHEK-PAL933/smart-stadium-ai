@@ -16,7 +16,6 @@ import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import Animated, { FadeInUp } from 'react-native-reanimated';
 
 interface IncidentButton {
   id: string;
@@ -44,7 +43,7 @@ export default function EmergencyHelp() {
   const [selectedPath, setSelectedPath] = useState<'FASTEST' | 'ACCESSIBLE' | 'ALT'>('FASTEST');
 
   // Report fields
-  const [reportType, setReportType] = useState('Suspicious Activity');
+  const [reportType, setReportType] = useState('Suspicious Activity'); // eslint-disable-line @typescript-eslint/no-unused-vars
   const [description, setDescription] = useState('');
   const [submittedReports, setSubmittedReports] = useState<
     { id: string; type: string; status: string }[]

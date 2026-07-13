@@ -28,6 +28,7 @@ export default function AIMatchAssistant() {
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const themeColors = Colors[theme];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { messages, isTyping, sendMessage, clearChat } = useChat();
   const { isListening, startListening, stopListening, speak } = useSpeech();
   const [inputText, setInputText] = useState('');

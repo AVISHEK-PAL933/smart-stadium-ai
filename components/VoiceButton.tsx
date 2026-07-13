@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
-import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
 import Animated, {
   useAnimatedStyle,
@@ -34,7 +33,7 @@ export const VoiceButton = ({ isListening, onPress }: VoiceButtonProps) => {
     } else {
       scale.value = withTiming(1.0, { duration: 200 });
     }
-  }, [isListening]);
+  }, [isListening, scale]);
 
   const animatedStyle = useAnimatedStyle(() => {
     return {

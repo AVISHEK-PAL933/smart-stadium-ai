@@ -155,7 +155,16 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
       actionType: 'FOOD',
     };
   }
-  if (lowerQuery.includes('park')) {
+  if (
+    lowerQuery.includes('park') ||
+    lowerQuery.includes('transit') ||
+    lowerQuery.includes('shuttle') ||
+    lowerQuery.includes('bus') ||
+    lowerQuery.includes('metro') ||
+    lowerQuery.includes('car') ||
+    lowerQuery.includes('charger') ||
+    lowerQuery.includes('ev')
+  ) {
     return MOCK_ANSWERS['parking'];
   }
   if (

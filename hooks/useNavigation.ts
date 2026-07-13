@@ -4,7 +4,6 @@ import {
   NavigationRoute,
   STADIUM_DESTINATIONS,
   CURRENT_LOCATION,
-  MapCoordinate,
 } from '../services/navigationService';
 
 export const useNavigation = () => {
