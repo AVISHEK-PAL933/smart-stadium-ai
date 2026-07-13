@@ -56,6 +56,12 @@ const QUICK_ACTIONS = [
     route: '/(modules)/multilingual-guide',
   },
   { id: 'lost-found', title: 'Lost & Found', icon: 'image-search', route: '/(modules)/lost-found' },
+  {
+    id: 'fan-engagement',
+    title: 'Fan Zone',
+    icon: 'gamepad-variant',
+    route: '/(modules)/fan-engagement',
+  },
   { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
 ];
 

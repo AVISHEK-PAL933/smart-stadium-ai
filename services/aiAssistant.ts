@@ -72,6 +72,11 @@ const MOCK_ANSWERS: Record<string, AIResponse> = {
     answer:
       'Shuttles to the City Center leave every 10 minutes from Gate A. The metro station is a 7-minute walk from the South exit.',
   },
+  fan_zone: {
+    answer:
+      '🎮 Opening Fan Zone! Play quizzes, spin the lucky wheel, predict match results, climb the leaderboard, and earn exclusive rewards!',
+    actionType: 'FAN_ZONE',
+  },
 };
 
 export const askAIAssistant = async (query: string): Promise<AIResponse> => {
@@ -215,6 +220,26 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
     lowerQuery.includes('shuttle')
   ) {
     return MOCK_ANSWERS['transport'];
+  }
+
+  if (
+    lowerQuery.includes('leaderboard') ||
+    lowerQuery.includes('fan zone') ||
+    lowerQuery.includes('gamif') ||
+    lowerQuery.includes('quiz') ||
+    lowerQuery.includes('spin') ||
+    lowerQuery.includes('scratch') ||
+    lowerQuery.includes('predict') ||
+    lowerQuery.includes('badge') ||
+    lowerQuery.includes('xp') ||
+    lowerQuery.includes('coins') ||
+    lowerQuery.includes('reward') ||
+    lowerQuery.includes('achievement') ||
+    lowerQuery.includes('penalty') ||
+    lowerQuery.includes('poll') ||
+    lowerQuery.includes('selfie')
+  ) {
+    return MOCK_ANSWERS['fan_zone'];
   }
 
   return {

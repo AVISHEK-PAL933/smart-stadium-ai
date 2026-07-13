@@ -83,6 +83,9 @@ export default function AIMatchAssistant() {
       case 'LOST_FOUND':
         router.push('/(modules)/lost-found');
         break;
+      case 'FAN_ZONE':
+        router.push('/(modules)/fan-engagement');
+        break;
       default:
         break;
     }
