@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  Alert,
+  Platform,
+} from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
@@ -40,9 +48,17 @@ export default function SmartTicket() {
     };
   });
 
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      alert(`${title}\n\n${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
   const handleOfflineToggle = () => {
     setIsOfflineMode(!isOfflineMode);
-    Alert.alert(
+    showAlert(
       !isOfflineMode ? 'Offline Mode Enabled' : 'Online Mode Restored',
       !isOfflineMode
         ? 'This ticket has been cached locally. You can access it anytime even without stadium connectivity.'
@@ -51,18 +67,15 @@ export default function SmartTicket() {
   };
 
   const handleDownload = () => {
-    Alert.alert('Download Complete', 'FIFA Smart Ticket PDF has been saved to your downloads.');
+    showAlert('Download Complete', 'FIFA Smart Ticket PDF has been saved to your downloads.');
   };
 
   const handleShare = () => {
-    Alert.alert(
-      'Share Ticket',
-      'Ticket sharing links generated successfully. Forward to recipient.'
-    );
+    showAlert('Share Ticket', 'Ticket sharing links generated successfully. Forward to recipient.');
   };
 
   const handleSaveToDevice = () => {
-    Alert.alert(
+    showAlert(
       'Saved to Wallet',
       'StadiumMind ticket added successfully to Google Wallet/Apple Wallet.'
     );
