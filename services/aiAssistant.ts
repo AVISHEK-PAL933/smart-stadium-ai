@@ -7,8 +7,8 @@ export interface AIResponse {
 const MOCK_ANSWERS: Record<string, AIResponse> = {
   seat: {
     answer:
-      'Your reserved seat is located in Section 112, Row M, Seat 42. Go to Gate D and follow the blue lights.',
-    actionType: 'NAVIGATE',
+      "Your reserved seat is located in Section 112, Row M, Seat 42. I've loaded your digital ticket so you can see entry details.",
+    actionType: 'TICKET',
     actionPayload: { gate: 'D', section: '112', row: 'M', seat: '42' },
   },
   ticket: {
@@ -18,9 +18,9 @@ const MOCK_ANSWERS: Record<string, AIResponse> = {
   },
   gate: {
     answer:
-      "Gate A is located on the North side of the stadium. It's currently a 5-minute walk from your current location.",
-    actionType: 'NAVIGATE',
-    actionPayload: { destination: 'Gate A' },
+      "Your ticket designates Gate D for stadium entry. I\'ve loaded your smart ticket so you can see full gate and route details.",
+    actionType: 'TICKET',
+    actionPayload: { destination: 'Gate D' },
   },
   washroom: {
     answer:
