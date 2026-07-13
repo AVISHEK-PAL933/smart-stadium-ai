@@ -172,7 +172,13 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
   if (
     lowerQuery.includes('emergency') ||
     lowerQuery.includes('help') ||
-    lowerQuery.includes('sos')
+    lowerQuery.includes('sos') ||
+    lowerQuery.includes('fire') ||
+    lowerQuery.includes('medical') ||
+    lowerQuery.includes('police') ||
+    lowerQuery.includes('lost child') ||
+    lowerQuery.includes('safety') ||
+    lowerQuery.includes('suspicious')
   ) {
     return MOCK_ANSWERS['emergency'];
   }
