@@ -100,13 +100,60 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
   ) {
     return MOCK_ANSWERS['washroom'];
   }
+  if (lowerQuery.includes('pizza')) {
+    return {
+      answer: "I've loaded the food concessions menu and filtered it to pizzas for you!",
+      actionType: 'FOOD',
+      actionPayload: { filter: 'Pizza' },
+    };
+  }
+  if (lowerQuery.includes('popcorn')) {
+    return {
+      answer:
+        'Giant Butter Popcorn buckets are available at nearby stands. Opening concessions menu...',
+      actionType: 'FOOD',
+      actionPayload: { filter: 'Popcorn' },
+    };
+  }
+  if (lowerQuery.includes('coffee')) {
+    return {
+      answer: 'Piping hot espresso and coffees are ready for delivery. Opening concessions menu...',
+      actionType: 'FOOD',
+      actionPayload: { filter: 'Coffee' },
+    };
+  }
+  if (lowerQuery.includes('veg')) {
+    return {
+      answer: 'Showing vegetarian food recommendations on the concessions menu.',
+      actionType: 'FOOD',
+      actionPayload: { filter: 'veg' },
+    };
+  }
+  if (lowerQuery.includes('spicy')) {
+    return {
+      answer: 'Showing spicy items (like Pepperoni Pizzas) on the concessions menu.',
+      actionType: 'FOOD',
+      actionPayload: { filter: 'spicy' },
+    };
+  }
+  if (lowerQuery.includes('calorie') || lowerQuery.includes('healthy')) {
+    return {
+      answer: 'Showing healthy options and low calorie salad bowls on the concessions menu.',
+      actionType: 'FOOD',
+      actionPayload: { filter: 'healthy' },
+    };
+  }
   if (
     lowerQuery.includes('food') ||
     lowerQuery.includes('concession') ||
     lowerQuery.includes('drink') ||
     lowerQuery.includes('eat')
   ) {
-    return MOCK_ANSWERS['food'];
+    return {
+      answer:
+        'Opening the concessions menu. Order warm food directly to Section 112, Row M, Seat 42!',
+      actionType: 'FOOD',
+    };
   }
   if (lowerQuery.includes('park')) {
     return MOCK_ANSWERS['parking'];

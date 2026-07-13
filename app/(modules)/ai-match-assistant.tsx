@@ -68,7 +68,10 @@ export default function AIMatchAssistant() {
         router.push('/(modules)/smart-ticket');
         break;
       case 'FOOD':
-        router.push('/(modules)/food-ordering');
+        router.push({
+          pathname: '/(modules)/food-ordering',
+          params: actionPayload?.filter ? { filter: actionPayload.filter } : undefined,
+        });
         break;
       case 'PARKING':
         router.push('/(modules)/parking');

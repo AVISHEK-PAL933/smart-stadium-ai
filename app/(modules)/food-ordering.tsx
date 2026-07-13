@@ -1,131 +1,510 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Alert,
+  Platform,
+} from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { FadeInUp, SlideInDown } from 'react-native-reanimated';
+import { FoodCard } from '../../components/FoodCard';
+import { CategoryChip } from '../../components/CategoryChip';
+import { SearchBar } from '../../components/SearchBar';
+import { CartItem } from '../../components/CartItem';
+import { DeliveryTracker, DeliveryStatus } from '../../components/DeliveryTracker';
 import { PrimaryButton } from '../../components/PrimaryButton';
-
-const MENU_ITEMS = [
-  { id: '1', name: 'Classic Stadium Hot Dog', price: '$8.00', icon: 'hamburger' },
-  { id: '2', name: 'Nachos with Cheese', price: '$6.50', icon: 'silverware-fork-knife' },
-  { id: '3', name: 'Draft Beer (Large)', price: '$12.00', icon: 'glass-wine' },
-  { id: '4', name: 'Bottled Water', price: '$4.00', icon: 'water' },
-  { id: '5', name: 'Pretzel', price: '$5.50', icon: 'bread-slice' },
-];
+import { useCart, CartCustomization } from '../../hooks/useCart';
+import {
+  FOOD_CATEGORIES,
+  FOOD_ITEMS,
+  getFilteredFoodItems,
+  FoodItem,
+} from '../../services/foodService';
+import { useLocalSearchParams } from 'expo-router';
+import Animated, { FadeInUp, SlideInDown } from 'react-native-reanimated';
 
 export default function FoodOrdering() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const themeColors = Colors[theme];
 
-  const [cart, setCart] = useState<Record<string, number>>({});
+  // AI Assistant routing filter params
+  const params = useLocalSearchParams<{ filter?: string }>();
 
-  const handleAdd = (id: string) => {
-    setCart((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
-  };
+  const {
+    cartItems,
+    subtotal,
+    taxes,
+    deliveryCharge,
+    grandTotal,
+    addToCart,
+    updateQuantity,
+    removeFromCart,
+    clearCart,
+  } = useCart();
 
-  const handleRemove = (id: string) => {
-    setCart((prev) => {
-      const next = { ...prev };
-      if (next[id] > 1) {
-        next[id]--;
-      } else {
-        delete next[id];
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  // Customization modal state
+  const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(null);
+  const [customOptions, setCustomOptions] = useState<CartCustomization>({
+    extraCheese: false,
+    extraSauce: false,
+    noOnion: false,
+    lessSpicy: false,
+    specialInstructions: '',
+  });
+
+  // UI state: MENU, CART, CHECKOUT, TRACKING
+  const [currentStep, setCurrentStep] = useState<'MENU' | 'CART' | 'CHECKOUT' | 'TRACKING'>('MENU');
+
+  // Checkout options
+  const [paymentMethod, setPaymentMethod] = useState<
+    'WALLET' | 'CARD' | 'APPLE_PAY' | 'GOOGLE_PAY'
+  >('WALLET');
+
+  // Order tracking status
+  const [orderStatus, setOrderStatus] = useState<DeliveryStatus>('PREPARING');
+  const [estDeliveryTime, setEstDeliveryTime] = useState(12);
+
+  // Hook query parameters from assistant
+  useEffect(() => {
+    if (params?.filter) {
+      const query = params.filter;
+      setSearchQuery(query);
+      // If matches exact category, activate category chip
+      const catMatch = FOOD_CATEGORIES.find((c) => c.toLowerCase() === query.toLowerCase());
+      if (catMatch) {
+        setSelectedCategory(catMatch);
       }
-      return next;
+    }
+  }, [params]);
+
+  // Menu items list matching current category and search query
+  const itemsToDisplay = FOOD_ITEMS.filter((item) => {
+    const matchesCategory = selectedCategory ? item.category === selectedCategory : true;
+    const matchesSearch = searchQuery
+      ? item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.description.toLowerCase().includes(searchQuery.toLowerCase())
+      : true;
+    return matchesCategory && matchesSearch;
+  });
+
+  const handleOpenCustomize = (item: FoodItem) => {
+    setSelectedFoodItem(item);
+    setCustomOptions({
+      extraCheese: false,
+      extraSauce: false,
+      noOnion: false,
+      lessSpicy: false,
+      specialInstructions: '',
     });
   };
 
-  const totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
+  const handleConfirmAdd = () => {
+    if (selectedFoodItem) {
+      addToCart(selectedFoodItem, customOptions, 1);
+      setSelectedFoodItem(null);
+      showAlert('Added to Cart', `${selectedFoodItem.name} added successfully!`);
+    }
+  };
+
+  const handlePlaceOrder = () => {
+    setCurrentStep('TRACKING');
+    setOrderStatus('PREPARING');
+    setEstDeliveryTime(12);
+  };
+
+  // Mock Delivery Progress Trigger
+  useEffect(() => {
+    if (currentStep === 'TRACKING') {
+      const t1 = setTimeout(() => {
+        setOrderStatus('COOKING');
+        setEstDeliveryTime(9);
+      }, 4000);
+      const t2 = setTimeout(() => {
+        setOrderStatus('SHIPPED');
+        setEstDeliveryTime(5);
+      }, 8000);
+      const t3 = setTimeout(() => {
+        setOrderStatus('DELIVERED');
+        setEstDeliveryTime(0);
+      }, 12000);
+      return () => {
+        clearTimeout(t1);
+        clearTimeout(t2);
+        clearTimeout(t3);
+      };
+    }
+  }, [currentStep]);
+
+  const showAlert = (title: string, msg: string) => {
+    if (Platform.OS === 'web') {
+      alert(`${title}\n\n${msg}`);
+    } else {
+      Alert.alert(title, msg);
+    }
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <Header title="In-Seat Delivery" />
-      <ScrollView contentContainerStyle={styles.content}>
-        <Animated.View entering={FadeInUp.delay(100)}>
-          <GlassCard style={styles.headerCard}>
-            <MaterialCommunityIcons
-              name="coffee"
-              size={48}
-              color={themeColors.tint}
-              style={styles.icon}
-            />
-            <Text style={[styles.title, { color: themeColors.text }]}>Section 112 Concessions</Text>
-            <Text style={[styles.subtitle, { color: themeColors.icon }]}>
-              Order from nearby vendors and skip the line. Delivered in ~10 mins.
-            </Text>
-          </GlassCard>
-        </Animated.View>
+      <Header
+        title={
+          currentStep === 'MENU'
+            ? 'Smart Concessions'
+            : currentStep === 'CART'
+              ? 'Shopping Cart'
+              : currentStep === 'CHECKOUT'
+                ? 'Payment Checkout'
+                : 'Delivery Progress'
+        }
+      />
 
-        <View style={styles.menuList}>
-          {MENU_ITEMS.map((item, index) => (
-            <Animated.View key={item.id} entering={FadeInUp.delay(200 + index * 100)}>
-              <View
-                style={[
-                  styles.menuItem,
-                  { backgroundColor: themeColors.card, borderColor: themeColors.border },
-                ]}>
-                <View
-                  style={[styles.itemIconContainer, { backgroundColor: themeColors.tint + '20' }]}>
-                  <MaterialCommunityIcons
-                    name={item.icon as any}
-                    size={28}
-                    color={themeColors.tint}
-                  />
+      {currentStep === 'MENU' && (
+        <>
+          <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+
+          <View style={styles.categoriesWrapper}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.categoriesScroll}>
+              <CategoryChip
+                label="All Menus"
+                isActive={selectedCategory === null}
+                onPress={() => setSelectedCategory(null)}
+              />
+              {FOOD_CATEGORIES.map((cat) => (
+                <CategoryChip
+                  key={cat}
+                  label={cat}
+                  isActive={selectedCategory === cat}
+                  onPress={() => setSelectedCategory(cat)}
+                />
+              ))}
+            </ScrollView>
+          </View>
+
+          <ScrollView contentContainerStyle={styles.menuGrid} showsVerticalScrollIndicator={false}>
+            {itemsToDisplay.map((item) => (
+              <FoodCard key={item.id} item={item} onPress={() => handleOpenCustomize(item)} />
+            ))}
+          </ScrollView>
+
+          {/* Floating Cart Button */}
+          {cartItems.length > 0 && (
+            <Animated.View entering={SlideInDown} style={styles.floatingCartWrapper}>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                onPress={() => setCurrentStep('CART')}
+                style={[styles.floatingCart, { backgroundColor: themeColors.tint }]}>
+                <View style={styles.cartBtnRow}>
+                  <MaterialCommunityIcons name="cart-outline" size={24} color="#FFFFFF" />
+                  <Text style={styles.cartCount}>
+                    {cartItems.reduce((a, b) => a + b.quantity, 0)} Items
+                  </Text>
                 </View>
-                <View style={styles.itemDetails}>
-                  <Text style={[styles.itemName, { color: themeColors.text }]}>{item.name}</Text>
-                  <Text style={[styles.itemPrice, { color: themeColors.tint }]}>{item.price}</Text>
-                </View>
-                <View style={styles.quantityControls}>
-                  {cart[item.id] ? (
-                    <>
-                      <TouchableOpacity
-                        onPress={() => handleRemove(item.id)}
-                        style={[styles.ctrlBtn, { borderColor: themeColors.border }]}>
-                        <MaterialCommunityIcons name="minus" size={20} color={themeColors.text} />
-                      </TouchableOpacity>
-                      <Text style={[styles.qtyText, { color: themeColors.text }]}>
-                        {cart[item.id]}
-                      </Text>
-                    </>
-                  ) : null}
-                  <TouchableOpacity
-                    onPress={() => handleAdd(item.id)}
-                    style={[
-                      styles.ctrlBtn,
-                      { backgroundColor: themeColors.tint, borderColor: themeColors.tint },
-                    ]}>
-                    <MaterialCommunityIcons name="plus" size={20} color="#fff" />
+                <Text style={styles.cartPrice}>View Cart • ${subtotal.toFixed(2)}</Text>
+              </TouchableOpacity>
+            </Animated.View>
+          )}
+
+          {/* Customize Modal Overlay Sheet */}
+          {selectedFoodItem && (
+            <View style={styles.modalOverlay}>
+              <GlassCard style={styles.modalCard}>
+                <View style={styles.modalHeader}>
+                  <Text style={[styles.modalTitle, { color: themeColors.text }]}>
+                    Customize Order
+                  </Text>
+                  <TouchableOpacity onPress={() => setSelectedFoodItem(null)}>
+                    <MaterialCommunityIcons name="close" size={22} color={themeColors.text} />
                   </TouchableOpacity>
                 </View>
-              </View>
-            </Animated.View>
-          ))}
-        </View>
-      </ScrollView>
 
-      {totalItems > 0 && (
-        <Animated.View
-          entering={SlideInDown}
-          style={[
-            styles.cartFloating,
-            { borderTopColor: themeColors.border, backgroundColor: themeColors.background },
-          ]}>
-          <View style={styles.cartInfo}>
-            <Text style={[styles.cartItems, { color: themeColors.text }]}>
-              {totalItems} Items Selected
-            </Text>
-            <Text style={[styles.cartDesc, { color: themeColors.icon }]}>
-              Delivery to Sec 112, Row M, Seat 42
-            </Text>
+                <Text style={[styles.modalItemName, { color: themeColors.tint }]}>
+                  {selectedFoodItem.name}
+                </Text>
+                <Text style={[styles.modalDesc, { color: themeColors.icon }]}>
+                  {selectedFoodItem.description}
+                </Text>
+
+                {/* Options Switches */}
+                <View style={styles.addonsList}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      setCustomOptions((prev) => ({ ...prev, extraCheese: !prev.extraCheese }))
+                    }
+                    style={[styles.addonRow, { borderBottomColor: themeColors.border }]}>
+                    <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                      🧀 Extra Cheese
+                    </Text>
+                    <MaterialCommunityIcons
+                      name={
+                        customOptions.extraCheese ? 'checkbox-marked' : 'checkbox-blank-outline'
+                      }
+                      size={20}
+                      color={themeColors.tint}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      setCustomOptions((prev) => ({ ...prev, extraSauce: !prev.extraSauce }))
+                    }
+                    style={[styles.addonRow, { borderBottomColor: themeColors.border }]}>
+                    <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                      🥫 Extra Sauce
+                    </Text>
+                    <MaterialCommunityIcons
+                      name={customOptions.extraSauce ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      size={20}
+                      color={themeColors.tint}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      setCustomOptions((prev) => ({ ...prev, noOnion: !prev.noOnion }))
+                    }
+                    style={[styles.addonRow, { borderBottomColor: themeColors.border }]}>
+                    <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                      🧅 No Onion
+                    </Text>
+                    <MaterialCommunityIcons
+                      name={customOptions.noOnion ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      size={20}
+                      color={themeColors.tint}
+                    />
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() =>
+                      setCustomOptions((prev) => ({ ...prev, lessSpicy: !prev.lessSpicy }))
+                    }
+                    style={[styles.addonRow, { borderBottomColor: themeColors.border }]}>
+                    <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                      🌶 Less Spicy
+                    </Text>
+                    <MaterialCommunityIcons
+                      name={customOptions.lessSpicy ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      size={20}
+                      color={themeColors.tint}
+                    />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Special Instructions */}
+                <TextInput
+                  style={[
+                    styles.instructionsInput,
+                    {
+                      color: themeColors.text,
+                      borderColor: themeColors.border,
+                      backgroundColor:
+                        theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                    },
+                  ]}
+                  placeholder="Special instructions (e.g. well done)"
+                  placeholderTextColor={themeColors.icon}
+                  value={customOptions.specialInstructions}
+                  onChangeText={(txt) =>
+                    setCustomOptions((prev) => ({ ...prev, specialInstructions: txt }))
+                  }
+                />
+
+                <PrimaryButton
+                  title={`Add to Basket • $${selectedFoodItem.price.toFixed(2)}`}
+                  onPress={handleConfirmAdd}
+                  style={styles.modalAddBtn}
+                />
+              </GlassCard>
+            </View>
+          )}
+        </>
+      )}
+
+      {currentStep === 'CART' && (
+        <View style={styles.cartContainer}>
+          <ScrollView style={styles.cartList} showsVerticalScrollIndicator={false}>
+            {cartItems.map((item) => (
+              <CartItem
+                key={`${item.foodItem.id}-${JSON.stringify(item.customization)}`}
+                item={item}
+                onUpdateQty={updateQuantity}
+                onRemove={removeFromCart}
+              />
+            ))}
+          </ScrollView>
+
+          {/* Pricing totals summary block */}
+          <GlassCard style={styles.summaryCard}>
+            <View style={styles.priceRow}>
+              <Text style={[styles.summaryLabel, { color: themeColors.icon }]}>Subtotal</Text>
+              <Text style={[styles.summaryVal, { color: themeColors.text }]}>
+                ${subtotal.toFixed(2)}
+              </Text>
+            </View>
+            <View style={styles.priceRow}>
+              <Text style={[styles.summaryLabel, { color: themeColors.icon }]}>Taxes (8%)</Text>
+              <Text style={[styles.summaryVal, { color: themeColors.text }]}>
+                ${taxes.toFixed(2)}
+              </Text>
+            </View>
+            <View style={styles.priceRow}>
+              <Text style={[styles.summaryLabel, { color: themeColors.icon }]}>
+                In-Seat Delivery
+              </Text>
+              <Text style={[styles.summaryVal, { color: themeColors.text }]}>
+                ${deliveryCharge.toFixed(2)}
+              </Text>
+            </View>
+            <View
+              style={[
+                styles.priceRow,
+                styles.totalPriceRow,
+                { borderTopColor: themeColors.border },
+              ]}>
+              <Text style={[styles.totalLabel, { color: themeColors.text }]}>Grand Total</Text>
+              <Text style={[styles.totalVal, { color: themeColors.tint }]}>
+                ${grandTotal.toFixed(2)}
+              </Text>
+            </View>
+          </GlassCard>
+
+          <View style={styles.cartActions}>
+            <TouchableOpacity
+              onPress={() => setCurrentStep('MENU')}
+              style={[
+                styles.backBtn,
+                { borderColor: themeColors.border, backgroundColor: themeColors.card },
+              ]}>
+              <Text style={[styles.backBtnText, { color: themeColors.text }]}>Keep Adding</Text>
+            </TouchableOpacity>
+            <PrimaryButton
+              title="Proceed to Checkout"
+              onPress={() => setCurrentStep('CHECKOUT')}
+              style={styles.checkoutBtn}
+            />
           </View>
-          <PrimaryButton title="Checkout" onPress={() => {}} style={styles.checkoutBtn} />
-        </Animated.View>
+        </View>
+      )}
+
+      {currentStep === 'CHECKOUT' && (
+        <View style={styles.cartContainer}>
+          <ScrollView style={styles.checkoutBody} showsVerticalScrollIndicator={false}>
+            {/* Delivery location address */}
+            <GlassCard style={styles.checkoutCard}>
+              <Text style={[styles.checkTitle, { color: themeColors.text }]}>
+                Delivery Destination
+              </Text>
+              <View style={styles.destBox}>
+                <MaterialCommunityIcons name="seat" size={24} color={themeColors.tint} />
+                <View>
+                  <Text style={[styles.destSeat, { color: themeColors.text }]}>
+                    Section 112, Row M, Seat 42
+                  </Text>
+                  <Text style={[styles.destSub, { color: themeColors.icon }]}>
+                    MetLife Stadium Smart Seat
+                  </Text>
+                </View>
+              </View>
+            </GlassCard>
+
+            {/* Payment Method Selector */}
+            <GlassCard style={[styles.checkoutCard, { marginTop: Theme.spacing.m }]}>
+              <Text style={[styles.checkTitle, { color: themeColors.text }]}>
+                Cashless Payment Method
+              </Text>
+              <View style={styles.paymentList}>
+                <TouchableOpacity
+                  onPress={() => setPaymentMethod('WALLET')}
+                  style={[styles.paymentRow, { borderBottomColor: themeColors.border }]}>
+                  <MaterialCommunityIcons name="wallet" size={20} color={themeColors.tint} />
+                  <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                    Stadium Cashless Wallet
+                  </Text>
+                  <MaterialCommunityIcons
+                    name={paymentMethod === 'WALLET' ? 'radiobox-marked' : 'radiobox-blank'}
+                    size={20}
+                    color={themeColors.tint}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setPaymentMethod('CARD')}
+                  style={[styles.paymentRow, { borderBottomColor: themeColors.border }]}>
+                  <MaterialCommunityIcons name="credit-card" size={20} color={themeColors.icon} />
+                  <Text style={[styles.addonLabel, { color: themeColors.text }]}>
+                    Credit / Debit Card
+                  </Text>
+                  <MaterialCommunityIcons
+                    name={paymentMethod === 'CARD' ? 'radiobox-marked' : 'radiobox-blank'}
+                    size={20}
+                    color={themeColors.tint}
+                  />
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => setPaymentMethod('APPLE_PAY')}
+                  style={[styles.paymentRow, { borderBottomColor: themeColors.border }]}>
+                  <MaterialCommunityIcons name="apple" size={20} color={themeColors.icon} />
+                  <Text style={[styles.addonLabel, { color: themeColors.text }]}>Apple Pay</Text>
+                  <MaterialCommunityIcons
+                    name={paymentMethod === 'APPLE_PAY' ? 'radiobox-marked' : 'radiobox-blank'}
+                    size={20}
+                    color={themeColors.tint}
+                  />
+                </TouchableOpacity>
+              </View>
+            </GlassCard>
+          </ScrollView>
+
+          <View style={styles.cartActions}>
+            <TouchableOpacity
+              onPress={() => setCurrentStep('CART')}
+              style={[
+                styles.backBtn,
+                { borderColor: themeColors.border, backgroundColor: themeColors.card },
+              ]}>
+              <Text style={[styles.backBtnText, { color: themeColors.text }]}>Back to Cart</Text>
+            </TouchableOpacity>
+            <PrimaryButton
+              title={`Pay & Order • $${grandTotal.toFixed(2)}`}
+              onPress={handlePlaceOrder}
+              style={styles.checkoutBtn}
+            />
+          </View>
+        </View>
+      )}
+
+      {currentStep === 'TRACKING' && (
+        <ScrollView
+          contentContainerStyle={styles.trackingContainer}
+          showsVerticalScrollIndicator={false}>
+          <DeliveryTracker
+            status={orderStatus}
+            seat="Sec 112, Row M, Seat 42"
+            estMinutes={estDeliveryTime}
+          />
+          <PrimaryButton
+            title="Return to Menu"
+            onPress={() => {
+              clearCart();
+              setCurrentStep('MENU');
+            }}
+            style={styles.doneBtn}
+          />
+        </ScrollView>
       )}
     </View>
   );
@@ -133,68 +512,102 @@ export default function FoodOrdering() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: Theme.spacing.l, paddingBottom: 150 },
-  headerCard: { padding: Theme.spacing.l, alignItems: 'center', marginBottom: Theme.spacing.xl },
-  icon: {
-    marginBottom: Theme.spacing.m,
-    textShadowColor: 'rgba(0, 229, 255, 0.4)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
-  },
-  title: {
-    fontSize: Theme.typography.sizes.xl,
-    fontWeight: 'bold',
-    marginBottom: Theme.spacing.s,
-    textAlign: 'center',
-  },
-  subtitle: { fontSize: Theme.typography.sizes.m, textAlign: 'center' },
-  menuList: { gap: Theme.spacing.m },
-  menuItem: {
+  categoriesWrapper: { paddingVertical: Theme.spacing.s },
+  categoriesScroll: { paddingHorizontal: Theme.spacing.l },
+  menuGrid: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: Theme.spacing.l,
+    paddingBottom: 120,
+  },
+  floatingCartWrapper: { position: 'absolute', bottom: 70, left: 16, right: 16 },
+  floatingCart: {
     padding: Theme.spacing.m,
-    borderRadius: Theme.shapes.borderRadius.m,
-    borderWidth: 1,
-    gap: Theme.spacing.m,
-  },
-  itemIconContainer: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    borderRadius: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
   },
-  itemDetails: { flex: 1 },
-  itemName: { fontSize: Theme.typography.sizes.m, fontWeight: 'bold', marginBottom: 4 },
-  itemPrice: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
-  quantityControls: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  ctrlBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  qtyText: {
-    fontSize: Theme.typography.sizes.m,
-    fontWeight: 'bold',
-    width: 20,
-    textAlign: 'center',
-  },
-  cartFloating: {
+  cartBtnRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  cartCount: { color: '#FFFFFF', fontWeight: 'bold', fontSize: Theme.typography.sizes.s },
+  cartPrice: { color: '#FFFFFF', fontWeight: 'bold', fontSize: Theme.typography.sizes.s },
+
+  modalOverlay: {
     position: 'absolute',
-    bottom: 60,
+    top: 0,
+    bottom: 0,
     left: 0,
     right: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
     padding: Theme.spacing.l,
-    borderTopWidth: 1,
+    zIndex: 100,
+  },
+  modalCard: { padding: Theme.spacing.l, borderRadius: 24, gap: Theme.spacing.s },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  modalTitle: { fontSize: Theme.typography.sizes.m, fontWeight: 'bold' },
+  modalItemName: { fontSize: Theme.typography.sizes.l, fontWeight: '900', marginTop: 4 },
+  modalDesc: { fontSize: Theme.typography.sizes.s, lineHeight: 18, marginBottom: Theme.spacing.s },
+  addonsList: { gap: 2, marginBottom: Theme.spacing.s },
+  addonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+  },
+  addonLabel: { fontSize: Theme.typography.sizes.s, fontWeight: '600' },
+  instructionsInput: {
+    padding: Theme.spacing.m,
+    borderRadius: 16,
+    borderWidth: 1,
+    fontSize: Theme.typography.sizes.s,
+    height: 44,
+    marginBottom: Theme.spacing.m,
+  },
+  modalAddBtn: { width: '100%' },
+
+  cartContainer: { flex: 1, padding: Theme.spacing.l, gap: Theme.spacing.m },
+  cartList: { flex: 1 },
+  summaryCard: { padding: Theme.spacing.m, borderRadius: 20, gap: 10 },
+  priceRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  summaryLabel: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
+  summaryVal: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
+  totalPriceRow: { borderTopWidth: 1, paddingTop: Theme.spacing.s, marginTop: 4 },
+  totalLabel: { fontSize: Theme.typography.sizes.m, fontWeight: 'bold' },
+  totalVal: { fontSize: Theme.typography.sizes.m, fontWeight: '900' },
+  cartActions: { flexDirection: 'row', gap: Theme.spacing.s, paddingBottom: 60 },
+  backBtn: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 48,
+    borderRadius: 16,
+    borderWidth: 1,
+  },
+  backBtnText: { fontWeight: 'bold', fontSize: Theme.typography.sizes.s },
+  checkoutBtn: { flex: 1.5 },
+
+  checkoutBody: { flex: 1 },
+  checkoutCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
+  checkTitle: { fontSize: Theme.typography.sizes.m - 2, fontWeight: 'bold' },
+  destBox: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.m },
+  destSeat: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
+  destSub: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold', opacity: 0.6 },
+  paymentList: { gap: 2 },
+  paymentRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
     gap: Theme.spacing.m,
   },
-  cartInfo: { flex: 1 },
-  cartItems: { fontSize: Theme.typography.sizes.l, fontWeight: 'bold', marginBottom: 4 },
-  cartDesc: { fontSize: Theme.typography.sizes.s },
-  checkoutBtn: { flexShrink: 0 },
+
+  trackingContainer: { padding: Theme.spacing.l, gap: Theme.spacing.m, paddingBottom: 100 },
+  doneBtn: { width: '100%', marginTop: Theme.spacing.m },
 });
