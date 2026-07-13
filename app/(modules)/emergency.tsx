@@ -16,73 +16,98 @@ import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import Animated, {
-  FadeInUp,
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { FadeInUp } from 'react-native-reanimated';
+
+interface IncidentButton {
+  id: string;
+  title: string;
+  icon: string;
+  color: string;
+}
 
 export default function EmergencyHelp() {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const themeColors = Colors[theme];
 
-  // Active tabs: 'DASHBOARD' | 'NAVIGATION' | 'GUIDE' | 'REPORT' | 'CHAT'
+  // Active tab selection
   const [activeTab, setActiveTab] = useState<
     'DASHBOARD' | 'NAVIGATION' | 'GUIDE' | 'REPORT' | 'CHAT'
   >('DASHBOARD');
 
-  // SOS state
+  // Emergency States
   const [sosActive, setSosActive] = useState(false);
+  const [sosCountdown, setSosCountdown] = useState(10);
+  const [activeIncidentDispatch, setActiveIncidentDispatch] = useState<string | null>(null);
 
-  // Evacuation routing path selection
+  // Evacuation route selection
   const [selectedPath, setSelectedPath] = useState<'FASTEST' | 'ACCESSIBLE' | 'ALT'>('FASTEST');
 
-  // Interactive report mock states
+  // Report fields
   const [reportType, setReportType] = useState('Suspicious Activity');
   const [description, setDescription] = useState('');
   const [submittedReports, setSubmittedReports] = useState<
     { id: string; type: string; status: string }[]
-  >([]);
+  >([{ id: 'REP-7421', type: 'Crowd Incident', status: 'RESPONDERS ON SCENE' }]);
 
-  // Emergency assistant messages
+  // Chat integration
   const [chatInput, setChatInput] = useState('');
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant'; text: string }[]>([
     {
       role: 'assistant',
-      text: 'Emergency AI Response Hub active. Type your safety concern or tap an action.',
+      text: 'Stadium Emergency Response Center is online. Type a safety concern or tap an emergency action above.',
     },
   ]);
 
-  // Pulse animation controller
-  const pulseScale = useSharedValue(1);
-  const pulseOpacity = useSharedValue(0.8);
-
+  // Countdown timer for SOS dispatch
   useEffect(() => {
-    pulseScale.value = withRepeat(withTiming(1.3, { duration: 1000 }), -1, true);
-    pulseOpacity.value = withRepeat(withTiming(0.2, { duration: 1000 }), -1, true);
-  }, []);
-
-  const animatedSosPulse = useAnimatedStyle(() => {
-    return {
-      transform: [{ scale: pulseScale.value }],
-      opacity: pulseOpacity.value,
-    };
-  });
+    let timer: NodeJS.Timeout;
+    if (sosActive && sosCountdown > 0) {
+      timer = setTimeout(() => {
+        setSosCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [sosActive, sosCountdown]);
 
   const handleTriggerSOS = () => {
     setSosActive(true);
+    setSosCountdown(10);
+    setActiveIncidentDispatch('SOS General Alarm');
     showAlert(
       'SOS Broadcasted',
-      'Your location has been shared with MetLife Stadium Command Center. Medical & Security teams have been dispatched.'
+      'SOS signal transmitted. Responders have been dispatched to Sec 112, Row M, Seat 42.'
     );
+  };
+
+  const handleTriggerIncident = (incident: IncidentButton) => {
+    setActiveIncidentDispatch(incident.title);
+    setSosActive(true);
+    setSosCountdown(10);
+
+    // Add to submitted reports
+    const newRep = {
+      id: `REP-${Math.floor(1000 + Math.random() * 9000)}`,
+      type: incident.title,
+      status: 'DISPATCHED',
+    };
+    setSubmittedReports((prev) => [newRep, ...prev]);
+
+    showAlert(
+      `${incident.title} Dispatched`,
+      `A dispatch ticket has been opened for ${incident.title} at your seat Section 112.`
+    );
+  };
+
+  const handleCancelSOS = () => {
+    setSosActive(false);
+    setActiveIncidentDispatch(null);
+    showAlert('SOS Cancelled', 'The emergency signal was cancelled.');
   };
 
   const handleSendReport = () => {
     if (!description.trim()) {
-      showAlert('Error', 'Please enter details of the incident.');
+      showAlert('Error', 'Please describe the incident.');
       return;
     }
     const newReport = {
@@ -92,7 +117,7 @@ export default function EmergencyHelp() {
     };
     setSubmittedReports((prev) => [newReport, ...prev]);
     setDescription('');
-    showAlert('Incident Filed', `Report #${newReport.id} logged. Stadium control is responding.`);
+    showAlert('Incident Logged', `Report #${newReport.id} logged. Security desk is reviewing.`);
   };
 
   const handleSendChatMessage = () => {
@@ -130,17 +155,32 @@ export default function EmergencyHelp() {
     }
   };
 
+  const INCIDENT_ACTIONS: IncidentButton[] = [
+    { id: 'med', title: 'Medical Emergency', icon: 'medical-bag', color: '#EF5350' },
+    { id: 'sec', title: 'Security Incident', icon: 'police-badge', color: '#42A5F5' },
+    { id: 'fire', title: 'Fire Alert', icon: 'fire', color: '#FF7043' },
+    { id: 'child', title: 'Lost Child', icon: 'account-child', color: '#AB47BC' },
+    { id: 'item', title: 'Lost Item', icon: 'wallet-giftcard', color: '#FFA726' },
+    { id: 'susp', title: 'Suspicious Activity', icon: 'eye-outline', color: '#26A69A' },
+    { id: 'crowd', title: 'Crowd Incident', icon: 'account-group-outline', color: '#78909C' },
+  ];
+
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <Header title={sosActive ? '⚠️ EMERGENCY DISPATCH ACTIVE' : 'Crowd Safety & SOS'} />
+      <Header title="Crowd Safety & SOS" />
 
-      {/* Live Safety Announcement Bar */}
-      <View style={[styles.alertBar, { backgroundColor: '#D32F2F' }]}>
-        <MaterialCommunityIcons name="bullhorn-outline" size={18} color="#FFFFFF" />
-        <Text style={styles.alertBarText}>
-          Warning: Congestion near Gate A. Please use Gate C for exits.
-        </Text>
-      </View>
+      {/* Dispatch status bar */}
+      {sosActive && (
+        <View style={styles.alertBanner}>
+          <MaterialCommunityIcons name="alert-decagram" size={20} color="#FFFFFF" />
+          <Text style={styles.alertBannerText}>
+            ACTIVE DISPATCH: {activeIncidentDispatch} • ETA {sosCountdown}s
+          </Text>
+          <TouchableOpacity onPress={handleCancelSOS} style={styles.cancelBannerBtn}>
+            <Text style={styles.cancelBtnText}>CANCEL</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Navigation Tabs */}
@@ -166,35 +206,72 @@ export default function EmergencyHelp() {
 
         {activeTab === 'DASHBOARD' && (
           <View style={styles.tabContent}>
-            {/* SOS Pulse Button Widget */}
-            <GlassCard style={[styles.sosCard, { borderColor: '#EF5350' }]}>
-              <View style={styles.pulseContainer}>
-                <Animated.View style={[styles.pulseRing, animatedSosPulse]} />
-                <TouchableOpacity
-                  onPress={handleTriggerSOS}
-                  activeOpacity={0.8}
-                  style={styles.sosCircle}>
-                  <Text style={styles.sosCircleText}>SOS</Text>
-                </TouchableOpacity>
-              </View>
+            {/* SOS Trigger Card */}
+            <GlassCard
+              style={[
+                styles.sosCard,
+                sosActive && { borderColor: '#EF5350', backgroundColor: 'rgba(239, 83, 80, 0.1)' },
+              ]}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={handleTriggerSOS}
+                style={[styles.sosCircle, sosActive && { backgroundColor: '#B71C1C' }]}>
+                <Text style={styles.sosCircleText}>{sosActive ? 'ALERTING' : 'SOS'}</Text>
+              </TouchableOpacity>
               <Text style={[styles.sosCardTitle, { color: themeColors.text }]}>
-                Emergency Broadcast Beacon
+                {sosActive ? 'DISPATCHING RESPONDERS' : 'Broadcast SOS Signal'}
               </Text>
               <Text style={[styles.sosCardSub, { color: themeColors.icon }]}>
-                Tap the SOS button to instantly summon emergency medics & security dispatchers
-                directly to Section 112.
+                {sosActive
+                  ? 'Responders are navigating to Section 112, Row M, Seat 42.'
+                  : 'Tap to instantly alert medical, security, and safety wardens to your seat location.'}
               </Text>
             </GlassCard>
 
+            {/* Incident Types Grid */}
+            <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+              Report Specific Emergencies
+            </Text>
+            <View style={styles.incidentsGrid}>
+              {INCIDENT_ACTIONS.map((incident) => (
+                <TouchableOpacity
+                  key={incident.id}
+                  activeOpacity={0.8}
+                  onPress={() => handleTriggerIncident(incident)}
+                  style={[
+                    styles.incidentCardBtn,
+                    { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                  ]}>
+                  <View
+                    style={[styles.iconWrapperCircle, { backgroundColor: incident.color + '20' }]}>
+                    <MaterialCommunityIcons
+                      name={incident.icon as any}
+                      size={24}
+                      color={incident.color}
+                    />
+                  </View>
+                  <Text
+                    style={[styles.incidentCardTitle, { color: themeColors.text }]}
+                    numberOfLines={1}>
+                    {incident.title}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
             {/* Live Crowd Intelligence Metrics */}
             <GlassCard style={styles.metricsCard}>
-              <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
-                🏟 Live Crowd Intelligence
+              <Text
+                style={[
+                  styles.sectionHeading,
+                  { color: themeColors.text, marginBottom: Theme.spacing.s },
+                ]}>
+                🏟 Live Crowd Stats
               </Text>
               <View style={styles.gridRow}>
                 <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
                   <Text style={[styles.cellVal, { color: '#00E676' }]}>Low</Text>
-                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Density</Text>
+                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Crowd Density</Text>
                 </View>
                 <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
                   <Text style={[styles.cellVal, { color: '#FFD700' }]}>Moderate</Text>
@@ -202,24 +279,7 @@ export default function EmergencyHelp() {
                 </View>
                 <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
                   <Text style={[styles.cellVal, { color: themeColors.text }]}>4.5 min</Text>
-                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>
-                    Est. Evacuation
-                  </Text>
-                </View>
-              </View>
-
-              <View style={[styles.locationDetails, { borderTopColor: themeColors.border }]}>
-                <View style={styles.locItem}>
-                  <MaterialCommunityIcons name="logout" size={16} color={themeColors.tint} />
-                  <Text style={[styles.locText, { color: themeColors.text }]}>
-                    Nearest Exit: Gate C (40m)
-                  </Text>
-                </View>
-                <View style={styles.locItem}>
-                  <MaterialCommunityIcons name="medical-bag" size={16} color="#00E676" />
-                  <Text style={[styles.locText, { color: themeColors.text }]}>
-                    Nearest Aid Station: Sec 110 (12m)
-                  </Text>
+                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Evac Duration</Text>
                 </View>
               </View>
             </GlassCard>
@@ -228,81 +288,43 @@ export default function EmergencyHelp() {
 
         {activeTab === 'NAVIGATION' && (
           <View style={styles.tabContent}>
-            {/* Map overlays */}
             <GlassCard style={styles.mapCard}>
               <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
-                Emergency Evacuation Routing
+                Emergency Evacuation Route
               </Text>
 
-              {/* Path Option selector buttons */}
               <View style={styles.pathSelectorRow}>
-                <TouchableOpacity
-                  onPress={() => setSelectedPath('FASTEST')}
-                  style={[
-                    styles.pathBtn,
-                    selectedPath === 'FASTEST' && [
-                      styles.activePathBtn,
-                      { backgroundColor: themeColors.tint },
-                    ],
-                  ]}>
-                  <Text
+                {(['FASTEST', 'ACCESSIBLE', 'ALT'] as const).map((path) => (
+                  <TouchableOpacity
+                    key={path}
+                    onPress={() => setSelectedPath(path)}
                     style={[
-                      styles.pathBtnText,
-                      { color: selectedPath === 'FASTEST' ? '#FFFFFF' : themeColors.text },
+                      styles.pathBtn,
+                      selectedPath === path && [
+                        styles.activePathBtn,
+                        { backgroundColor: themeColors.tint },
+                      ],
                     ]}>
-                    Shortest Exit
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setSelectedPath('ACCESSIBLE')}
-                  style={[
-                    styles.pathBtn,
-                    selectedPath === 'ACCESSIBLE' && [
-                      styles.activePathBtn,
-                      { backgroundColor: themeColors.tint },
-                    ],
-                  ]}>
-                  <Text
-                    style={[
-                      styles.pathBtnText,
-                      { color: selectedPath === 'ACCESSIBLE' ? '#FFFFFF' : themeColors.text },
-                    ]}>
-                    Wheelchair Access
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => setSelectedPath('ALT')}
-                  style={[
-                    styles.pathBtn,
-                    selectedPath === 'ALT' && [
-                      styles.activePathBtn,
-                      { backgroundColor: themeColors.tint },
-                    ],
-                  ]}>
-                  <Text
-                    style={[
-                      styles.pathBtnText,
-                      { color: selectedPath === 'ALT' ? '#FFFFFF' : themeColors.text },
-                    ]}>
-                    Alt Route
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={[
+                        styles.pathBtnText,
+                        { color: selectedPath === path ? '#FFFFFF' : themeColors.text },
+                      ]}>
+                      {path}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
               </View>
 
-              {/* Graphic Mock map drawing */}
               <View style={[styles.mapGraphic, { borderColor: themeColors.border }]}>
-                {/* Stadium exits */}
                 <View style={[styles.exitGateNode, { left: '10%', top: '10%' }]}>
                   <Text style={styles.gateLabelText}>Gate A</Text>
                 </View>
                 <View style={[styles.exitGateNode, { right: '10%', bottom: '10%' }]}>
                   <Text style={styles.gateLabelText}>Gate C (Exit)</Text>
                 </View>
-
-                {/* User node */}
                 <View style={[styles.userNode, { left: '40%', top: '50%' }]} />
 
-                {/* SVG Polyline representing navigation route */}
                 <View
                   style={[
                     styles.routePathLine,
@@ -319,10 +341,10 @@ export default function EmergencyHelp() {
 
               <Text style={[styles.routeDescText, { color: themeColors.icon }]}>
                 {selectedPath === 'FASTEST'
-                  ? 'Follow the illuminated blue path to Gate C. Distance: 45 meters.'
+                  ? 'Follow the green exits signs directly to Gate C. Evacuation clearway.'
                   : selectedPath === 'ACCESSIBLE'
-                    ? 'Ramp accessible pathway leading to Elevator 2 & Exit Gate C.'
-                    : 'Alternative path routing through South Corridor to bypass crowd density.'}
+                    ? 'Wheelchair elevator access corridor mapping to Gate C level.'
+                    : 'Secondary path avoiding the central concourse lines.'}
               </Text>
             </GlassCard>
           </View>
@@ -330,42 +352,28 @@ export default function EmergencyHelp() {
 
         {activeTab === 'GUIDE' && (
           <View style={styles.tabContent}>
-            {/* Guides and Emergency Medical Aids */}
             <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
-              Quick First Aid Protocols
+              Emergency Medical Guides
             </Text>
-
             <GlassCard style={styles.guideCard}>
               <Text style={[styles.guideTitle, { color: themeColors.text }]}>
-                ❤️ CPR Instructions
+                ❤️ CPR Resuscitation
               </Text>
               <Text style={[styles.guideBody, { color: themeColors.icon }]}>
-                1. Push hard and fast in the center of the chest.{'\n'}
-                2. Maintain rate of 100 to 120 compressions per minute (e.g. rhythm of "Staying
-                Alive").{'\n'}
-                3. Allow chest to rise completely between compressions.
+                1. Push chest center hard and fast.{'\n'}
+                2. Keep pace of 100-120 compressions per minute.{'\n'}
+                3. Perform Rescue Breaths if trained.
               </Text>
             </GlassCard>
 
             <GlassCard style={styles.guideCard}>
               <Text style={[styles.guideTitle, { color: themeColors.text }]}>
-                ☀️ Heat Exhaustion & Stroke
+                ☀️ Heat Stroke Relief
               </Text>
               <Text style={[styles.guideBody, { color: themeColors.icon }]}>
-                1. Relocate to an air-conditioned stadium zone (e.g. Concourses).{'\n'}
-                2. Dampen shirt with cold water and fan the victim.{'\n'}
-                3. Sip cool water slowly. Seek medical support if vomiting persists.
-              </Text>
-            </GlassCard>
-
-            <GlassCard style={styles.guideCard}>
-              <Text style={[styles.guideTitle, { color: themeColors.text }]}>
-                🤕 Bleeding & Cuts
-              </Text>
-              <Text style={[styles.guideBody, { color: themeColors.icon }]}>
-                1. Place direct pressure on the wound with a clean cloth.{'\n'}
-                2. Keep the injured extremity elevated.{'\n'}
-                3. Apply sterile bandages from nearby Gate B medical locker.
+                1. Relocate to a cold concourse booth.{'\n'}
+                2. Apply cool wet clothes to wrists and neck.{'\n'}
+                3. Sip water slowly. Do not gulp.
               </Text>
             </GlassCard>
           </View>
@@ -373,46 +381,11 @@ export default function EmergencyHelp() {
 
         {activeTab === 'REPORT' && (
           <View style={styles.tabContent}>
-            {/* Incident Reports Submission */}
             <GlassCard style={styles.reportFormCard}>
               <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
-                File Incident Report
+                Log Security Concern
               </Text>
 
-              <Text style={[styles.inputLabel, { color: themeColors.text }]}>
-                Choose Incident Category
-              </Text>
-              <View style={styles.incidentRow}>
-                {['Suspicious Activity', 'Crowd Incident', 'Facilities Issue'].map((t) => (
-                  <TouchableOpacity
-                    key={t}
-                    onPress={() => setReportType(t)}
-                    style={[
-                      styles.incBtn,
-                      { borderColor: themeColors.border },
-                      reportType === t && {
-                        backgroundColor: themeColors.tint,
-                        borderColor: themeColors.tint,
-                      },
-                    ]}>
-                    <Text
-                      style={[
-                        styles.incBtnText,
-                        { color: reportType === t ? '#FFFFFF' : themeColors.text },
-                      ]}>
-                      {t}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-
-              <Text
-                style={[
-                  styles.inputLabel,
-                  { color: themeColors.text, marginTop: Theme.spacing.m },
-                ]}>
-                Incident Details
-              </Text>
               <TextInput
                 style={[
                   styles.descInput,
@@ -423,20 +396,20 @@ export default function EmergencyHelp() {
                       theme === 'dark' ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
                   },
                 ]}
-                placeholder="Enter description, location, or row details..."
+                placeholder="Describe suspicious activity or crowd hazard details here..."
                 placeholderTextColor={themeColors.icon}
                 value={description}
                 onChangeText={setDescription}
                 multiline
               />
 
-              <PrimaryButton title="Submit Report to Security" onPress={handleSendReport} />
+              <PrimaryButton title="File Incident Log" onPress={handleSendReport} />
             </GlassCard>
 
             {submittedReports.length > 0 && (
               <View style={styles.historySection}>
                 <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
-                  Active Report Logs
+                  Active Report Tickets
                 </Text>
                 {submittedReports.map((rep) => (
                   <View
@@ -462,7 +435,6 @@ export default function EmergencyHelp() {
 
         {activeTab === 'CHAT' && (
           <View style={styles.tabContent}>
-            {/* Assistant Chatbot Integration */}
             <GlassCard style={styles.chatCard}>
               <ScrollView
                 style={styles.chatScroll}
@@ -493,7 +465,7 @@ export default function EmergencyHelp() {
                     styles.chatTextInput,
                     { color: themeColors.text, borderColor: themeColors.border },
                   ]}
-                  placeholder="Ask Emergency AI assistant..."
+                  placeholder="Ask for first aid guides..."
                   placeholderTextColor={themeColors.icon}
                   value={chatInput}
                   onChangeText={setChatInput}
@@ -514,14 +486,23 @@ export default function EmergencyHelp() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  alertBar: {
+  alertBanner: {
+    backgroundColor: '#D32F2F',
+    padding: Theme.spacing.m,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Theme.spacing.s,
-    paddingVertical: 10,
-    paddingHorizontal: Theme.spacing.l,
+    justifyContent: 'space-between',
+    gap: 6,
   },
-  alertBarText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 10 },
+  alertBannerText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 10, flex: 1 },
+  cancelBannerBtn: {
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  cancelBtnText: { color: '#D32F2F', fontSize: 9, fontWeight: '900' },
+
   content: { padding: Theme.spacing.l, paddingBottom: 100 },
 
   tabsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Theme.spacing.m },
@@ -536,36 +517,52 @@ const styles = StyleSheet.create({
   tabBtnText: { fontSize: 9, fontWeight: 'bold' },
   tabContent: { gap: Theme.spacing.m },
 
-  sosCard: { padding: Theme.spacing.l, alignItems: 'center', borderWidth: 1, gap: Theme.spacing.m },
-  pulseContainer: {
-    width: 100,
-    height: 100,
+  sosCard: {
+    padding: Theme.spacing.xl,
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
+    borderWidth: 1,
+    gap: Theme.spacing.m,
+    borderRadius: 24,
   },
-  pulseRing: {
-    position: 'absolute',
+  sosCircle: {
     width: 90,
     height: 90,
     borderRadius: 45,
-    backgroundColor: 'rgba(239, 83, 80, 0.4)',
-  },
-  sosCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
     backgroundColor: '#EF5350',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 2,
+    elevation: 4,
   },
-  sosCircleText: { color: '#FFFFFF', fontWeight: '900', fontSize: Theme.typography.sizes.m },
-  sosCardTitle: { fontSize: Theme.typography.sizes.m, fontWeight: 'bold' },
+  sosCircleText: { color: '#FFFFFF', fontWeight: '900', fontSize: Theme.typography.sizes.l },
+  sosCardTitle: { fontSize: Theme.typography.sizes.m, fontWeight: 'bold', marginTop: 4 },
   sosCardSub: { fontSize: Theme.typography.sizes.s - 2, textAlign: 'center', lineHeight: 18 },
 
-  metricsCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
   sectionHeading: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
+  incidentsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Theme.spacing.s,
+    justifyContent: 'space-between',
+  },
+  incidentCardBtn: {
+    width: '48%',
+    padding: Theme.spacing.m,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: Theme.spacing.s,
+  },
+  iconWrapperCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  incidentCardTitle: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
+
+  metricsCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
   gridRow: { flexDirection: 'row', justifyContent: 'space-between', gap: Theme.spacing.s },
   gridCell: {
     flex: 1,
@@ -576,9 +573,6 @@ const styles = StyleSheet.create({
   },
   cellVal: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
   cellLabel: { fontSize: 8, fontWeight: 'bold', opacity: 0.6 },
-  locationDetails: { borderTopWidth: 1, paddingTop: Theme.spacing.s, gap: Theme.spacing.s },
-  locItem: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.s },
-  locText: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
 
   mapCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
   pathSelectorRow: { flexDirection: 'row', justifyContent: 'space-between', gap: Theme.spacing.s },
@@ -625,10 +619,6 @@ const styles = StyleSheet.create({
   guideBody: { fontSize: Theme.typography.sizes.s - 2, lineHeight: 18 },
 
   reportFormCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.s },
-  inputLabel: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
-  incidentRow: { flexDirection: 'row', justifyContent: 'space-between', gap: Theme.spacing.s },
-  incBtn: { flex: 1, paddingVertical: 10, alignItems: 'center', borderRadius: 12, borderWidth: 1 },
-  incBtnText: { fontSize: 8, fontWeight: 'bold' },
   descInput: {
     padding: Theme.spacing.m,
     borderRadius: 16,
