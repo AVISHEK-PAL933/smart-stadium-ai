@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
@@ -38,7 +38,12 @@ export default function LostFound() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.heroCard}>
-            <MaterialIcons name="search" size={48} color={themeColors.tint} style={styles.icon} />
+            <MaterialCommunityIcons
+              name="magnify"
+              size={48}
+              color={themeColors.tint}
+              style={styles.icon}
+            />
             <Text style={[styles.title, { color: themeColors.text }]}>AI Match & Recover</Text>
             <Text style={[styles.subtitle, { color: themeColors.icon }]}>
               Did you lose something? Register it here and our AI will match it with found items in
@@ -55,8 +60,8 @@ export default function LostFound() {
             <Animated.View key={item.id} entering={FadeInUp.delay(200 + index * 100)}>
               <GlassCard style={styles.itemCard}>
                 <View style={styles.itemIconBg}>
-                  <MaterialIcons
-                    name={item.status === 'Found' ? 'check-circle' : 'help-outline'}
+                  <MaterialCommunityIcons
+                    name={item.status === 'Found' ? 'check-circle' : 'help-circle-outline'}
                     size={24}
                     color={item.status === 'Found' ? '#39FF14' : '#FACC15'}
                   />

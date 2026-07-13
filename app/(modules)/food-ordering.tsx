@@ -5,16 +5,16 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp, SlideInDown } from 'react-native-reanimated';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
 const MENU_ITEMS = [
-  { id: '1', name: 'Classic Stadium Hot Dog', price: '$8.00', icon: 'lunch-dining' },
-  { id: '2', name: 'Nachos with Cheese', price: '$6.50', icon: 'local-dining' },
-  { id: '3', name: 'Draft Beer (Large)', price: '$12.00', icon: 'local-bar' },
-  { id: '4', name: 'Bottled Water', price: '$4.00', icon: 'water-drop' },
-  { id: '5', name: 'Pretzel', price: '$5.50', icon: 'bakery-dining' },
+  { id: '1', name: 'Classic Stadium Hot Dog', price: '$8.00', icon: 'hamburger' },
+  { id: '2', name: 'Nachos with Cheese', price: '$6.50', icon: 'silverware-fork-knife' },
+  { id: '3', name: 'Draft Beer (Large)', price: '$12.00', icon: 'glass-wine' },
+  { id: '4', name: 'Bottled Water', price: '$4.00', icon: 'water' },
+  { id: '5', name: 'Pretzel', price: '$5.50', icon: 'bread-slice' },
 ];
 
 export default function FoodOrdering() {
@@ -48,8 +48,8 @@ export default function FoodOrdering() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.headerCard}>
-            <MaterialIcons
-              name="local-cafe"
+            <MaterialCommunityIcons
+              name="coffee"
               size={48}
               color={themeColors.tint}
               style={styles.icon}
@@ -71,7 +71,11 @@ export default function FoodOrdering() {
                 ]}>
                 <View
                   style={[styles.itemIconContainer, { backgroundColor: themeColors.tint + '20' }]}>
-                  <MaterialIcons name={item.icon as any} size={28} color={themeColors.tint} />
+                  <MaterialCommunityIcons
+                    name={item.icon as any}
+                    size={28}
+                    color={themeColors.tint}
+                  />
                 </View>
                 <View style={styles.itemDetails}>
                   <Text style={[styles.itemName, { color: themeColors.text }]}>{item.name}</Text>
@@ -83,7 +87,7 @@ export default function FoodOrdering() {
                       <TouchableOpacity
                         onPress={() => handleRemove(item.id)}
                         style={[styles.ctrlBtn, { borderColor: themeColors.border }]}>
-                        <MaterialIcons name="remove" size={20} color={themeColors.text} />
+                        <MaterialCommunityIcons name="minus" size={20} color={themeColors.text} />
                       </TouchableOpacity>
                       <Text style={[styles.qtyText, { color: themeColors.text }]}>
                         {cart[item.id]}
@@ -96,7 +100,7 @@ export default function FoodOrdering() {
                       styles.ctrlBtn,
                       { backgroundColor: themeColors.tint, borderColor: themeColors.tint },
                     ]}>
-                    <MaterialIcons name="add" size={20} color="#fff" />
+                    <MaterialCommunityIcons name="plus" size={20} color="#fff" />
                   </TouchableOpacity>
                 </View>
               </View>

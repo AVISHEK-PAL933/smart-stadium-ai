@@ -7,7 +7,7 @@ import { useGlobalContext } from '../../context/GlobalProvider';
 import { PrimaryButton } from '../../components/PrimaryButton';
 import { router } from 'expo-router';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../components/GlassCard';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
@@ -23,12 +23,12 @@ export default function ProfileScreen() {
   };
 
   const SETTINGS = [
-    { icon: 'notifications', title: 'Push Notifications', type: 'switch', value: true },
-    { icon: 'dark-mode', title: 'Dark Mode', type: 'switch', value: theme === 'dark' },
-    { icon: 'language', title: 'Language', type: 'link', value: 'English (US)' },
-    { icon: 'payment', title: 'Payment Methods', type: 'link' },
-    { icon: 'security', title: 'Security & Privacy', type: 'link' },
-    { icon: 'help-outline', title: 'Help & Support', type: 'link' },
+    { icon: 'bell', title: 'Push Notifications', type: 'switch', value: true },
+    { icon: 'theme-light-dark', title: 'Dark Mode', type: 'switch', value: theme === 'dark' },
+    { icon: 'translate', title: 'Language', type: 'link', value: 'English (US)' },
+    { icon: 'credit-card', title: 'Payment Methods', type: 'link' },
+    { icon: 'shield-check', title: 'Security & Privacy', type: 'link' },
+    { icon: 'help-circle-outline', title: 'Help & Support', type: 'link' },
   ];
 
   return (
@@ -37,7 +37,7 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)} style={styles.headerSection}>
           <View style={styles.avatarContainer}>
-            <MaterialIcons name="account-circle" size={100} color={themeColors.tint} />
+            <MaterialCommunityIcons name="account-circle" size={100} color={themeColors.tint} />
             <View style={[styles.badge, { backgroundColor: '#39FF14' }]} />
           </View>
           <Text style={[styles.name, { color: themeColors.text }]}>
@@ -63,7 +63,11 @@ export default function ProfileScreen() {
                 ]}
                 disabled={item.type === 'switch'}>
                 <View style={styles.settingLeft}>
-                  <MaterialIcons name={item.icon as any} size={24} color={themeColors.icon} />
+                  <MaterialCommunityIcons
+                    name={item.icon as any}
+                    size={24}
+                    color={themeColors.icon}
+                  />
                   <Text style={[styles.settingTitle, { color: themeColors.text }]}>
                     {item.title}
                   </Text>
@@ -82,7 +86,11 @@ export default function ProfileScreen() {
                           {item.value as string}
                         </Text>
                       )}
-                      <MaterialIcons name="chevron-right" size={24} color={themeColors.icon} />
+                      <MaterialCommunityIcons
+                        name="chevron-right"
+                        size={24}
+                        color={themeColors.icon}
+                      />
                     </>
                   )}
                 </View>

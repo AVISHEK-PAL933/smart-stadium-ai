@@ -18,8 +18,8 @@ export const Header = ({ title }: HeaderProps) => {
   return (
     <LinearGradient
       colors={[
-        theme === 'dark' ? 'rgba(7,10,19,0.9)' : 'rgba(248,250,252,0.9)',
-        theme === 'dark' ? 'rgba(7,10,19,0.7)' : 'rgba(248,250,252,0.7)',
+        theme === 'dark' ? 'rgba(8,18,35,0.9)' : 'rgba(248,250,252,0.9)',
+        theme === 'dark' ? 'rgba(8,18,35,0.7)' : 'rgba(248,250,252,0.7)',
       ]}
       style={[
         styles.container,

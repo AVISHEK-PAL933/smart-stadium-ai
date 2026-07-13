@@ -5,28 +5,28 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const EMERGENCY_ACTIONS = [
   {
     id: 'medical',
     title: 'Medical Emergency',
-    icon: 'medical-services',
+    icon: 'medical-bag',
     color: '#EF4444',
     desc: 'Request immediate medical assistance',
   },
   {
     id: 'security',
     title: 'Security Incident',
-    icon: 'local-police',
+    icon: 'police-badge',
     color: '#FACC15',
     desc: 'Report a security or safety concern',
   },
   {
     id: 'facilities',
     title: 'Facilities Issue',
-    icon: 'build',
+    icon: 'tools',
     color: '#3B82F6',
     desc: 'Report a spill, broken seat, or restroom issue',
   },
@@ -44,7 +44,12 @@ export default function EmergencyHelp() {
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.sosCard}>
             <View style={styles.sosPulse}>
-              <MaterialIcons name="error-outline" size={64} color="#EF4444" style={styles.icon} />
+              <MaterialCommunityIcons
+                name="alert-circle-outline"
+                size={64}
+                color="#EF4444"
+                style={styles.icon}
+              />
             </View>
             <Text style={[styles.title, { color: themeColors.text }]}>SOS Alert</Text>
             <Text style={[styles.subtitle, { color: themeColors.icon }]}>
@@ -65,7 +70,11 @@ export default function EmergencyHelp() {
               <TouchableOpacity>
                 <GlassCard style={styles.actionCard}>
                   <View style={[styles.actionIconBg, { backgroundColor: action.color + '20' }]}>
-                    <MaterialIcons name={action.icon as any} size={28} color={action.color} />
+                    <MaterialCommunityIcons
+                      name={action.icon as any}
+                      size={28}
+                      color={action.color}
+                    />
                   </View>
                   <View style={styles.actionInfo}>
                     <Text style={[styles.actionTitle, { color: themeColors.text }]}>
@@ -75,7 +84,7 @@ export default function EmergencyHelp() {
                       {action.desc}
                     </Text>
                   </View>
-                  <MaterialIcons name="chevron-right" size={24} color={themeColors.icon} />
+                  <MaterialCommunityIcons name="chevron-right" size={24} color={themeColors.icon} />
                 </GlassCard>
               </TouchableOpacity>
             </Animated.View>

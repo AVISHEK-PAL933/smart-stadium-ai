@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
@@ -53,7 +53,7 @@ export const FloatingAIAssistant = () => {
         style={styles.gradient}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}>
-        <MaterialIcons name="smart-toy" size={28} color="#FFFFFF" />
+        <MaterialCommunityIcons name="robot" size={28} color="#FFFFFF" />
       </LinearGradient>
     </AnimatedTouchable>
   );

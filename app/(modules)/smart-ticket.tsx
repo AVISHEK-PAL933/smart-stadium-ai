@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
 export default function SmartTicket() {
@@ -19,7 +19,7 @@ export default function SmartTicket() {
       <ScrollView contentContainerStyle={styles.content}>
         <GlassCard style={styles.card}>
           <View style={styles.header}>
-            <MaterialIcons name="confirmation-number" size={32} color={themeColors.tint} />
+            <MaterialCommunityIcons name="ticket-confirmation" size={32} color={themeColors.tint} />
             <Text style={[styles.title, { color: themeColors.text }]}>FIFA World Cup 2026™</Text>
           </View>
 
@@ -49,7 +49,7 @@ export default function SmartTicket() {
           </View>
 
           <View style={[styles.qrContainer, { backgroundColor: '#FFFFFF' }]}>
-            <MaterialIcons name="qr-code" size={120} color="#000000" />
+            <MaterialCommunityIcons name="qrcode" size={120} color="#000000" />
           </View>
 
           <PrimaryButton title="Add to Wallet" onPress={() => {}} style={styles.button} />

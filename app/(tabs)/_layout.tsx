@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useColorScheme, StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FloatingAIAssistant } from '../../components/FloatingAIAssistant';
 import React from 'react';
 import { BlurView } from 'expo-blur';
@@ -18,7 +18,7 @@ export default function TabLayout() {
           tabBarInactiveTintColor: Colors[theme].tabIconDefault,
           tabBarStyle: {
             position: 'absolute',
-            backgroundColor: theme === 'dark' ? 'rgba(7,10,19,0.7)' : 'rgba(248,250,252,0.8)',
+            backgroundColor: theme === 'dark' ? 'rgba(8,18,35,0.7)' : 'rgba(248,250,252,0.8)',
             borderTopColor: Colors[theme].border,
             elevation: 0,
             borderTopWidth: 1,
@@ -41,7 +41,9 @@ export default function TabLayout() {
           name="index"
           options={{
             title: 'Dashboard',
-            tabBarIcon: ({ color }) => <MaterialIcons name="dashboard" size={26} color={color} />,
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons name="view-dashboard" size={26} color={color} />
+            ),
             headerShown: false,
           }}
         />
@@ -50,7 +52,7 @@ export default function TabLayout() {
           options={{
             title: 'Profile',
             tabBarIcon: ({ color }) => (
-              <MaterialIcons name="account-circle" size={26} color={color} />
+              <MaterialCommunityIcons name="account" size={26} color={color} />
             ),
             headerShown: false,
           }}

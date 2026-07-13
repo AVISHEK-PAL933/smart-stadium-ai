@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const LANGUAGES = [
@@ -29,8 +29,8 @@ export default function MultilingualGuide() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.heroCard}>
-            <MaterialIcons
-              name="g-translate"
+            <MaterialCommunityIcons
+              name="translate"
               size={48}
               color={themeColors.tint}
               style={styles.icon}
@@ -84,7 +84,7 @@ export default function MultilingualGuide() {
             />
             <View style={styles.inputActions}>
               <TouchableOpacity style={styles.micBtn}>
-                <MaterialIcons name="mic" size={24} color={themeColors.tint} />
+                <MaterialCommunityIcons name="microphone" size={24} color={themeColors.tint} />
               </TouchableOpacity>
             </View>
           </View>
@@ -98,7 +98,7 @@ export default function MultilingualGuide() {
                 [AI Translation Result...]
               </Text>
               <TouchableOpacity style={styles.speakBtn}>
-                <MaterialIcons name="volume-up" size={24} color="#fff" />
+                <MaterialCommunityIcons name="volume-high" size={24} color="#fff" />
               </TouchableOpacity>
             </GlassCard>
           )}

@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { useGlobalContext } from '../context/GlobalProvider';
 import { router } from 'expo-router';
 import Animated, { FadeIn, FadeOut, SlideInDown } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export default function SplashScreen() {
@@ -29,8 +29,8 @@ export default function SplashScreen() {
       colors={[themeColors.background, theme === 'dark' ? '#0F172A' : '#E2E8F0']}
       style={styles.container}>
       <Animated.View entering={FadeIn.duration(1000)} exiting={FadeOut}>
-        <MaterialIcons
-          name="sports-soccer"
+        <MaterialCommunityIcons
+          name="soccer"
           size={80}
           color={themeColors.tint}
           style={styles.icon}

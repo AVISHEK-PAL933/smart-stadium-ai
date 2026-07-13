@@ -1,5 +1,5 @@
-const tintColorLight = '#005CE6'; // Deep blue
-const tintColorDark = '#00E5FF'; // Neon cyan
+const tintColorLight = '#005CE6';
+const tintColorDark = '#00C8FF'; // Neon blue
 
 export const Colors = {
   light: {
@@ -16,16 +16,20 @@ export const Colors = {
     gradientEnd: '#3B82F6',
   },
   dark: {
-    text: '#F8FAFC',
-    background: '#070A13', // Premium deep dark blue
+    text: '#FFFFFF',
+    background: '#081223', // Deep navy
     tint: tintColorDark,
     icon: '#8F9BB3',
     tabIconDefault: '#8F9BB3',
     tabIconSelected: tintColorDark,
-    card: 'rgba(21, 28, 44, 0.65)', // Glassmorphism base
-    border: 'rgba(0, 229, 255, 0.15)', // Neon border glow
-    accent: '#39FF14', // Neon green accent
-    gradientStart: '#005CE6', // Deep blue for gradients
-    gradientEnd: '#00E5FF', // Neon cyan for gradients
+    card: 'rgba(13, 27, 48, 0.65)', // Premium glassmorphism base
+    border: 'rgba(0, 200, 255, 0.15)', // Neon blue border
+    accent: '#7C4DFF', // Purple accent
+    secondary: '#5A6BFF',
+    success: '#00E676',
+    warning: '#FFC107',
+    danger: '#FF5252',
+    gradientStart: '#081223',
+    gradientEnd: '#00C8FF',
   },
 };

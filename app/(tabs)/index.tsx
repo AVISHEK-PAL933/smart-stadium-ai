@@ -1,55 +1,69 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { useColorScheme } from 'react-native';
-import { Header } from '../../components/Header';
 import { router } from 'expo-router';
-import { MaterialIcons } from '@expo/vector-icons';
-import Animated, { FadeInDown } from 'react-native-reanimated';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
+import { GlassCard } from '../../components/GlassCard';
 
-const MODULES = [
+const QUICK_ACTIONS = [
   {
     id: 'ai-match-assistant',
     title: 'AI Assistant',
-    icon: 'smart-toy',
+    icon: 'robot',
     route: '/(modules)/ai-match-assistant',
   },
   {
     id: 'smart-ticket',
-    title: 'Tickets',
-    icon: 'confirmation-number',
+    title: 'Ticket Booking',
+    icon: 'ticket-confirmation',
     route: '/(modules)/smart-ticket',
   },
   {
-    id: 'crowd-intelligence',
-    title: 'Crowds',
-    icon: 'groups',
-    route: '/(modules)/crowd-intelligence',
+    id: 'navigation',
+    title: 'Seat Navigation',
+    icon: 'map-marker-path',
+    route: '/(modules)/navigation',
   },
-  { id: 'navigation', title: 'Navigate', icon: 'map', route: '/(modules)/navigation' },
   {
     id: 'food-ordering',
-    title: 'Food & Drink',
-    icon: 'restaurant',
+    title: 'Food Delivery',
+    icon: 'food-fork-drink',
     route: '/(modules)/food-ordering',
   },
-  { id: 'live-match', title: 'Live Match', icon: 'stadium', route: '/(modules)/live-match' },
-  { id: 'emergency', title: 'Emergency', icon: 'warning', route: '/(modules)/emergency' },
-  { id: 'lost-found', title: 'Lost & Found', icon: 'find-in-page', route: '/(modules)/lost-found' },
-  { id: 'parking', title: 'Parking', icon: 'local-parking', route: '/(modules)/parking' },
+  { id: 'parking', title: 'Parking', icon: 'parking', route: '/(modules)/parking' },
+  { id: 'emergency', title: 'Emergency', icon: 'alert-circle', route: '/(modules)/emergency' },
+  { id: 'live-match', title: 'Live Match', icon: 'soccer', route: '/(modules)/live-match' },
+  {
+    id: 'crowd-intelligence',
+    title: 'Crowd Intel',
+    icon: 'account-group',
+    route: '/(modules)/crowd-intelligence',
+  },
   {
     id: 'accessibility',
     title: 'Accessibility',
-    icon: 'accessible',
+    icon: 'human-wheelchair',
     route: '/(modules)/accessibility',
   },
   {
     id: 'multilingual-guide',
-    title: 'Language',
+    title: 'Language AI',
     icon: 'translate',
     route: '/(modules)/multilingual-guide',
   },
+  { id: 'lost-found', title: 'Lost & Found', icon: 'image-search', route: '/(modules)/lost-found' },
+  { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
+];
+
+const STATS = [
+  { label: 'Visitors', value: '78,450', icon: 'account-multiple-outline' },
+  { label: 'Tickets Sold', value: '98.5%', icon: 'ticket-outline' },
+  { label: 'Revenue', value: '$12.4M', icon: 'currency-usd' },
+  { label: 'Seats Occupied', value: '88%', icon: 'seat-outline' },
 ];
 
 export default function HomeDashboard() {
@@ -59,13 +73,109 @@ export default function HomeDashboard() {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <Header title="Dashboard" />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Hero Section */}
+        <Animated.View entering={FadeInDown.duration(600)} style={styles.heroSection}>
+          <LinearGradient
+            colors={['rgba(0, 200, 255, 0.2)', 'transparent']}
+            style={styles.heroGradient}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+          />
+          <View style={styles.heroHeader}>
+            <View>
+              <Text style={[styles.greeting, { color: themeColors.icon }]}>Welcome back,</Text>
+              <Text style={[styles.userName, { color: themeColors.text }]}>Alex Johnson</Text>
+            </View>
+            <TouchableOpacity
+              style={[
+                styles.iconButton,
+                { backgroundColor: themeColors.card, borderColor: themeColors.border },
+              ]}>
+              <MaterialCommunityIcons name="bell-outline" size={24} color={themeColors.text} />
+              <View style={styles.notificationBadge} />
+            </TouchableOpacity>
+          </View>
+
+          <View
+            style={[
+              styles.searchBar,
+              { backgroundColor: themeColors.card, borderColor: themeColors.border },
+            ]}>
+            <MaterialCommunityIcons name="magnify" size={20} color={themeColors.icon} />
+            <TextInput
+              placeholder="Search matches, food, seating..."
+              placeholderTextColor={themeColors.icon}
+              style={[styles.searchInput, { color: themeColors.text }]}
+            />
+          </View>
+        </Animated.View>
+
+        {/* Live Match Banner */}
+        <Animated.View entering={FadeInUp.delay(100)} style={styles.bannerContainer}>
+          <GlassCard style={styles.liveBanner}>
+            <View style={styles.bannerHeader}>
+              <View style={styles.liveBadge}>
+                <Text style={styles.liveText}>LIVE</Text>
+              </View>
+              <Text style={styles.matchTimer}>68'</Text>
+            </View>
+            <View style={styles.teamsContainer}>
+              <View style={styles.team}>
+                <Text style={styles.teamName}>BRA</Text>
+                <Text style={styles.teamScore}>2</Text>
+              </View>
+              <Text style={styles.vs}>VS</Text>
+              <View style={styles.team}>
+                <Text style={styles.teamScore}>1</Text>
+                <Text style={styles.teamName}>ARG</Text>
+              </View>
+            </View>
+            <View style={styles.possessionContainer}>
+              <View style={styles.possessionLabels}>
+                <Text style={styles.possessionText}>Possession: 58%</Text>
+                <Text style={styles.possessionText}>42%</Text>
+              </View>
+              <View style={[styles.progressBarBg, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
+                <View
+                  style={[
+                    styles.progressBarFill,
+                    { width: '58%', backgroundColor: themeColors.tint },
+                  ]}
+                />
+              </View>
+            </View>
+          </GlassCard>
+        </Animated.View>
+
+        {/* Stats Grid */}
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Stadium Statistics</Text>
+        <View style={styles.statsGrid}>
+          {STATS.map((stat, index) => (
+            <Animated.View
+              key={stat.label}
+              entering={FadeInUp.delay(150 + index * 50)}
+              style={styles.statsCardContainer}>
+              <GlassCard style={styles.statsCard}>
+                <MaterialCommunityIcons
+                  name={stat.icon as any}
+                  size={24}
+                  color={themeColors.tint}
+                />
+                <Text style={[styles.statsValue, { color: themeColors.text }]}>{stat.value}</Text>
+                <Text style={[styles.statsLabel, { color: themeColors.icon }]}>{stat.label}</Text>
+              </GlassCard>
+            </Animated.View>
+          ))}
+        </View>
+
+        {/* Quick Action Grid */}
+        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Quick Actions</Text>
         <View style={styles.grid}>
-          {MODULES.map((module, index) => (
+          {QUICK_ACTIONS.map((module, index) => (
             <Animated.View
               key={module.id}
-              entering={FadeInDown.duration(400).delay(index * 100)}
+              entering={FadeInDown.duration(400).delay(200 + index * 50)}
               style={styles.cardContainer}>
               <TouchableOpacity
                 style={[
@@ -78,7 +188,7 @@ export default function HomeDashboard() {
                 ]}
                 activeOpacity={0.7}
                 onPress={() => router.push(module.route as any)}>
-                <MaterialIcons
+                <MaterialCommunityIcons
                   name={module.icon as any}
                   size={32}
                   color={themeColors.tint}
@@ -100,7 +210,165 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: Theme.spacing.l,
-    paddingBottom: 120, // Space for floating button
+    paddingBottom: 120,
+  },
+  heroSection: {
+    marginBottom: Theme.spacing.l,
+    position: 'relative',
+    paddingTop: Theme.spacing.xl,
+  },
+  heroGradient: {
+    position: 'absolute',
+    left: -20,
+    right: -20,
+    top: -40,
+    height: 200,
+  },
+  heroHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.l,
+  },
+  greeting: {
+    fontSize: Theme.typography.sizes.m,
+  },
+  userName: {
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: '900',
+  },
+  iconButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+  },
+  notificationBadge: {
+    position: 'absolute',
+    top: 10,
+    right: 12,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FF5252',
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Theme.spacing.m,
+    height: 50,
+    borderRadius: 25,
+    borderWidth: 1,
+    gap: Theme.spacing.s,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: Theme.typography.sizes.m,
+  },
+  bannerContainer: {
+    marginBottom: Theme.spacing.xl,
+  },
+  liveBanner: {
+    padding: Theme.spacing.l,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 200, 255, 0.25)',
+  },
+  bannerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Theme.spacing.m,
+  },
+  liveBadge: {
+    backgroundColor: '#FF5252',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  liveText: {
+    color: '#FFF',
+    fontSize: Theme.typography.sizes.s,
+    fontWeight: '900',
+  },
+  matchTimer: {
+    color: '#00C8FF',
+    fontWeight: 'bold',
+  },
+  teamsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: Theme.spacing.xl,
+    marginBottom: Theme.spacing.l,
+  },
+  team: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Theme.spacing.m,
+  },
+  teamName: {
+    fontSize: Theme.typography.sizes.l,
+    fontWeight: '900',
+    color: '#FFF',
+  },
+  teamScore: {
+    fontSize: Theme.typography.sizes.xxl,
+    fontWeight: '900',
+    color: '#FFF',
+  },
+  vs: {
+    color: 'rgba(255,255,255,0.4)',
+    fontWeight: 'bold',
+  },
+  possessionContainer: {
+    gap: 8,
+  },
+  possessionLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  possessionText: {
+    color: 'rgba(255,255,255,0.6)',
+    fontSize: Theme.typography.sizes.s,
+  },
+  progressBarBg: {
+    height: 6,
+    borderRadius: 3,
+    overflow: 'hidden',
+  },
+  progressBarFill: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  sectionTitle: {
+    fontSize: Theme.typography.sizes.l,
+    fontWeight: '900',
+    marginBottom: Theme.spacing.m,
+    letterSpacing: 0.5,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: Theme.spacing.m,
+    marginBottom: Theme.spacing.xl,
+  },
+  statsCardContainer: {
+    width: '47%',
+  },
+  statsCard: {
+    padding: Theme.spacing.m,
+    alignItems: 'center',
+    gap: 6,
+  },
+  statsValue: {
+    fontSize: Theme.typography.sizes.l,
+    fontWeight: '900',
+  },
+  statsLabel: {
+    fontSize: Theme.typography.sizes.s,
   },
   grid: {
     flexDirection: 'row',
@@ -110,7 +378,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     width: '47%',
-    aspectRatio: 1,
+    aspectRatio: 1.1,
   },
   card: {
     flex: 1,
@@ -125,8 +393,8 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   icon: {
-    marginBottom: Theme.spacing.l,
-    textShadowColor: 'rgba(0, 229, 255, 0.4)',
+    marginBottom: Theme.spacing.s,
+    textShadowColor: 'rgba(0, 200, 255, 0.4)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },

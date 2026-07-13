@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface EmptyStateProps {
   title?: string;
@@ -19,8 +19,8 @@ export const EmptyState = ({
 
   return (
     <View style={[styles.container, { backgroundColor: Colors[theme].background }]}>
-      <MaterialIcons
-        name="error-outline"
+      <MaterialCommunityIcons
+        name="alert-circle-outline"
         size={48}
         color={Colors[theme].icon}
         style={styles.icon}

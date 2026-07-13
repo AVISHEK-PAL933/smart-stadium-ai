@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
@@ -26,8 +26,8 @@ export default function ParkingAssistant() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.heroCard}>
-            <MaterialIcons
-              name="local-parking"
+            <MaterialCommunityIcons
+              name="parking"
               size={48}
               color={themeColors.tint}
               style={styles.icon}

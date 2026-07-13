@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
@@ -17,10 +17,10 @@ export default function Navigation() {
   const [selectedDestination, setSelectedDestination] = useState<string | null>(null);
 
   const destinations = [
-    { id: 'seat', icon: 'airline-seat-recline-normal', title: 'My Seat' },
-    { id: 'restroom', icon: 'wc', title: 'Restrooms' },
-    { id: 'food', icon: 'restaurant', title: 'Concessions' },
-    { id: 'exit', icon: 'exit-to-app', title: 'Nearest Exit' },
+    { id: 'seat', icon: 'seat', title: 'My Seat' },
+    { id: 'restroom', icon: 'water-closet', title: 'Restrooms' },
+    { id: 'food', icon: 'food-fork-drink', title: 'Concessions' },
+    { id: 'exit', icon: 'exit-run', title: 'Nearest Exit' },
   ];
 
   return (
@@ -37,7 +37,7 @@ export default function Navigation() {
                   borderColor: themeColors.border,
                 },
               ]}>
-              <MaterialIcons
+              <MaterialCommunityIcons
                 name="map"
                 size={64}
                 color={themeColors.tint}
@@ -74,7 +74,7 @@ export default function Navigation() {
                       selectedDestination === dest.id ? themeColors.tint : themeColors.border,
                   },
                 ]}>
-                <MaterialIcons
+                <MaterialCommunityIcons
                   name={dest.icon as any}
                   size={32}
                   color={selectedDestination === dest.id ? themeColors.tint : themeColors.icon}

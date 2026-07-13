@@ -9,7 +9,7 @@ import { GlassCard } from '../components/GlassCard';
 import { Theme } from '../constants/theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function LoginScreen() {
   const colorScheme = useColorScheme();
@@ -35,7 +35,12 @@ export default function LoginScreen() {
       />
       <View style={styles.content}>
         <Animated.View entering={FadeInUp.duration(800).delay(200)} style={styles.iconContainer}>
-          <MaterialIcons name="security" size={64} color={themeColors.tint} style={styles.icon} />
+          <MaterialCommunityIcons
+            name="shield-check"
+            size={64}
+            color={themeColors.tint}
+            style={styles.icon}
+          />
         </Animated.View>
         <Animated.View entering={FadeInDown.duration(800).delay(400)}>
           <GlassCard style={styles.card}>

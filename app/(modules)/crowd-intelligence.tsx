@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 const GATE_DATA = [
@@ -26,7 +26,12 @@ export default function CrowdIntelligence() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.heroCard}>
-            <MaterialIcons name="groups" size={48} color={themeColors.tint} style={styles.icon} />
+            <MaterialCommunityIcons
+              name="account-group"
+              size={48}
+              color={themeColors.tint}
+              style={styles.icon}
+            />
             <Text style={[styles.title, { color: themeColors.text }]}>Live Stadium Density</Text>
             <Text style={[styles.subtitle, { color: themeColors.icon }]}>
               Overall crowd levels are Moderate. Navigate toward Gate A or D for fastest entry.

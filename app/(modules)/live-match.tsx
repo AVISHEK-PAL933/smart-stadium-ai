@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export default function LiveMatch() {
@@ -38,8 +38,8 @@ export default function LiveMatch() {
         <GlassCard style={styles.timeline}>
           <View style={styles.eventRow}>
             <Text style={[styles.time, { color: themeColors.tint }]}>45'</Text>
-            <MaterialIcons
-              name="sports-soccer"
+            <MaterialCommunityIcons
+              name="soccer"
               size={20}
               color={themeColors.text}
               style={styles.eventIcon}
@@ -51,7 +51,12 @@ export default function LiveMatch() {
           <View style={[styles.divider, { backgroundColor: themeColors.border }]} />
           <View style={styles.eventRow}>
             <Text style={[styles.time, { color: themeColors.tint }]}>32'</Text>
-            <MaterialIcons name="style" size={20} color="#FACC15" style={styles.eventIcon} />
+            <MaterialCommunityIcons
+              name="cards-outline"
+              size={20}
+              color="#FACC15"
+              style={styles.eventIcon}
+            />
             <Text style={[styles.eventText, { color: themeColors.text }]}>
               Yellow Card - Romero (ARG)
             </Text>
@@ -59,8 +64,8 @@ export default function LiveMatch() {
           <View style={[styles.divider, { backgroundColor: themeColors.border }]} />
           <View style={styles.eventRow}>
             <Text style={[styles.time, { color: themeColors.tint }]}>12'</Text>
-            <MaterialIcons
-              name="sports-soccer"
+            <MaterialCommunityIcons
+              name="soccer"
               size={20}
               color={themeColors.text}
               style={styles.eventIcon}

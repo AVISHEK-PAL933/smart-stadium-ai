@@ -5,7 +5,7 @@ import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { PrimaryButton } from '../../components/PrimaryButton';
 
@@ -13,7 +13,7 @@ const SERVICES = [
   {
     id: 'wheelchair',
     title: 'Wheelchair Assistance',
-    icon: 'accessible',
+    icon: 'wheelchair',
     desc: 'Request an escort with a wheelchair from your gate.',
   },
   {
@@ -25,7 +25,7 @@ const SERVICES = [
   {
     id: 'interpreter',
     title: 'Sign Language',
-    icon: 'sign-language',
+    icon: 'hand-okay',
     desc: 'Request an interpreter for the match broadcast.',
   },
   {
@@ -49,8 +49,8 @@ export default function AccessibilityServices() {
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)}>
           <GlassCard style={styles.heroCard}>
-            <MaterialIcons
-              name="accessible-forward"
+            <MaterialCommunityIcons
+              name="wheelchair-accessibility"
               size={48}
               color={themeColors.tint}
               style={styles.icon}
@@ -82,7 +82,7 @@ export default function AccessibilityServices() {
                           selectedService === service.id ? themeColors.tint : themeColors.border,
                       },
                     ]}>
-                    <MaterialIcons
+                    <MaterialCommunityIcons
                       name={service.icon as any}
                       size={24}
                       color={selectedService === service.id ? '#fff' : themeColors.icon}

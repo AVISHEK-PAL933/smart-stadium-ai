@@ -13,7 +13,7 @@ import { Colors } from '../../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
 import { Theme } from '../../constants/theme';
-import { MaterialIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -93,7 +93,7 @@ export default function AIMatchAssistant() {
               themeColors.gradientEnd || themeColors.tint,
             ]}
             style={styles.sendGradient}>
-            <MaterialIcons name="send" size={20} color="#fff" />
+            <MaterialCommunityIcons name="send" size={20} color="#fff" />
           </LinearGradient>
         </TouchableOpacity>
       </View>
