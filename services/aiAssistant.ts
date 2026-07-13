@@ -161,7 +161,11 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
   if (
     lowerQuery.includes('match') ||
     lowerQuery.includes('score') ||
-    lowerQuery.includes('today')
+    lowerQuery.includes('today') ||
+    lowerQuery.includes('lineup') ||
+    lowerQuery.includes('stats') ||
+    lowerQuery.includes('commentary') ||
+    lowerQuery.includes('who will win')
   ) {
     return MOCK_ANSWERS['match'];
   }
