@@ -69,6 +69,12 @@ const QUICK_ACTIONS = [
     route: '/(modules)/merchandise',
   },
   { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
+  {
+    id: 'admin-dashboard',
+    title: 'Ops Hub',
+    icon: 'shield-crown',
+    route: '/(modules)/admin-dashboard',
+  },
 ];
 
 const STATS = [
@@ -158,6 +164,29 @@ export default function HomeDashboard() {
               </View>
             </View>
           </GlassCard>
+        </Animated.View>
+
+        {/* Operations Command Center Banner */}
+        <Animated.View entering={FadeInUp.delay(80)} style={styles.opsBannerContainer}>
+          <TouchableOpacity
+            onPress={() => router.push('/(modules)/admin-dashboard' as any)}
+            activeOpacity={0.85}
+            style={[styles.opsBanner, { borderColor: 'rgba(0,200,255,0.3)' }]}>
+            <LinearGradient
+              colors={['rgba(0,200,255,0.18)', 'rgba(124,77,255,0.18)']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.opsBannerGrad}
+            />
+            <View style={styles.opsIconWrap}>
+              <MaterialCommunityIcons name="shield-crown" size={28} color="#00C8FF" />
+            </View>
+            <View style={styles.opsTextWrap}>
+              <Text style={styles.opsBannerTitle}>Operations Command Center</Text>
+              <Text style={styles.opsBannerSub}>Phase 12 — AI Stadium Ops Hub</Text>
+            </View>
+            <MaterialCommunityIcons name="arrow-right" size={20} color="#00C8FF" />
+          </TouchableOpacity>
         </Animated.View>
 
         {/* Stats Grid */}
@@ -354,6 +383,36 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 3,
   },
+  opsBannerContainer: {
+    marginBottom: Theme.spacing.l,
+  },
+  opsBanner: {
+    borderRadius: Theme.shapes.borderRadius.l,
+    borderWidth: 1,
+    padding: Theme.spacing.l,
+    flexDirection: 'row',
+    alignItems: 'center',
+    overflow: 'hidden',
+    gap: Theme.spacing.m,
+  },
+  opsBannerGrad: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  opsIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(0,200,255,0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  opsTextWrap: { flex: 1 },
+  opsBannerTitle: { color: '#FFF', fontSize: Theme.typography.sizes.m, fontWeight: '900' },
+  opsBannerSub: { color: 'rgba(255,255,255,0.55)', fontSize: 11, marginTop: 2 },
   sectionTitle: {
     fontSize: Theme.typography.sizes.l,
     fontWeight: '900',
