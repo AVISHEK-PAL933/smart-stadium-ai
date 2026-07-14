@@ -86,6 +86,9 @@ export default function AIMatchAssistant() {
       case 'FAN_ZONE':
         router.push('/(modules)/fan-engagement');
         break;
+      case 'MERCH':
+        router.push('/(modules)/merchandise');
+        break;
       default:
         break;
     }

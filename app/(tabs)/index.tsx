@@ -62,6 +62,12 @@ const QUICK_ACTIONS = [
     icon: 'gamepad-variant',
     route: '/(modules)/fan-engagement',
   },
+  {
+    id: 'merchandise',
+    title: 'Merch Store',
+    icon: 'shopping',
+    route: '/(modules)/merchandise',
+  },
   { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
 ];
 

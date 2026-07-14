@@ -77,6 +77,11 @@ const MOCK_ANSWERS: Record<string, AIResponse> = {
       '🎮 Opening Fan Zone! Play quizzes, spin the lucky wheel, predict match results, climb the leaderboard, and earn exclusive rewards!',
     actionType: 'FAN_ZONE',
   },
+  merch: {
+    answer:
+      '🛒 Opening the FIFA Merch Store! Browse official jerseys, footballs, collectibles, and more. Flash sale is live with up to 60% OFF on select items!',
+    actionType: 'MERCH',
+  },
 };
 
 export const askAIAssistant = async (query: string): Promise<AIResponse> => {
@@ -240,6 +245,24 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
     lowerQuery.includes('selfie')
   ) {
     return MOCK_ANSWERS['fan_zone'];
+  }
+
+  if (
+    lowerQuery.includes('jersey') ||
+    lowerQuery.includes('merch') ||
+    lowerQuery.includes('merchandise') ||
+    lowerQuery.includes('football ball') ||
+    lowerQuery.includes('collectible') ||
+    lowerQuery.includes('scarf') ||
+    lowerQuery.includes('cap') ||
+    lowerQuery.includes('sneaker') ||
+    lowerQuery.includes('buy') ||
+    lowerQuery.includes('shop') ||
+    lowerQuery.includes('flash sale') ||
+    lowerQuery.includes('discount') ||
+    lowerQuery.includes('customize')
+  ) {
+    return MOCK_ANSWERS['merch'];
   }
 
   return {
