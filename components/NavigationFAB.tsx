@@ -5,6 +5,7 @@ import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationDestination } from '../services/navigationService';
+import { GlassCard } from './GlassCard';
 
 interface NavigationFABProps {
   destinations: NavigationDestination[];
@@ -23,68 +24,58 @@ export const NavigationFAB = ({
 
   return (
     <View style={styles.wrapper}>
-      <Text style={[styles.title, { color: themeColors.text }]}>Quick Navigation Points</Text>
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContainer}>
+      <Text style={[styles.title, { color: themeColors.text }]}>Quick Destinations</Text>
+      <View style={styles.gridContainer}>
         {destinations.map((dest) => {
           const isActive = activeId === dest.id;
           return (
             <TouchableOpacity
               key={dest.id}
-              activeOpacity={0.8}
+              activeOpacity={0.7}
               onPress={() => onSelectDestination(dest.id)}
-              style={[
-                styles.chip,
-                {
-                  backgroundColor: isActive ? themeColors.tint : themeColors.card,
-                  borderColor: isActive ? themeColors.tint : themeColors.border,
-                },
-              ]}>
-              <MaterialCommunityIcons
-                name={dest.icon as any}
-                size={18}
-                color={isActive ? '#FFFFFF' : themeColors.tint}
-              />
-              <Text style={[styles.label, { color: isActive ? '#FFFFFF' : themeColors.text }]}>
-                {dest.name.split(' (')[0]}
-              </Text>
+              style={styles.cardWrapper}>
+              <GlassCard style={[styles.card, isActive && styles.cardActive]}>
+                <View style={[styles.iconBox, isActive && styles.iconBoxActive]}>
+                  <MaterialCommunityIcons
+                    name={dest.icon as any}
+                    size={28}
+                    color={isActive ? '#FFFFFF' : '#00C8FF'}
+                  />
+                </View>
+                <Text style={[styles.cardName, isActive && { color: '#00C8FF' }]}>
+                  {dest.name.split(' (')[0]}
+                </Text>
+                
+                <View style={styles.cardMetrics}>
+                  <View style={styles.metric}>
+                    <MaterialCommunityIcons name="walk" size={14} color="rgba(255,255,255,0.5)" />
+                    <Text style={styles.metricText}>3 min</Text>
+                  </View>
+                  <View style={styles.metric}>
+                    <MaterialCommunityIcons name="map-marker-distance" size={14} color="rgba(255,255,255,0.5)" />
+                    <Text style={styles.metricText}>150m</Text>
+                  </View>
+                </View>
+              </GlassCard>
             </TouchableOpacity>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  wrapper: {
-    marginVertical: Theme.spacing.s,
-    gap: Theme.spacing.s,
-  },
-  title: {
-    fontSize: Theme.typography.sizes.m - 2,
-    fontWeight: 'bold',
-    paddingHorizontal: Theme.spacing.l,
-    opacity: 0.8,
-  },
-  scrollContainer: {
-    paddingHorizontal: Theme.spacing.l,
-    paddingBottom: Theme.spacing.s,
-    gap: Theme.spacing.s,
-  },
-  chip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: Theme.spacing.m,
-    paddingVertical: 10,
-    borderRadius: 20,
-    borderWidth: 1,
-    gap: 8,
-  },
-  label: {
-    fontSize: Theme.typography.sizes.s,
-    fontWeight: 'bold',
-  },
+  wrapper: { marginVertical: Theme.spacing.s, gap: Theme.spacing.m },
+  title: { fontSize: 20, fontWeight: 'bold', paddingHorizontal: 4 },
+  gridContainer: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  cardWrapper: { width: '48%', minWidth: 150 },
+  card: { padding: 16, alignItems: 'flex-start', gap: 12, backgroundColor: 'rgba(15,23,42,0.85)' },
+  cardActive: { borderColor: '#00C8FF', borderWidth: 1, backgroundColor: 'rgba(0,200,255,0.1)' },
+  iconBox: { width: 48, height: 48, borderRadius: 24, backgroundColor: 'rgba(0,200,255,0.1)', alignItems: 'center', justifyContent: 'center' },
+  iconBoxActive: { backgroundColor: '#00C8FF' },
+  cardName: { fontSize: 16, fontWeight: 'bold', color: '#FFF' },
+  cardMetrics: { flexDirection: 'row', gap: 12 },
+  metric: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  metricText: { color: 'rgba(255,255,255,0.6)', fontSize: 12 },
 });

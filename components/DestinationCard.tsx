@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
@@ -13,6 +13,18 @@ interface DestinationCardProps {
   onNextStep: () => void;
   onCancel: () => void;
 }
+
+const DetailRow = ({ icon, label, value, color = '#00C8FF' }: any) => (
+  <View style={styles.detailRow}>
+    <View style={styles.detailIconBox}>
+      <MaterialCommunityIcons name={icon} size={18} color={color} />
+    </View>
+    <View style={styles.detailTextCol}>
+      <Text style={styles.detailLabel}>{label}</Text>
+      <Text style={styles.detailValue}>{value}</Text>
+    </View>
+  </View>
+);
 
 export const DestinationCard = ({
   currentRoute,
@@ -33,63 +45,64 @@ export const DestinationCard = ({
   };
 
   return (
-    <GlassCard style={styles.container} gradientColors={['rgba(0,200,255,0.15)', 'rgba(0,100,255,0.05)']}>
+    <GlassCard style={styles.container} gradientColors={['rgba(8,18,35,0.95)', 'rgba(15,23,42,0.9)']}>
       <View style={styles.header}>
         <View style={styles.targetCol}>
-          <Text style={[styles.targetTitle, { color: themeColors.text }]}>Navigating to</Text>
-          <Text style={[styles.targetName, { color: themeColors.tint }]}>
-            {currentRoute.destination.name}
-          </Text>
+          <Text style={styles.targetTitle}>Navigating to</Text>
+          <Text style={styles.targetName}>{currentRoute.destination.name}</Text>
         </View>
-        <TouchableOpacity
-          onPress={onCancel}
-          style={[styles.closeBtn, { backgroundColor: themeColors.border }]}>
-          <MaterialCommunityIcons name="close" size={18} color={themeColors.text} />
+        <TouchableOpacity onPress={onCancel} style={styles.closeBtn}>
+          <MaterialCommunityIcons name="close" size={20} color="#FFF" />
         </TouchableOpacity>
       </View>
 
-      {/* Metrics Row */}
-      <View style={[styles.metricsRow, { borderBottomColor: themeColors.border }]}>
-        <View style={styles.metricCell}>
-          <MaterialCommunityIcons name="walk" size={20} color={themeColors.icon} />
-          <Text style={[styles.metricVal, { color: themeColors.text }]}>
-            {formatTime(currentRoute.timeSeconds)}
-          </Text>
+      {/* Main Metrics (ETA / Dist / Speed) */}
+      <View style={styles.primaryMetrics}>
+        <View style={styles.mainMetricBlock}>
+          <Text style={styles.mainMetricVal}>{formatTime(currentRoute.timeSeconds)}</Text>
+          <Text style={styles.mainMetricLabel}>Est. Time</Text>
         </View>
-        <View style={styles.metricCell}>
-          <MaterialCommunityIcons name="map-marker-distance" size={20} color={themeColors.icon} />
-          <Text style={[styles.metricVal, { color: themeColors.text }]}>
-            {currentRoute.distanceMeters} m
-          </Text>
+        <View style={styles.mainMetricBlock}>
+          <Text style={styles.mainMetricVal}>{currentRoute.distanceMeters} m</Text>
+          <Text style={styles.mainMetricLabel}>Distance</Text>
+        </View>
+        <View style={styles.mainMetricBlock}>
+          <Text style={styles.mainMetricVal}>1.4 m/s</Text>
+          <Text style={styles.mainMetricLabel}>Avg Speed</Text>
         </View>
       </View>
 
-      {/* Step Instruction Card */}
+      {/* Next Turn Instruction */}
       <View style={styles.instructionBox}>
-        <View style={[styles.directionIcon, { backgroundColor: themeColors.tint + '20' }]}>
-          <MaterialCommunityIcons
-            name={isLastStep ? 'flag-checkered' : 'arrow-up-bold'}
-            size={22}
-            color={themeColors.tint}
-          />
+        <View style={styles.directionIcon}>
+          <MaterialCommunityIcons name={isLastStep ? 'flag-checkered' : 'arrow-top-right-thick'} size={28} color="#00C8FF" />
         </View>
-        <Text style={[styles.instructionText, { color: themeColors.text }]}>
-          {currentInstruction}
-        </Text>
+        <View style={styles.instructionTextWrapper}>
+          <Text style={styles.instructionLabel}>{isLastStep ? 'Final Destination' : 'Next Turn'}</Text>
+          <Text style={styles.instructionText}>{currentInstruction}</Text>
+        </View>
+      </View>
+
+      {/* Secondary Details Grid */}
+      <View style={styles.detailsGrid}>
+        <DetailRow icon="map-marker-radius" label="Current Zone" value="Zone C (Level 2)" />
+        <DetailRow icon="account-group" label="Crowd Density" value="Moderate (65%)" color="#FF9800" />
+        <DetailRow icon="wheelchair-accessibility" label="Accessibility" value="Wheelchair Friendly" color="#00E676" />
+        <DetailRow icon="store" label="Nearby Facilities" value="Restroom (20m)" color="#7C4DFF" />
       </View>
 
       {/* Control Actions */}
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={isLastStep ? onCancel : onNextStep}
-        style={[styles.actionBtn, { backgroundColor: isLastStep ? '#00E676' : themeColors.tint }]}>
+        style={[styles.actionBtn, { backgroundColor: isLastStep ? '#00E676' : '#00C8FF' }]}>
         <Text style={styles.actionBtnText}>
-          {isLastStep ? 'Arrived (End Route)' : 'Next Step Instruction'}
+          {isLastStep ? 'Arrived (End Route)' : 'Next Step'}
         </Text>
         <MaterialCommunityIcons
           name={isLastStep ? 'check-circle' : 'chevron-right'}
-          size={18}
-          color="#FFFFFF"
+          size={20}
+          color="#1E293B"
         />
       </TouchableOpacity>
     </GlassCard>
@@ -97,85 +110,27 @@ export const DestinationCard = ({
 };
 
 const styles = StyleSheet.create({
-  container: {
-    padding: Theme.spacing.m,
-    borderRadius: 24,
-    gap: Theme.spacing.m,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.35,
-    shadowRadius: 16,
-    elevation: 10,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  targetCol: {
-    flex: 1,
-    gap: 2,
-  },
-  targetTitle: {
-    fontSize: Theme.typography.sizes.s,
-    fontWeight: 'bold',
-    opacity: 0.6,
-  },
-  targetName: {
-    fontSize: Theme.typography.sizes.m,
-    fontWeight: '900',
-  },
-  closeBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  metricsRow: {
-    flexDirection: 'row',
-    gap: Theme.spacing.l,
-    borderBottomWidth: 1,
-    paddingBottom: Theme.spacing.s,
-  },
-  metricCell: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  metricVal: {
-    fontSize: Theme.typography.sizes.s,
-    fontWeight: 'bold',
-  },
-  instructionBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Theme.spacing.m,
-    padding: Theme.spacing.s,
-  },
-  directionIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  instructionText: {
-    flex: 1,
-    fontSize: Theme.typography.sizes.s,
-    lineHeight: 18,
-    fontWeight: '600',
-  },
-  actionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 44,
-    borderRadius: 16,
-    gap: 8,
-  },
-  actionBtnText: {
-    color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: Theme.typography.sizes.s,
-  },
+  container: { padding: 20, borderRadius: 24, gap: 20 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  targetCol: { flex: 1, gap: 4 },
+  targetTitle: { fontSize: 14, color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase', fontWeight: 'bold' },
+  targetName: { fontSize: 24, fontWeight: '900', color: '#FFF' },
+  closeBtn: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.1)', alignItems: 'center', justifyContent: 'center' },
+  primaryMetrics: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 16, borderBottomWidth: 1, borderTopWidth: 1, borderColor: 'rgba(255,255,255,0.1)' },
+  mainMetricBlock: { alignItems: 'center', flex: 1 },
+  mainMetricVal: { fontSize: 20, fontWeight: 'bold', color: '#00C8FF' },
+  mainMetricLabel: { fontSize: 12, color: 'rgba(255,255,255,0.6)', marginTop: 4 },
+  instructionBox: { flexDirection: 'row', alignItems: 'center', gap: 16, paddingVertical: 8 },
+  directionIcon: { width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(0,200,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+  instructionTextWrapper: { flex: 1, gap: 4 },
+  instructionLabel: { fontSize: 12, color: '#00C8FF', fontWeight: 'bold', textTransform: 'uppercase' },
+  instructionText: { fontSize: 18, fontWeight: '600', color: '#FFF', lineHeight: 24 },
+  detailsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
+  detailRow: { width: '45%', minWidth: 140, flexDirection: 'row', gap: 12, alignItems: 'center' },
+  detailIconBox: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(255,255,255,0.05)', alignItems: 'center', justifyContent: 'center' },
+  detailTextCol: { flex: 1 },
+  detailLabel: { fontSize: 11, color: 'rgba(255,255,255,0.5)', marginBottom: 2 },
+  detailValue: { fontSize: 13, color: '#FFF', fontWeight: '600' },
+  actionBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', height: 56, borderRadius: 28, gap: 8, marginTop: 10 },
+  actionBtnText: { color: '#1E293B', fontWeight: 'bold', fontSize: 16 },
 });
