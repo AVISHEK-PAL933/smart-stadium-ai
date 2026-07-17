@@ -152,8 +152,7 @@ export default function HomeDashboard() {
           />
           <View style={styles.heroHeader}>
             <View>
-              <Text style={[styles.greeting, { color: themeColors.icon }]}>Welcome back,</Text>
-              <Text style={[styles.userName, { color: themeColors.text }]}>Alex Johnson</Text>
+              <Text style={[styles.greeting, { color: themeColors.text, fontWeight: '900', fontSize: Theme.typography.sizes.xl }]}>Smart Stadium AI</Text>
             </View>
             <TouchableOpacity
               onPress={() => router.push('/(modules)/notifications' as any)}
@@ -180,42 +179,7 @@ export default function HomeDashboard() {
           </TouchableOpacity>
         </Animated.View>
 
-        {/* Live Match Banner */}
-        <Animated.View entering={FadeInUp.delay(100)} style={styles.bannerContainer}>
-          <GlassCard gradientColors={themeColors.cardGradient1 as any}>
-            <View style={styles.bannerHeader}>
-              <View style={styles.liveBadge}>
-                <Text style={styles.liveText}>LIVE</Text>
-              </View>
-              <Text style={styles.matchTimer}>68'</Text>
-            </View>
-            <View style={styles.teamsContainer}>
-              <View style={styles.team}>
-                <Text style={styles.teamName}>BRA</Text>
-                <Text style={styles.teamScore}>2</Text>
-              </View>
-              <Text style={styles.vs}>VS</Text>
-              <View style={styles.team}>
-                <Text style={styles.teamScore}>1</Text>
-                <Text style={styles.teamName}>ARG</Text>
-              </View>
-            </View>
-            <View style={styles.possessionContainer}>
-              <View style={styles.possessionLabels}>
-                <Text style={styles.possessionText}>Possession: 58%</Text>
-                <Text style={styles.possessionText}>42%</Text>
-              </View>
-              <View style={[styles.progressBarBg, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
-                <View
-                  style={[
-                    styles.progressBarFill,
-                    { width: '58%', backgroundColor: themeColors.tint },
-                  ]}
-                />
-              </View>
-            </View>
-          </GlassCard>
-        </Animated.View>
+
 
         {/* Operations Command Center Banner */}
         <Animated.View entering={FadeInUp.delay(80)} style={styles.opsBannerContainer}>
