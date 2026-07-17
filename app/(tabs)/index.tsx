@@ -70,10 +70,10 @@ const QUICK_ACTIONS = [
   },
   { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
   {
-    id: 'admin-dashboard',
-    title: 'Ops Hub',
+    id: 'ai-ops-center',
+    title: 'AI Ops Hub',
     icon: 'shield-crown',
-    route: '/(modules)/admin-dashboard',
+    route: '/(modules)/ai-ops-center',
   },
 ];
 
@@ -169,7 +169,7 @@ export default function HomeDashboard() {
         {/* Operations Command Center Banner */}
         <Animated.View entering={FadeInUp.delay(80)} style={styles.opsBannerContainer}>
           <TouchableOpacity
-            onPress={() => router.push('/(modules)/admin-dashboard' as any)}
+            onPress={() => router.push('/(modules)/ai-ops-center' as any)}
             activeOpacity={0.85}
             style={[styles.opsBanner, { borderColor: 'rgba(0,200,255,0.3)' }]}>
             <LinearGradient
