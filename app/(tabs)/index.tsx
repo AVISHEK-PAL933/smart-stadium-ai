@@ -131,7 +131,7 @@ export default function HomeDashboard() {
         {/* Hero Section */}
         <Animated.View entering={FadeInDown.duration(600)} style={styles.heroSection}>
           <LinearGradient
-            colors={['rgba(0, 200, 255, 0.2)', 'transparent']}
+            colors={['rgba(0, 200, 255, 0.3)', 'transparent']}
             style={styles.heroGradient}
             start={{ x: 0.5, y: 0 }}
             end={{ x: 0.5, y: 1 }}
@@ -168,7 +168,7 @@ export default function HomeDashboard() {
 
         {/* Live Match Banner */}
         <Animated.View entering={FadeInUp.delay(100)} style={styles.bannerContainer}>
-          <GlassCard style={styles.liveBanner}>
+          <GlassCard gradientColors={themeColors.cardGradient1 as any}>
             <View style={styles.bannerHeader}>
               <View style={styles.liveBadge}>
                 <Text style={styles.liveText}>LIVE</Text>
@@ -229,22 +229,30 @@ export default function HomeDashboard() {
         {/* Stats Grid */}
         <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Stadium Statistics</Text>
         <View style={styles.statsGrid}>
-          {STATS.map((stat, index) => (
-            <Animated.View
-              key={stat.label}
-              entering={FadeInUp.delay(150 + index * 50)}
-              style={styles.statsCardContainer}>
-              <GlassCard style={styles.statsCard}>
-                <MaterialCommunityIcons
-                  name={stat.icon as any}
-                  size={24}
-                  color={themeColors.tint}
-                />
-                <Text style={[styles.statsValue, { color: themeColors.text }]}>{stat.value}</Text>
-                <Text style={[styles.statsLabel, { color: themeColors.icon }]}>{stat.label}</Text>
-              </GlassCard>
-            </Animated.View>
-          ))}
+          {STATS.map((stat, index) => {
+            const gradients = [
+              themeColors.cardGradient2,
+              themeColors.cardGradient3,
+              themeColors.cardGradient1,
+              ['#00E676', '#009688'],
+            ];
+            return (
+              <Animated.View
+                key={stat.label}
+                entering={FadeInUp.delay(150 + index * 50)}
+                style={styles.statsCardContainer}>
+                <GlassCard style={styles.statsCard} gradientColors={gradients[index % gradients.length] as any}>
+                  <MaterialCommunityIcons
+                    name={stat.icon as any}
+                    size={24}
+                    color="#fff"
+                  />
+                  <Text style={[styles.statsValue, { color: '#fff' }]}>{stat.value}</Text>
+                  <Text style={[styles.statsLabel, { color: 'rgba(255,255,255,0.7)' }]}>{stat.label}</Text>
+                </GlassCard>
+              </Animated.View>
+            );
+          })}
         </View>
 
         {/* Quick Action Grid */}
@@ -256,23 +264,19 @@ export default function HomeDashboard() {
               entering={FadeInDown.duration(400).delay(200 + index * 50)}
               style={styles.cardContainer}>
               <TouchableOpacity
-                style={[
-                  styles.card,
-                  {
-                    backgroundColor: themeColors.card,
-                    borderColor: themeColors.border,
-                    shadowColor: themeColors.tint,
-                  },
-                ]}
                 activeOpacity={0.7}
                 onPress={() => router.push(module.route as any)}>
-                <MaterialCommunityIcons
-                  name={module.icon as any}
-                  size={32}
-                  color={themeColors.tint}
-                  style={styles.icon}
-                />
-                <Text style={[styles.cardTitle, { color: themeColors.text }]}>{module.title}</Text>
+                <GlassCard style={styles.card} gradientColors={['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.01)']}>
+                  <View style={styles.iconCircle}>
+                    <MaterialCommunityIcons
+                      name={module.icon as any}
+                      size={28}
+                      color={themeColors.tint}
+                      style={styles.icon}
+                    />
+                  </View>
+                  <Text style={[styles.cardTitle, { color: themeColors.text }]}>{module.title}</Text>
+                </GlassCard>
               </TouchableOpacity>
             </Animated.View>
           ))}
@@ -283,6 +287,15 @@ export default function HomeDashboard() {
 }
 
 const styles = StyleSheet.create({
+  iconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(0, 200, 255, 0.15)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Theme.spacing.s,
+  },
   container: {
     flex: 1,
   },
@@ -489,20 +502,13 @@ const styles = StyleSheet.create({
     aspectRatio: 1.1,
   },
   card: {
-    flex: 1,
     borderRadius: Theme.shapes.borderRadius.xl,
     padding: Theme.spacing.m,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
-    elevation: 6,
   },
   icon: {
-    marginBottom: Theme.spacing.s,
-    textShadowColor: 'rgba(0, 200, 255, 0.4)',
+    textShadowColor: 'rgba(0, 200, 255, 0.6)',
     textShadowOffset: { width: 0, height: 0 },
     textShadowRadius: 10,
   },

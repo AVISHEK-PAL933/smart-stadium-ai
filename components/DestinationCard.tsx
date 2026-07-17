@@ -33,7 +33,7 @@ export const DestinationCard = ({
   };
 
   return (
-    <GlassCard style={styles.container}>
+    <GlassCard style={styles.container} gradientColors={['rgba(0,200,255,0.15)', 'rgba(0,100,255,0.05)']}>
       <View style={styles.header}>
         <View style={styles.targetCol}>
           <Text style={[styles.targetTitle, { color: themeColors.text }]}>Navigating to</Text>

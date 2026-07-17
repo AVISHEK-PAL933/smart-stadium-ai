@@ -209,8 +209,9 @@ export default function EmergencyHelp() {
             <GlassCard
               style={[
                 styles.sosCard,
-                sosActive && { borderColor: '#EF5350', backgroundColor: 'rgba(239, 83, 80, 0.1)' },
-              ]}>
+                sosActive && { borderColor: '#EF5350' },
+              ]}
+              gradientColors={sosActive ? ['rgba(239, 83, 80, 0.4)', 'rgba(183, 28, 28, 0.15)'] : undefined}>
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleTriggerSOS}

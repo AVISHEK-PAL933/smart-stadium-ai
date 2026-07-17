@@ -87,7 +87,7 @@ export default function SmartTicket() {
       <Header title="Smart Ticket Wallet" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Ticket Wallet Card */}
-        <GlassCard style={styles.card}>
+        <GlassCard style={styles.card} gradientColors={['#0F4C75', '#00C8FF']}>
           <View style={styles.ticketHeader}>
             <View style={styles.ticketBrand}>
               <MaterialCommunityIcons name="soccer" size={24} color={themeColors.tint} />
@@ -157,7 +157,7 @@ export default function SmartTicket() {
             </View>
             <View style={styles.alignRight}>
               <Text style={[styles.infoLabel, { color: themeColors.icon }]}>CATEGORY</Text>
-              <Text style={[styles.infoVal, { color: themeColors.tint }]}>Category 1 - Gold</Text>
+              <Text style={[styles.infoVal, { color: '#00E676' }]}>Category 1 - Gold</Text>
             </View>
           </View>
 
@@ -193,7 +193,7 @@ export default function SmartTicket() {
               color={isOfflineMode ? '#00E676' : themeColors.icon}
             />
             <Text
-              style={[styles.offlineText, { color: isOfflineMode ? '#00E676' : themeColors.text }]}>
+              style={[styles.offlineText, { color: isOfflineMode ? '#00E676' : '#FFFFFF' }]}>
               {isOfflineMode ? 'Saved Offline Successfully' : 'Enable Offline Mode Cache'}
             </Text>
           </TouchableOpacity>

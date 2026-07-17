@@ -8,9 +8,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 export const ExecutiveKPIDashboard = ({ kpis }: { kpis: any[] }) => {
   return (
-    <GlassCard style={styles.container}>
+    <GlassCard style={styles.container} gradientColors={['rgba(0,150,136,0.15)', 'rgba(0,77,64,0.1)']}>
       <View style={styles.header}>
-        <Ionicons name="pie-chart" size={24} color="#00e5ff" />
+        <Ionicons name="pie-chart" size={24} color="#009688" />
         <Text style={styles.title}>Executive KPIs</Text>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>

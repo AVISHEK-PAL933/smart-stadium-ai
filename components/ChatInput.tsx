@@ -57,8 +57,8 @@ export const ChatInput = ({
         style={[styles.sendButton, { opacity: value.trim() ? 1 : 0.6 }]}>
         <LinearGradient
           colors={[
-            themeColors.gradientStart || themeColors.tint,
-            themeColors.gradientEnd || themeColors.tint,
+            '#7C4DFF',
+            '#3B1D5A',
           ]}
           style={styles.sendGradient}>
           <MaterialCommunityIcons name="send" size={20} color="#FFFFFF" />

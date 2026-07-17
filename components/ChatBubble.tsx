@@ -5,6 +5,7 @@ import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInUp } from 'react-native-reanimated';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface ChatBubbleProps {
   text: string;
@@ -36,16 +37,20 @@ export const ChatBubble = ({
       <View
         style={[
           styles.bubble,
-          isBot
-            ? [
-                styles.botBubble,
-                { backgroundColor: themeColors.card, borderColor: themeColors.border },
-              ]
-            : [
-                styles.userBubble,
-                { backgroundColor: themeColors.tint, borderColor: themeColors.tint },
-              ],
+          isBot ? styles.botBubble : styles.userBubble,
+          { 
+            borderColor: isBot ? themeColors.border : 'transparent',
+            backgroundColor: isBot ? 'transparent' : '#7C4DFF',
+          }
         ]}>
+        {isBot && (
+          <LinearGradient
+            colors={['rgba(20, 33, 61, 0.8)', 'rgba(124, 77, 255, 0.15)']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFillObject}
+          />
+        )}
         <Text style={[styles.text, { color: isBot ? themeColors.text : '#FFFFFF' }]}>{text}</Text>
 
         <View style={styles.bubbleFooter}>
@@ -94,8 +99,9 @@ const styles = StyleSheet.create({
   },
   bubble: {
     padding: Theme.spacing.m,
-    borderRadius: Theme.shapes.borderRadius.l,
+    borderRadius: 24,
     borderWidth: 1,
+    overflow: 'hidden',
   },
   botBubble: {
     borderTopLeftRadius: 4,

@@ -21,10 +21,10 @@ export const FoodCard = ({ item, onPress }: FoodCardProps) => {
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      style={[styles.card, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+      style={[styles.card, { backgroundColor: 'rgba(255, 112, 67, 0.05)', borderColor: 'rgba(255,112,67,0.3)' }]}>
       {/* Icon Graphic Container */}
-      <View style={[styles.iconWrapper, { backgroundColor: themeColors.tint + '15' }]}>
-        <MaterialCommunityIcons name={item.icon as any} size={48} color={themeColors.tint} />
+      <View style={[styles.iconWrapper, { backgroundColor: 'rgba(255, 112, 67, 0.15)' }]}>
+        <MaterialCommunityIcons name={item.icon as any} size={48} color="#FF7043" />
 
         {/* Vegetarian Badge */}
         <View
@@ -68,8 +68,8 @@ export const FoodCard = ({ item, onPress }: FoodCardProps) => {
 
         {/* Price & Add Button */}
         <View style={styles.footer}>
-          <Text style={[styles.price, { color: themeColors.tint }]}>${item.price.toFixed(2)}</Text>
-          <View style={[styles.addBtn, { backgroundColor: themeColors.tint }]}>
+          <Text style={[styles.price, { color: '#FF7043' }]}>${item.price.toFixed(2)}</Text>
+          <View style={[styles.addBtn, { backgroundColor: '#FF7043' }]}>
             <MaterialCommunityIcons name="plus" size={18} color="#FFFFFF" />
           </View>
         </View>

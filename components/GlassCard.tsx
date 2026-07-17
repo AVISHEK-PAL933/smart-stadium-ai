@@ -4,13 +4,15 @@ import { BlurView } from 'expo-blur';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface GlassCardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  gradientColors?: [string, string];
 }
 
-export const GlassCard = ({ children, style }: GlassCardProps) => {
+export const GlassCard = ({ children, style, gradientColors }: GlassCardProps) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
 
@@ -26,6 +28,14 @@ export const GlassCard = ({ children, style }: GlassCardProps) => {
               shadowColor: Colors[theme].tint,
             },
           ]}>
+          {gradientColors && (
+            <LinearGradient
+              colors={gradientColors}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFillObject}
+            />
+          )}
           {children}
         </View>
       </BlurView>
@@ -35,7 +45,7 @@ export const GlassCard = ({ children, style }: GlassCardProps) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: Theme.shapes.borderRadius.xl,
+    borderRadius: 24,
     overflow: 'hidden',
   },
   blur: {
@@ -44,11 +54,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     padding: Theme.spacing.l,
-    borderWidth: 1,
-    borderRadius: Theme.shapes.borderRadius.xl,
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    elevation: 8,
+    borderWidth: 1.5,
+    borderRadius: 24,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+    overflow: 'hidden',
   },
 });

@@ -18,16 +18,22 @@ export default function TabLayout() {
           tabBarInactiveTintColor: Colors[theme].tabIconDefault,
           tabBarStyle: {
             position: 'absolute',
+            bottom: 20,
+            left: 20,
+            right: 20,
             backgroundColor: theme === 'dark' ? 'rgba(8,18,35,0.7)' : 'rgba(248,250,252,0.8)',
-            borderTopColor: Colors[theme].border,
-            elevation: 0,
-            borderTopWidth: 1,
-            height: 60,
-            paddingBottom: 10,
+            borderTopColor: 'transparent',
+            borderColor: Colors[theme].border,
+            borderWidth: 1,
+            borderRadius: 30,
+            elevation: 10,
+            height: 65,
+            paddingBottom: 12,
+            overflow: 'hidden',
           },
           tabBarBackground: () => (
             <BlurView
-              intensity={theme === 'dark' ? 60 : 80}
+              intensity={theme === 'dark' ? 80 : 100}
               tint={theme}
               style={StyleSheet.absoluteFill}
             />
