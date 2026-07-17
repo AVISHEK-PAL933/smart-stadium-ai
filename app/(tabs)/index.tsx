@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, Platform } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { useColorScheme } from 'react-native';
@@ -126,11 +126,23 @@ export default function HomeDashboard() {
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const themeColors = Colors[theme];
 
+  const { width } = useWindowDimensions();
+  
+  // Responsive calculations
+  const maxContentWidth = 1200;
+  const paddingHorizontal = 16;
+  const contentWidth = Math.min(width - paddingHorizontal * 2, maxContentWidth);
+  
+  const cols = width >= 1024 ? 4 : width >= 768 ? 3 : 2;
+  const gap = 16;
+  const cardWidth = (contentWidth - (cols - 1) * gap) / cols;
+
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <AnimatedBackground />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Hero Section */}
+        <View style={[styles.contentWrapper, { maxWidth: maxContentWidth }]}>
+          {/* Hero Section */}
         <Animated.View entering={FadeInDown.duration(600)} style={styles.heroSection}>
           <LinearGradient
             colors={['rgba(0, 200, 255, 0.3)', 'transparent']}
@@ -261,27 +273,31 @@ export default function HomeDashboard() {
         <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Quick Actions</Text>
         <View style={styles.grid}>
           {QUICK_ACTIONS.map((module, index) => (
-            <Animated.View
-              key={module.id}
-              entering={FadeInDown.duration(400).delay(200 + index * 50)}
-              style={styles.cardContainer}>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => router.push(module.route as any)}>
-                <GlassCard style={styles.card} gradientColors={['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.01)']}>
-                  <View style={styles.iconCircle}>
-                    <MaterialCommunityIcons
-                      name={module.icon as any}
-                      size={28}
-                      color={themeColors.tint}
-                      style={styles.icon}
-                    />
-                  </View>
-                  <Text style={[styles.cardTitle, { color: themeColors.text }]}>{module.title}</Text>
-                </GlassCard>
-              </TouchableOpacity>
-            </Animated.View>
-          ))}
+              <Animated.View
+                key={module.id}
+                entering={FadeInDown.duration(400).delay(100 + index * 20)}
+                style={{ width: cardWidth, marginBottom: gap }}>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  style={styles.cardTouchable}
+                  onPress={() => router.push(module.route as any)}>
+                  <GlassCard style={styles.card} gradientColors={['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.01)']}>
+                    <View style={styles.iconCircle}>
+                      <MaterialCommunityIcons
+                        name={module.icon as any}
+                        size={28}
+                        color={themeColors.tint}
+                        style={styles.icon}
+                      />
+                    </View>
+                    <Text style={[styles.cardTitle, { color: themeColors.text }]} numberOfLines={1}>
+                      {module.title}
+                    </Text>
+                  </GlassCard>
+                </TouchableOpacity>
+              </Animated.View>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -302,13 +318,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: Theme.spacing.l,
-    paddingBottom: 120,
+    paddingHorizontal: 16,
+    paddingTop: Theme.spacing.l,
+    paddingBottom: 80,
+    alignItems: 'center', // centers the wrapper
+  },
+  contentWrapper: {
+    width: '100%',
+    alignSelf: 'center',
+    gap: 24, // Reduces section spacing to 24px
   },
   heroSection: {
-    marginBottom: Theme.spacing.l,
     position: 'relative',
-    paddingTop: Theme.spacing.xl,
+    paddingTop: Theme.spacing.m,
   },
   heroGradient: {
     position: 'absolute',
@@ -361,7 +383,7 @@ const styles = StyleSheet.create({
     fontSize: Theme.typography.sizes.m,
   },
   bannerContainer: {
-    marginBottom: Theme.spacing.xl,
+    // Controlled by gap
   },
   liveBanner: {
     padding: Theme.spacing.l,
@@ -436,7 +458,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   opsBannerContainer: {
-    marginBottom: Theme.spacing.l,
+    // Controlled by gap
   },
   opsBanner: {
     borderRadius: Theme.shapes.borderRadius.l,
@@ -475,8 +497,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: Theme.spacing.m,
-    marginBottom: Theme.spacing.xl,
+    gap: 16,
   },
   statsCardContainer: {
     width: '47%',
@@ -497,15 +518,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: Theme.spacing.m,
+    gap: 16, // Enforces 16px gap
   },
-  cardContainer: {
-    width: '47%',
-    aspectRatio: 1.1,
+  cardTouchable: {
+    flex: 1,
   },
   card: {
     borderRadius: Theme.shapes.borderRadius.xl,
-    padding: Theme.spacing.m,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
   },
