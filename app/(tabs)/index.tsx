@@ -81,6 +81,12 @@ const QUICK_ACTIONS = [
     icon: 'lightning-bolt',
     route: '/(modules)/smart-iot-center',
   },
+  {
+    id: 'executive-analytics',
+    title: 'Exec Analytics',
+    icon: 'chart-pie',
+    route: '/(modules)/executive-analytics',
+  },
 ];
 
 const STATS = [
