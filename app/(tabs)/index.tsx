@@ -87,6 +87,12 @@ const QUICK_ACTIONS = [
     icon: 'chart-pie',
     route: '/(modules)/executive-analytics',
   },
+  {
+    id: 'smart-fan-experience',
+    title: 'Fan XP',
+    icon: 'star',
+    route: '/(modules)/smart-fan-experience',
+  },
 ];
 
 const STATS = [
