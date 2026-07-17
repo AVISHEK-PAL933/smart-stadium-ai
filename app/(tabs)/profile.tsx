@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
@@ -17,18 +17,56 @@ export default function ProfileScreen() {
   const themeColors = Colors[theme];
   const { role, setRole } = useGlobalContext();
 
+  const [userName, setUserName] = useState(role === 'user' ? 'John Doe' : 'Guest User');
+  const [isEditing, setIsEditing] = useState(false);
+  const [pushEnabled, setPushEnabled] = useState(true);
+  const [darkEnabled, setDarkEnabled] = useState(theme === 'dark');
+
   const handleLogout = () => {
     setRole(null);
     router.replace('/login');
   };
 
   const SETTINGS = [
-    { icon: 'bell', title: 'Push Notifications', type: 'switch', value: true },
-    { icon: 'theme-light-dark', title: 'Dark Mode', type: 'switch', value: theme === 'dark' },
-    { icon: 'translate', title: 'Language', type: 'link', value: 'English (US)' },
-    { icon: 'credit-card', title: 'Payment Methods', type: 'link' },
-    { icon: 'shield-check', title: 'Security & Privacy', type: 'link' },
-    { icon: 'help-circle-outline', title: 'Help & Support', type: 'link' },
+    { 
+      icon: 'bell', 
+      title: 'Push Notifications', 
+      type: 'switch', 
+      value: pushEnabled, 
+      onToggle: () => setPushEnabled(!pushEnabled) 
+    },
+    { 
+      icon: 'theme-light-dark', 
+      title: 'Dark Mode', 
+      type: 'switch', 
+      value: darkEnabled, 
+      onToggle: () => setDarkEnabled(!darkEnabled) 
+    },
+    { 
+      icon: 'translate', 
+      title: 'Language', 
+      type: 'link', 
+      value: 'English (US)',
+      onPress: () => Alert.alert('Language', 'Language options will be available soon.')
+    },
+    { 
+      icon: 'credit-card', 
+      title: 'Payment Methods', 
+      type: 'link',
+      onPress: () => Alert.alert('Payment Methods', 'Manage your saved cards securely.') 
+    },
+    { 
+      icon: 'shield-check', 
+      title: 'Security & Privacy', 
+      type: 'link',
+      onPress: () => Alert.alert('Security', 'Your account is secured with end-to-end encryption.') 
+    },
+    { 
+      icon: 'help-circle-outline', 
+      title: 'Help & Support', 
+      type: 'link',
+      onPress: () => Alert.alert('Support', 'Connecting you to our 24/7 support team...') 
+    },
   ];
 
   return (
@@ -40,9 +78,21 @@ export default function ProfileScreen() {
             <MaterialCommunityIcons name="account-circle" size={100} color={themeColors.tint} />
             <View style={[styles.badge, { backgroundColor: '#39FF14' }]} />
           </View>
-          <Text style={[styles.name, { color: themeColors.text }]}>
-            {role === 'user' ? 'John Doe' : 'Guest User'}
-          </Text>
+          {isEditing ? (
+            <TextInput
+              style={[styles.nameInput, { color: themeColors.text, borderColor: themeColors.border }]}
+              value={userName}
+              onChangeText={setUserName}
+              onSubmitEditing={() => setIsEditing(false)}
+              onBlur={() => setIsEditing(false)}
+              autoFocus
+            />
+          ) : (
+            <TouchableOpacity onPress={() => setIsEditing(true)} style={styles.nameRow}>
+              <Text style={[styles.name, { color: themeColors.text }]}>{userName}</Text>
+              <MaterialCommunityIcons name="pencil" size={16} color={themeColors.icon} style={styles.editIcon} />
+            </TouchableOpacity>
+          )}
           <Text style={[styles.role, { color: themeColors.icon }]}>
             {role === 'user' ? 'FIFA VIP Member' : 'Temporary Access'}
           </Text>
@@ -54,6 +104,7 @@ export default function ProfileScreen() {
           {SETTINGS.map((item, index) => (
             <Animated.View key={item.title} entering={FadeInUp.delay(200 + index * 50)}>
               <TouchableOpacity
+                onPress={item.type === 'switch' ? item.onToggle : item.onPress}
                 style={[
                   styles.settingRow,
                   index !== SETTINGS.length - 1 && {
@@ -61,7 +112,7 @@ export default function ProfileScreen() {
                     borderBottomColor: themeColors.border,
                   },
                 ]}
-                disabled={item.type === 'switch'}>
+                activeOpacity={0.7}>
                 <View style={styles.settingLeft}>
                   <MaterialCommunityIcons
                     name={item.icon as any}
@@ -76,6 +127,7 @@ export default function ProfileScreen() {
                   {item.type === 'switch' ? (
                     <Switch
                       value={item.value as boolean}
+                      onValueChange={item.onToggle}
                       trackColor={{ true: themeColors.tint }}
                       thumbColor="#fff"
                     />
@@ -122,7 +174,18 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#070A13',
   },
-  name: { fontSize: Theme.typography.sizes.xxl, fontWeight: 'bold', marginBottom: 4 },
+  name: { fontSize: Theme.typography.sizes.xxl, fontWeight: 'bold' },
+  nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  editIcon: { marginLeft: 8 },
+  nameInput: {
+    fontSize: Theme.typography.sizes.xl,
+    fontWeight: 'bold',
+    borderBottomWidth: 1,
+    minWidth: 150,
+    textAlign: 'center',
+    paddingVertical: 4,
+    marginBottom: 4,
+  },
   role: { fontSize: Theme.typography.sizes.m },
   sectionTitle: {
     fontSize: Theme.typography.sizes.l,
