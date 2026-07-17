@@ -97,11 +97,16 @@ export const StadiumMap = ({ currentRoute, selectedDestinationId }: StadiumMapPr
       {STADIUM_DESTINATIONS.map((dest) => {
         const isActiveDestination =
           currentRoute?.destination.id === dest.id || selectedDestinationId === dest.id;
+        
+        // Translate old fixed coordinates to new dynamic center
+        const mappedX = dest.coordinates.x - 160 + mapWidth / 2;
+        const mappedY = dest.coordinates.y - 180 + mapHeight / 2;
+
         return (
           <Marker
             key={dest.id}
-            x={dest.coordinates.x}
-            y={dest.coordinates.y}
+            x={mappedX}
+            y={mappedY}
             icon={dest.icon}
             isPulsing={isActiveDestination}
             color={isActiveDestination ? '#00C8FF' : '#475569'}
@@ -111,8 +116,8 @@ export const StadiumMap = ({ currentRoute, selectedDestinationId }: StadiumMapPr
 
       {/* Current Location Marker */}
       <Marker
-        x={CURRENT_LOCATION.x}
-        y={CURRENT_LOCATION.y}
+        x={CURRENT_LOCATION.x - 160 + mapWidth / 2}
+        y={CURRENT_LOCATION.y - 180 + mapHeight / 2}
         icon="account-navigation"
         isPulsing={true}
         color="#00E676"

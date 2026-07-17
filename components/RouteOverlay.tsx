@@ -19,7 +19,11 @@ export const RouteOverlay = ({ path, width, height }: RouteOverlayProps) => {
     return () => clearInterval(interval);
   }, []);
 
-  const pointsString = path.map((coord) => `${coord.x},${coord.y}`).join(' ');
+  const pointsString = path.map((coord) => {
+    const mappedX = coord.x - 160 + width / 2;
+    const mappedY = coord.y - 180 + height / 2;
+    return `${mappedX},${mappedY}`;
+  }).join(' ');
 
   return (
     <View style={StyleSheet.absoluteFill} pointerEvents="none">
