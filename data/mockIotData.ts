@@ -1,0 +1,80 @@
+export const mockIotData = {
+  sensors: [
+    { label: "Temperature", value: "24.5°C", icon: "thermometer", color: "#00e5ff" },
+    { label: "Air Quality", value: "98 AQI", icon: "leaf", color: "#00e676" },
+    { label: "Humidity", value: "45%", icon: "water", color: "#2979ff" },
+    { label: "CO₂ Levels", value: "410 ppm", icon: "cloud", color: "#fbc02d" },
+    { label: "Noise Level", value: "85 dB", icon: "volume-high", color: "#ff3d00" },
+    { label: "Water Pressure", value: "52 psi", icon: "speedometer", color: "#b388ff" },
+    { label: "Electricity", value: "4.2 MW", icon: "flash", color: "#ffd600" },
+    { label: "Wi-Fi Health", value: "99.9%", icon: "wifi", color: "#00e676" },
+    { label: "Network Traffic", value: "8.5 GB/s", icon: "git-network", color: "#2979ff" },
+    { label: "Battery Backup", value: "100%", icon: "battery-full", color: "#00e676" },
+    { label: "UPS Status", value: "Active", icon: "power", color: "#00e5ff" },
+    { label: "Generator", value: "Standby", icon: "cog", color: "#b388ff" },
+  ],
+  energy: {
+    solar: 45, // %
+    grid: 40,
+    battery: 15,
+    consumption: "3.2 MWh",
+    emissions: "12 Tons",
+    saved: "18%",
+  },
+  water: {
+    tanks: [
+      { id: "T1", level: 85, status: "Normal" },
+      { id: "T2", level: 40, status: "Filling" },
+      { id: "T3", level: 95, status: "Full" },
+    ],
+    consumption: "15,000 L/h",
+    leaks: 0,
+    quality: "Excellent",
+    valves: 42,
+  },
+  waste: {
+    recycling: 65, // %
+    organic: 20,
+    plastic: 15,
+    collection: "In Progress",
+    alerts: 1,
+  },
+  sustainabilityScore: 88,
+  aiRecommendations: [
+    { text: "Reduce lighting in Zone B by 15%", confidence: 95, impact: "High" },
+    { text: "Switch to battery backup for Sector 4", confidence: 88, impact: "Medium" },
+    { text: "Delay irrigation, rain expected", confidence: 98, impact: "High" },
+    { text: "Increase recycling collection at Gate North", confidence: 75, impact: "Low" },
+  ],
+  maintenance: [
+    { equipment: "Escalators", health: 95, status: "Healthy" },
+    { equipment: "Elevators", health: 98, status: "Healthy" },
+    { equipment: "Lighting", health: 85, status: "Warning" },
+    { equipment: "CCTV", health: 99, status: "Healthy" },
+    { equipment: "Scoreboards", health: 100, status: "Healthy" },
+    { equipment: "Cooling Sys", health: 70, status: "Warning" },
+    { equipment: "Public Wi-Fi", health: 92, status: "Healthy" },
+    { equipment: "Restrooms", health: 65, status: "Critical" },
+  ],
+  environment: {
+    weather: "Partly Cloudy",
+    rainProb: 15,
+    uvIndex: 4,
+    windSpeed: "12 km/h",
+    heatIndex: "26°C",
+    aqi: 45,
+  },
+  predictions: [
+    { event: "Escalator 4 failure", time: "14 days", risk: "Medium" },
+    { event: "Generator maintenance due", time: "5 days", risk: "High" },
+    { event: "Camera 12 battery low", time: "12 hours", risk: "Low" },
+    { event: "Pump efficiency decreasing", time: "30 days", risk: "Medium" },
+  ],
+  execKpis: {
+    energySaved: "450 MWh",
+    waterSaved: "120k L",
+    co2Reduced: "350 Tons",
+    wasteRecycled: "45 Tons",
+    monthlySavings: "$125,000",
+  }
+};

@@ -75,6 +75,12 @@ const QUICK_ACTIONS = [
     icon: 'shield-crown',
     route: '/(modules)/ai-ops-center',
   },
+  {
+    id: 'smart-iot-center',
+    title: 'IoT Center',
+    icon: 'lightning-bolt',
+    route: '/(modules)/smart-iot-center',
+  },
 ];
 
 const STATS = [

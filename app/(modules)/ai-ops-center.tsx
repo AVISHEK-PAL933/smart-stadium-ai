@@ -21,7 +21,7 @@ import { AIInsightsPanel } from '../../components/ops/AIInsightsPanel';
 export default function AIOpsCenterScreen() {
   return (
     <SafeAreaView style={styles.container}>
-      <Header title="AI Operations Command Center" showBack />
+      <Header title="AI Operations Command Center"  />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <LiveStatusCards data={mockOpsData.liveStatus} />
@@ -30,9 +30,9 @@ export default function AIOpsCenterScreen() {
           
           <LiveKPIDashboard chartData={mockOpsData.chartData} />
           
-          <AIDecisionEngine decisions={mockOpsData.aiDecisions} />
+          <AIDecisionEngine decisions={mockOpsData.aiDecisions as any} />
           
-          <EventStream events={mockOpsData.eventStream} />
+          <EventStream events={mockOpsData.eventStream as any} />
           
           <PredictiveAnalytics predictions={mockOpsData.predictiveAnalytics} />
           
@@ -40,7 +40,7 @@ export default function AIOpsCenterScreen() {
           
           <ResourceManagement resources={mockOpsData.resources} />
           
-          <SystemHealth systems={mockOpsData.systemHealth} />
+          <SystemHealth systems={mockOpsData.systemHealth as any} />
           
           <WorldMap />
           
