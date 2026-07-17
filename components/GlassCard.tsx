@@ -1,20 +1,28 @@
 import React from 'react';
-import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
+import { View, StyleSheet, ViewStyle, StyleProp, ViewProps } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-interface GlassCardProps {
+export interface GlassCardProps extends ViewProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-  gradientColors?: [string, string];
+  gradientColors?: [string, string, ...string[]];
+  borderColor?: string;
 }
 
-export const GlassCard = ({ children, style, gradientColors }: GlassCardProps) => {
+export const GlassCard: React.FC<GlassCardProps> = ({
+  children,
+  style,
+  gradientColors,
+  borderColor,
+  ...props
+}) => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const themeColors = Colors[theme];
 
   return (
     <View style={[styles.container, style]}>
@@ -23,11 +31,12 @@ export const GlassCard = ({ children, style, gradientColors }: GlassCardProps) =
           style={[
             styles.content,
             {
-              backgroundColor: Colors[theme].card,
-              borderColor: Colors[theme].border,
-              shadowColor: Colors[theme].tint,
+              backgroundColor: themeColors.card,
+              borderColor: borderColor || themeColors.border,
+              shadowColor: themeColors.tint,
             },
-          ]}>
+          ]}
+          {...props}>
           {gradientColors && (
             <LinearGradient
               colors={gradientColors}

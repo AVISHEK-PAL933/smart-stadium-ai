@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../components/GlassCard';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 const QUICK_ACTIONS = [
   {
@@ -127,6 +128,7 @@ export default function HomeDashboard() {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <AnimatedBackground />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Hero Section */}
         <Animated.View entering={FadeInDown.duration(600)} style={styles.heroSection}>

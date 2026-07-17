@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { useColorScheme } from 'react-native';
+import { GlassCard } from '../../components/GlassCard';
 
 const ZONES = [
   {
@@ -115,15 +116,7 @@ export default function CrowdAnalytics() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Overall Occupancy */}
         <Animated.View entering={FadeInUp.delay(100)}>
-          <View
-            style={[
-              styles.overallCard,
-              { backgroundColor: themeColors.card, borderColor: '#7C4DFF44' },
-            ]}>
-            <LinearGradient
-              colors={['rgba(124,77,255,0.2)', 'transparent']}
-              style={styles.cardGrad}
-            />
+          <GlassCard style={styles.overallCard} gradientColors={['rgba(124,77,255,0.25)', 'rgba(64,196,255,0.1)']} borderColor="rgba(124,77,255,0.4)">
             <Text style={[styles.overallLabel, { color: themeColors.icon }]}>
               Overall Stadium Occupancy
             </Text>
@@ -145,7 +138,7 @@ export default function CrowdAnalytics() {
             <Text style={[styles.overallPct, { color: overallPct > 95 ? '#FF5252' : '#7C4DFF' }]}>
               {overallPct}% Capacity
             </Text>
-          </View>
+          </GlassCard>
         </Animated.View>
 
         {/* Tabs */}
@@ -179,11 +172,7 @@ export default function CrowdAnalytics() {
               const pct = Math.round((zone.current / zone.capacity) * 100);
               return (
                 <Animated.View key={zone.id} entering={FadeInDown.delay(200 + i * 50)}>
-                  <View
-                    style={[
-                      styles.zoneCard,
-                      { backgroundColor: themeColors.card, borderColor: themeColors.border },
-                    ]}>
+                  <GlassCard style={styles.zoneCard} gradientColors={[`${zone.color}15`, 'transparent']} borderColor={`${zone.color}44`}>
                     <View style={styles.zoneHeader}>
                       <View style={[styles.zoneIdBadge, { backgroundColor: `${zone.color}22` }]}>
                         <Text style={[styles.zoneId, { color: zone.color }]}>{zone.id}</Text>
@@ -211,7 +200,7 @@ export default function CrowdAnalytics() {
                       </Text>
                       <Text style={[styles.zonePct, { color: zone.color }]}>{pct}%</Text>
                     </View>
-                  </View>
+                  </GlassCard>
                 </Animated.View>
               );
             })}
@@ -221,11 +210,7 @@ export default function CrowdAnalytics() {
         {/* Flow View */}
         {view === 'flow' && (
           <Animated.View entering={FadeInUp.delay(200)}>
-            <View
-              style={[
-                styles.flowCard,
-                { backgroundColor: themeColors.card, borderColor: themeColors.border },
-              ]}>
+            <GlassCard style={styles.flowCard} gradientColors={['rgba(0,200,255,0.1)', 'transparent']} borderColor="rgba(0,200,255,0.3)">
               <Text style={[styles.sectionTitle, { color: themeColors.text }]}>
                 Entry / Exit Flow (Last 60 min)
               </Text>
@@ -260,7 +245,7 @@ export default function CrowdAnalytics() {
                   </View>
                 </View>
               ))}
-            </View>
+            </GlassCard>
           </Animated.View>
         )}
 
@@ -269,23 +254,13 @@ export default function CrowdAnalytics() {
           <View style={styles.alertsList}>
             {ALERTS.map((alert, i) => (
               <Animated.View key={i} entering={FadeInDown.delay(200 + i * 60)}>
-                <View
-                  style={[
-                    styles.alertCard,
-                    {
-                      backgroundColor: themeColors.card,
-                      borderColor: alert.severity === 'Critical' ? '#FF525244' : '#FFC10744',
-                    },
-                  ]}>
-                  <LinearGradient
-                    colors={[
-                      alert.severity === 'Critical'
-                        ? 'rgba(255,82,82,0.12)'
-                        : 'rgba(255,193,7,0.12)',
-                      'transparent',
-                    ]}
-                    style={styles.alertGrad}
-                  />
+                <GlassCard
+                  style={styles.alertCard}
+                  gradientColors={[
+                    alert.severity === 'Critical' ? 'rgba(255,82,82,0.15)' : 'rgba(255,193,7,0.15)',
+                    'transparent'
+                  ]}
+                  borderColor={alert.severity === 'Critical' ? 'rgba(255,82,82,0.4)' : 'rgba(255,193,7,0.4)'}>
                   <View style={styles.alertHeader}>
                     <MaterialCommunityIcons
                       name={alert.severity === 'Critical' ? 'alert-octagon' : 'alert'}
@@ -316,7 +291,7 @@ export default function CrowdAnalytics() {
                     {alert.message}
                   </Text>
                   <Text style={[styles.alertTime, { color: themeColors.icon }]}>{alert.time}</Text>
-                </View>
+                </GlassCard>
               </Animated.View>
             ))}
           </View>
