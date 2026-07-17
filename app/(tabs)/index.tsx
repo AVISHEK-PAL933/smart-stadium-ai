@@ -93,6 +93,24 @@ const QUICK_ACTIONS = [
     icon: 'star',
     route: '/(modules)/smart-fan-experience',
   },
+  {
+    id: 'admin-mode',
+    title: 'Admin Demo',
+    icon: 'security',
+    route: '/(modules)/admin-mode',
+  },
+  {
+    id: 'settings',
+    title: 'Settings',
+    icon: 'cog',
+    route: '/(modules)/settings',
+  },
+  {
+    id: 'help-center',
+    title: 'Help Center',
+    icon: 'help-circle',
+    route: '/(modules)/help-center',
+  },
 ];
 
 const STATS = [
@@ -124,6 +142,7 @@ export default function HomeDashboard() {
               <Text style={[styles.userName, { color: themeColors.text }]}>Alex Johnson</Text>
             </View>
             <TouchableOpacity
+              onPress={() => router.push('/(modules)/notifications' as any)}
               style={[
                 styles.iconButton,
                 { backgroundColor: themeColors.card, borderColor: themeColors.border },
@@ -133,18 +152,18 @@ export default function HomeDashboard() {
             </TouchableOpacity>
           </View>
 
-          <View
+          <TouchableOpacity
+            onPress={() => router.push('/(modules)/global-search' as any)}
+            activeOpacity={0.8}
             style={[
               styles.searchBar,
               { backgroundColor: themeColors.card, borderColor: themeColors.border },
             ]}>
             <MaterialCommunityIcons name="magnify" size={20} color={themeColors.icon} />
-            <TextInput
-              placeholder="Search matches, food, seating..."
-              placeholderTextColor={themeColors.icon}
-              style={[styles.searchInput, { color: themeColors.text }]}
-            />
-          </View>
+            <Text style={[styles.searchInput, { color: themeColors.icon }]}>
+              Search matches, food, seating...
+            </Text>
+          </TouchableOpacity>
         </Animated.View>
 
         {/* Live Match Banner */}
