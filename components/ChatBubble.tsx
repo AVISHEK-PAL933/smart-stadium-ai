@@ -1,144 +1,144 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Clipboard } from 'react-native';
-import { Colors } from '../constants/colors';
-import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import Animated, { FadeInUp } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeInLeft } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface ChatBubbleProps {
   text: string;
   isBot: boolean;
-  onActionPress?: (actionType: string, actionPayload?: any) => void;
   actionType?: string;
   actionPayload?: any;
+  onActionPress?: (actionType: string, actionPayload?: any) => void;
 }
 
-export const ChatBubble = ({
-  text,
-  isBot,
-  onActionPress,
-  actionType,
-  actionPayload,
-}: ChatBubbleProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
-
-  const copyToClipboard = () => {
-    Clipboard.setString(text);
+export const ChatBubble = ({ text, isBot, actionType, actionPayload, onActionPress }: ChatBubbleProps) => {
+  const getActionIcon = () => {
+    switch (actionType) {
+      case 'NAVIGATE': return 'navigation-variant';
+      case 'TICKET': return 'ticket';
+      case 'FOOD': return 'food';
+      case 'PARKING': return 'parking';
+      case 'SOS': return 'alert';
+      case 'LOST_FOUND': return 'magnify';
+      case 'FAN_ZONE': return 'account-group';
+      case 'MERCH': return 'shopping';
+      default: return 'arrow-right';
+    }
   };
 
-  return (
-    <Animated.View
-      entering={FadeInUp.duration(300)}
-      style={[styles.bubbleContainer, isBot ? styles.botAlign : styles.userAlign]}>
-      <View
-        style={[
-          styles.bubble,
-          isBot ? styles.botBubble : styles.userBubble,
-          { 
-            borderColor: isBot ? themeColors.border : 'transparent',
-            backgroundColor: isBot ? 'transparent' : '#7C4DFF',
-          }
-        ]}>
-        {isBot && (
-          <LinearGradient
-            colors={['rgba(20, 33, 61, 0.8)', 'rgba(124, 77, 255, 0.15)']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={StyleSheet.absoluteFillObject}
-          />
-        )}
-        <Text style={[styles.text, { color: isBot ? themeColors.text : '#FFFFFF' }]}>{text}</Text>
-
-        <View style={styles.bubbleFooter}>
-          <Text
-            style={[styles.time, { color: isBot ? themeColors.icon : 'rgba(255,255,255,0.7)' }]}>
-            {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </Text>
-          <TouchableOpacity onPress={copyToClipboard} style={styles.copyBtn}>
-            <MaterialCommunityIcons
-              name="content-copy"
-              size={14}
-              color={isBot ? themeColors.icon : 'rgba(255,255,255,0.7)'}
-            />
-          </TouchableOpacity>
+  if (!isBot) {
+    return (
+      <Animated.View entering={FadeInRight.duration(400)} style={styles.userContainer}>
+        <View style={styles.userBubble}>
+          <Text style={styles.userText}>{text}</Text>
         </View>
-      </View>
+      </Animated.View>
+    );
+  }
 
-      {isBot && actionType && onActionPress && (
-        <TouchableOpacity
-          onPress={() => onActionPress(actionType, actionPayload)}
-          style={[
-            styles.actionBtn,
-            { backgroundColor: themeColors.tint + '15', borderColor: themeColors.tint },
-          ]}>
-          <MaterialCommunityIcons name="open-in-new" size={16} color={themeColors.tint} />
-          <Text style={[styles.actionBtnText, { color: themeColors.tint }]}>
-            Go to {actionType === 'NAVIGATE' ? 'Map' : actionType}
-          </Text>
-        </TouchableOpacity>
-      )}
+  return (
+    <Animated.View entering={FadeInLeft.duration(400)} style={styles.botContainer}>
+      <View style={styles.botAvatar}>
+        <MaterialCommunityIcons name="robot-outline" size={20} color="#00C8FF" />
+      </View>
+      
+      <View style={styles.botBubbleWrapper}>
+        <LinearGradient
+          colors={['rgba(124,77,255,0.2)', 'rgba(0,200,255,0.05)']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.botBubble}
+        >
+          <Text style={styles.botText}>{text}</Text>
+          
+          {actionType && onActionPress && (
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.actionBtn}
+              onPress={() => onActionPress(actionType, actionPayload)}
+            >
+              <Text style={styles.actionBtnText}>Take Action</Text>
+              <MaterialCommunityIcons name={getActionIcon()} size={16} color="#FFF" />
+            </TouchableOpacity>
+          )}
+        </LinearGradient>
+      </View>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  bubbleContainer: {
-    marginVertical: Theme.spacing.s,
-    maxWidth: '85%',
-    gap: 6,
-  },
-  botAlign: {
-    alignSelf: 'flex-start',
-  },
-  userAlign: {
+  userContainer: {
     alignSelf: 'flex-end',
-  },
-  bubble: {
-    padding: Theme.spacing.m,
-    borderRadius: 24,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  botBubble: {
-    borderTopLeftRadius: 4,
+    maxWidth: '80%',
+    marginVertical: 6,
   },
   userBubble: {
-    borderTopRightRadius: 4,
+    backgroundColor: '#00C8FF',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 4,
   },
-  text: {
-    fontSize: Theme.typography.sizes.m,
-    lineHeight: 20,
+  userText: {
+    color: '#081223',
+    fontSize: 15,
+    fontWeight: '500',
+    lineHeight: 22,
   },
-  bubbleFooter: {
+  botContainer: {
+    alignSelf: 'flex-start',
+    maxWidth: '85%',
+    marginVertical: 6,
     flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  botAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(15,23,42,0.8)',
+    borderWidth: 1,
+    borderColor: '#00C8FF',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginTop: 6,
-    gap: Theme.spacing.s,
+    justifyContent: 'center',
+    marginBottom: 4,
   },
-  time: {
-    fontSize: Theme.typography.sizes.s - 2,
+  botBubbleWrapper: {
+    flex: 1,
   },
-  copyBtn: {
-    padding: 2,
+  botBubble: {
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(124,77,255,0.3)',
+  },
+  botText: {
+    color: '#FFF',
+    fontSize: 15,
+    lineHeight: 24,
   },
   actionBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
     paddingVertical: 8,
-    paddingHorizontal: Theme.spacing.m,
+    paddingHorizontal: 16,
     borderRadius: 16,
     borderWidth: 1,
     gap: 6,
     marginTop: 2,
   },
   actionBtnText: {
-    fontSize: Theme.typography.sizes.s,
+    fontSize: 12,
     fontWeight: 'bold',
   },
 });

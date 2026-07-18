@@ -1,16 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
-import { Header } from '../../components/Header';
-import { Theme } from '../../constants/theme';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, useWindowDimensions } from 'react-native';
 import { ChatBubble } from '../../components/ChatBubble';
-import { SuggestionChip } from '../../components/SuggestionChip';
 import { TypingIndicator } from '../../components/TypingIndicator';
 import { ChatInput } from '../../components/ChatInput';
 import { useChat } from '../../hooks/useChat';
 import { useSpeech } from '../../hooks/useSpeech';
 import { router } from 'expo-router';
+import { AIHeader } from '../../components/AIHeader';
+import { AIInfoPanel } from '../../components/AIInfoPanel';
+import { AIActionCard } from '../../components/AIActionCard';
+import { AIWelcomeCard } from '../../components/AIWelcomeCard';
 
 const SUGGESTIONS = [
   '🎫 Show my ticket',
@@ -24,9 +23,9 @@ const SUGGESTIONS = [
 ];
 
 export default function AIMatchAssistant() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 1024;
+  const isTablet = width >= 768 && width < 1024;
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { messages, isTyping, sendMessage, clearChat } = useChat();
@@ -103,71 +102,108 @@ export default function AIMatchAssistant() {
   }, [messages, speak]);
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.container, { backgroundColor: themeColors.background }]}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
-      <Header title="AI Stadium Assistant" />
+    <View style={styles.container}>
+      <AIHeader />
+      
+      <KeyboardAvoidingView
+        style={styles.keyboardView}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
+        <View style={[styles.mainSplit, !isDesktop && styles.mobileLayout]}>
+          
+          {/* Left Chat Area */}
+          <View style={[styles.chatPanel, isDesktop && { flex: 7 }]}>
+            <ScrollView
+              ref={scrollViewRef}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
+              <View style={styles.messagesContainer}>
+                {messages.length <= 1 ? (
+                  // Intercept the default initial message with the beautiful welcome card
+                  <AIWelcomeCard />
+                ) : (
+                  messages.map((msg, index) => {
+                    // Skip the initial invisible bot welcome message if there are real messages
+                    if (index === 0 && msg.id === '1') return null;
+                    return (
+                      <ChatBubble
+                        key={msg.id}
+                        text={msg.text}
+                        isBot={msg.isBot}
+                        actionType={msg.actionType}
+                        actionPayload={msg.actionPayload}
+                        onActionPress={handleAction}
+                      />
+                    );
+                  })
+                )}
+                {isTyping && <TypingIndicator />}
+              </View>
 
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.messagesContainer}>
-          {messages.map((msg) => (
-            <ChatBubble
-              key={msg.id}
-              text={msg.text}
-              isBot={msg.isBot}
-              actionType={msg.actionType}
-              actionPayload={msg.actionPayload}
-              onActionPress={handleAction}
+              {/* Suggestions Grid inside chat scroll, below messages */}
+              {messages.length <= 1 && (
+                <View style={styles.suggestionsWrapper}>
+                  {SUGGESTIONS.map((suggestion) => (
+                    <AIActionCard key={suggestion} label={suggestion} onPress={sendMessage} />
+                  ))}
+                </View>
+              )}
+            </ScrollView>
+
+            <ChatInput
+              value={inputText}
+              onChangeText={setInputText}
+              onSend={handleSend}
+              isListening={isListening}
+              onVoicePress={handleVoicePress}
             />
-          ))}
-          {isTyping && <TypingIndicator />}
+          </View>
+
+          {/* Right Info Panel (Desktop Only) */}
+          {isDesktop && (
+            <View style={{ flex: 3 }}>
+              <AIInfoPanel />
+            </View>
+          )}
+
         </View>
-      </ScrollView>
-
-      {/* Suggested prompts list */}
-      <View style={styles.suggestionsWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.suggestionsContainer}>
-          {SUGGESTIONS.map((suggestion) => (
-            <SuggestionChip key={suggestion} label={suggestion} onPress={sendMessage} />
-          ))}
-        </ScrollView>
-      </View>
-
-      <ChatInput
-        value={inputText}
-        onChangeText={setInputText}
-        onSend={handleSend}
-        isListening={isListening}
-        onVoicePress={handleVoicePress}
-      />
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#081223',
+  },
+  keyboardView: {
+    flex: 1,
+  },
+  mainSplit: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+  mobileLayout: {
+    flexDirection: 'column',
+  },
+  chatPanel: {
+    flex: 1,
+    position: 'relative',
   },
   scrollContent: {
-    padding: Theme.spacing.l,
-    paddingBottom: Theme.spacing.xl,
+    padding: 20,
+    paddingBottom: 40,
   },
   messagesContainer: {
     flex: 1,
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   suggestionsWrapper: {
-    paddingVertical: Theme.spacing.s,
-    backgroundColor: 'transparent',
-  },
-  suggestionsContainer: {
-    paddingHorizontal: Theme.spacing.l,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    paddingVertical: 20,
   },
 });

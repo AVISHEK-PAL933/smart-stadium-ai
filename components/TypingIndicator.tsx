@@ -1,77 +1,102 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
 import { Colors } from '../constants/colors';
-import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
 import Animated, {
-  useAnimatedStyle,
   useSharedValue,
+  useAnimatedStyle,
   withRepeat,
   withSequence,
   withTiming,
   withDelay,
+  FadeInLeft,
+  SharedValue,
 } from 'react-native-reanimated';
-
-const Dot = ({ index }: { index: number }) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
-
-  const translateY = useSharedValue(0);
-
-  useEffect(() => {
-    translateY.value = withDelay(
-      index * 150,
-      withRepeat(
-        withSequence(withTiming(-8, { duration: 300 }), withTiming(0, { duration: 300 })),
-        -1,
-        false
-      )
-    );
-  }, [translateY, index]);
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: translateY.value }],
-    };
-  });
-
-  return (
-    <Animated.View style={[styles.dot, { backgroundColor: themeColors.tint }, animatedStyle]} />
-  );
-};
+import { GlassCard } from './GlassCard';
 
 export const TypingIndicator = () => {
   const colorScheme = useColorScheme();
   const theme = colorScheme === 'dark' ? 'dark' : 'light';
   const themeColors = Colors[theme];
 
+  const dot1 = useSharedValue(0);
+  const dot2 = useSharedValue(0);
+  const dot3 = useSharedValue(0);
+
+  useEffect(() => {
+    const animateDot = (dot: SharedValue<number>, delay: number) => {
+      dot.value = withDelay(
+        delay,
+        withRepeat(
+          withSequence(
+            withTiming(1, { duration: 400 }),
+            withTiming(0, { duration: 400 }),
+            withTiming(0, { duration: 400 })
+          ),
+          -1,
+          true
+        )
+      );
+    };
+
+    animateDot(dot1, 0);
+    animateDot(dot2, 200);
+    animateDot(dot3, 400);
+  }, [dot1, dot2, dot3]);
+
+  const getAnimatedStyle = (dot: SharedValue<number>) => {
+    return useAnimatedStyle(() => ({
+      transform: [{ translateY: -10 * dot.value }],
+      opacity: 0.3 + dot.value * 0.7,
+      backgroundColor: dot.value > 0.5 ? '#00C8FF' : '#7C4DFF',
+    }));
+  };
+
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: themeColors.card, borderColor: themeColors.border },
-      ]}>
-      <Dot index={0} />
-      <Dot index={1} />
-      <Dot index={2} />
-    </View>
+    <Animated.View entering={FadeInLeft.duration(300)}>
+      <GlassCard style={styles.container} gradientColors={['rgba(15,23,42,0.95)', 'rgba(8,18,35,0.9)']}>
+        <View style={styles.thinkingBox}>
+          <Text style={styles.thinkingText}>AI Thinking</Text>
+          <View style={styles.dotsWrapper}>
+            <Animated.View style={[styles.dot, getAnimatedStyle(dot1)]} />
+            <Animated.View style={[styles.dot, getAnimatedStyle(dot2)]} />
+            <Animated.View style={[styles.dot, getAnimatedStyle(dot3)]} />
+          </View>
+        </View>
+      </GlassCard>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    borderBottomLeftRadius: 4,
     alignSelf: 'flex-start',
-    paddingHorizontal: Theme.spacing.m,
-    paddingVertical: Theme.spacing.s + 2,
-    borderRadius: 16,
+    maxWidth: '80%',
+    marginVertical: 4,
     borderWidth: 1,
-    gap: 6,
-    marginVertical: Theme.spacing.s,
+    borderColor: 'rgba(124,77,255,0.3)',
+  },
+  thinkingBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  thinkingText: {
+    color: '#00C8FF',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  dotsWrapper: {
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: 36,
+    gap: 4,
   },
   dot: {
     width: 6,
