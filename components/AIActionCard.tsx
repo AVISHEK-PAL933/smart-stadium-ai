@@ -26,7 +26,7 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
     <TouchableOpacity activeOpacity={0.7} onPress={() => onPress(label)} style={styles.touchable}>
       <GlassCard style={styles.card} gradientColors={['rgba(8,18,35,0.85)', 'rgba(15,23,42,0.95)']}>
         <View style={[styles.iconBox, { backgroundColor: `${meta.color}20` }]}>
-          <MaterialCommunityIcons name={meta.icon as any} size={28} color={meta.color} />
+          <MaterialCommunityIcons name={meta.icon as any} size={20} color={meta.color} />
         </View>
         <Text style={styles.title}>{label.substring(2).trim()}</Text>
         <Text style={styles.desc}>{meta.desc}</Text>
@@ -38,30 +38,31 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
 const styles = StyleSheet.create({
   touchable: {
     width: 160,
-    marginRight: 16,
-    marginBottom: 16,
+    height: 100,
+    marginRight: 12,
   },
   card: {
-    padding: 16,
-    gap: 12,
-    borderRadius: 24,
+    flex: 1,
+    padding: 12,
+    gap: 8,
+    borderRadius: 20,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
   },
   iconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   desc: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.5)',
+    fontSize: 11,
+    color: '#CBD5E1',
   },
 });

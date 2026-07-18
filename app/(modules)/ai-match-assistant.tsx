@@ -141,12 +141,14 @@ export default function AIMatchAssistant() {
                 {isTyping && <TypingIndicator />}
               </View>
 
-              {/* Suggestions Grid inside chat scroll, below messages */}
+              {/* Suggestions Horizontal Scroll inside chat scroll, below messages */}
               {messages.length <= 1 && (
                 <View style={styles.suggestionsWrapper}>
-                  {SUGGESTIONS.map((suggestion) => (
-                    <AIActionCard key={suggestion} label={suggestion} onPress={sendMessage} />
-                  ))}
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsContainer}>
+                    {SUGGESTIONS.map((suggestion) => (
+                      <AIActionCard key={suggestion} label={suggestion} onPress={sendMessage} />
+                    ))}
+                  </ScrollView>
                 </View>
               )}
             </ScrollView>
@@ -201,9 +203,10 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   suggestionsWrapper: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    paddingVertical: 20,
+    paddingVertical: 12,
+  },
+  suggestionsContainer: {
+    paddingHorizontal: 8,
+    gap: 12,
   },
 });

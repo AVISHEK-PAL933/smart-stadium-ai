@@ -8,8 +8,9 @@ import Animated, {
   withSequence,
   withTiming,
   FadeInUp,
+  FadeInUp,
 } from 'react-native-reanimated';
-import { GlassCard } from './GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface ChatInputProps {
   value: string;
@@ -54,20 +55,26 @@ export const ChatInput = ({
 
   return (
     <Animated.View entering={FadeInUp.delay(500)} style={styles.container}>
-      <GlassCard style={styles.inputCard} gradientColors={['rgba(8,18,35,0.95)', 'rgba(15,23,42,0.9)']}>
+      <View style={styles.inputCard}>
+        <LinearGradient
+          colors={['rgba(8,18,35,0.95)', 'rgba(15,23,42,0.95)']}
+          style={StyleSheet.absoluteFillObject}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+        />
         <View style={styles.actionsLeft}>
           <TouchableOpacity onPress={handleMockAction} style={styles.iconBtn}>
-            <MaterialCommunityIcons name="plus-circle-outline" size={24} color="rgba(255,255,255,0.5)" />
+            <MaterialCommunityIcons name="plus-circle-outline" size={24} color="#CBD5E1" />
           </TouchableOpacity>
           <TouchableOpacity onPress={handleMockAction} style={styles.iconBtn}>
-            <MaterialCommunityIcons name="image-outline" size={24} color="rgba(255,255,255,0.5)" />
+            <MaterialCommunityIcons name="image-outline" size={24} color="#CBD5E1" />
           </TouchableOpacity>
         </View>
         
         <TextInput
           style={styles.input}
           placeholder="Ask anything about the stadium..."
-          placeholderTextColor="rgba(255,255,255,0.4)"
+          placeholderTextColor="#CBD5E1"
           value={value}
           onChangeText={onChangeText}
           multiline
@@ -80,18 +87,18 @@ export const ChatInput = ({
               <Animated.View style={[styles.voiceBtn, isListening && styles.voiceBtnActive, voiceAnimatedStyle]}>
                 <MaterialCommunityIcons 
                   name={isListening ? "microphone" : "microphone-outline"} 
-                  size={24} 
+                  size={20} 
                   color={isListening ? "#FFF" : "#00C8FF"} 
                 />
               </Animated.View>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity style={styles.sendBtn} onPress={onSend}>
-              <MaterialCommunityIcons name="arrow-up" size={22} color="#FFF" />
+              <MaterialCommunityIcons name="arrow-up" size={20} color="#FFF" />
             </TouchableOpacity>
           )}
         </View>
-      </GlassCard>
+      </View>
     </Animated.View>
   );
 };
@@ -106,15 +113,12 @@ const styles = StyleSheet.create({
   inputCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 8,
-    borderRadius: 30,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+    borderRadius: 24,
     borderWidth: 1,
-    borderColor: 'rgba(124,77,255,0.3)',
-    shadowColor: '#00C8FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 12,
+    borderColor: 'rgba(124,77,255,0.4)',
+    overflow: 'hidden',
   },
   actionsLeft: {
     flexDirection: 'row',
@@ -129,9 +133,10 @@ const styles = StyleSheet.create({
     minHeight: 40,
     maxHeight: 100,
     color: '#FFF',
-    fontSize: 16,
-    paddingHorizontal: 12,
-    paddingTop: 12,
+    fontSize: 15,
+    paddingHorizontal: 8,
+    paddingTop: 10,
+    paddingBottom: 10,
   },
   actionsRight: {
     flexDirection: 'row',
@@ -139,9 +144,9 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   voiceBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: 'rgba(0,200,255,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -150,15 +155,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#7C4DFF',
   },
   sendBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: '#00C8FF',
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#00C8FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
   },
 });
