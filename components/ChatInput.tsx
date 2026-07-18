@@ -8,7 +8,6 @@ import Animated, {
   withSequence,
   withTiming,
   FadeInUp,
-  FadeInUp,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
