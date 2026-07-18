@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GlassCard } from './GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface AIActionCardProps {
   label: string;
@@ -24,13 +24,19 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
 
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={() => onPress(label)} style={styles.touchable}>
-      <GlassCard style={styles.card} gradientColors={['rgba(8,18,35,0.85)', 'rgba(15,23,42,0.95)']}>
+      <View style={styles.card}>
+        <LinearGradient 
+          colors={['rgba(8,18,35,0.85)', 'rgba(15,23,42,0.95)']} 
+          style={StyleSheet.absoluteFillObject} 
+          start={{x:0, y:0}} 
+          end={{x:1, y:1}} 
+        />
         <View style={[styles.iconBox, { backgroundColor: `${meta.color}20` }]}>
           <MaterialCommunityIcons name={meta.icon as any} size={16} color={meta.color} />
         </View>
-        <Text style={styles.title}>{label.substring(2).trim()}</Text>
-        <Text style={styles.desc}>{meta.desc}</Text>
-      </GlassCard>
+        <Text style={styles.title} numberOfLines={1}>{label.substring(2).trim()}</Text>
+        <Text style={styles.desc} numberOfLines={1}>{meta.desc}</Text>
+      </View>
     </TouchableOpacity>
   );
 };
@@ -43,11 +49,13 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    padding: 10,
-    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
     borderRadius: 18,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.05)',
+    overflow: 'hidden',
+    justifyContent: 'space-between',
   },
   iconBox: {
     width: 28,
@@ -55,7 +63,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 2,
+    marginBottom: 4,
   },
   title: {
     fontSize: 14,
