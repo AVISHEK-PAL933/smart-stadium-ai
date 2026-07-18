@@ -29,12 +29,7 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
       style={styles.touchable}
     >
       <View style={[styles.card, { borderColor: meta.color }]}>
-        <LinearGradient 
-          colors={['rgba(8,18,35,0.85)', 'rgba(15,23,42,0.95)']} 
-          style={StyleSheet.absoluteFillObject} 
-          start={{x:0, y:0}} 
-          end={{x:1, y:1}} 
-        />
+        <View style={styles.bgGlow} />
         <View style={[styles.iconBox, { backgroundColor: `${meta.color}20` }]}>
           <MaterialCommunityIcons name={meta.icon as any} size={16} color={meta.color} />
         </View>
@@ -47,18 +42,23 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
 
 const styles = StyleSheet.create({
   touchable: {
-    width: 150,
-    height: 85,
     marginRight: 12,
   },
   card: {
-    flex: 1,
+    width: 150,
+    height: 90,
     paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 18,
     borderWidth: 1.5,
     overflow: 'hidden',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    gap: 4,
+    backgroundColor: 'rgba(15,23,42,0.9)',
+  },
+  bgGlow: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255,255,255,0.02)',
   },
   iconBox: {
     width: 28,
@@ -66,7 +66,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
   },
   title: {
     fontSize: 14,
