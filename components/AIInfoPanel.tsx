@@ -21,7 +21,7 @@ export const AIInfoPanel = () => {
     <Animated.View entering={FadeInRight.delay(300).duration(500)} style={styles.wrapper}>
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
         
-        <GlassCard style={styles.matchCard} gradientColors={['rgba(124,77,255,0.2)', 'rgba(0,200,255,0.05)']}>
+        <GlassCard style={styles.matchCard} gradientColors={['#0B1120', '#0F172A']}>
           <Text style={styles.sectionTitle}>Today's Match</Text>
           <View style={styles.scoreRow}>
             <View style={styles.team}>
@@ -39,7 +39,7 @@ export const AIInfoPanel = () => {
           </View>
         </GlassCard>
 
-        <GlassCard style={styles.statsCard} gradientColors={['rgba(8,18,35,0.8)', 'rgba(15,23,42,0.6)']}>
+        <GlassCard style={styles.statsCard} gradientColors={['#0B1120', '#0F172A']}>
           <Text style={styles.sectionTitle}>Stadium Status</Text>
           <View style={styles.statsGrid}>
             <InfoRow icon="weather-partly-cloudy" label="Weather" value="72°F Clear" color="#FFCA28" />
@@ -49,7 +49,7 @@ export const AIInfoPanel = () => {
           </View>
         </GlassCard>
 
-        <GlassCard style={styles.tipsCard} gradientColors={['rgba(8,18,35,0.8)', 'rgba(15,23,42,0.6)']}>
+        <GlassCard style={styles.tipsCard} gradientColors={['#0B1120', '#0F172A']}>
           <View style={styles.tipsHeader}>
             <MaterialCommunityIcons name="lightbulb-on" size={20} color="#FFCA28" />
             <Text style={styles.sectionTitle}>AI Insight</Text>
@@ -80,13 +80,14 @@ const styles = StyleSheet.create({
     gap: 12,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(124,77,255,0.3)',
+    borderColor: 'rgba(255,255,255,0.05)',
     width: '100%',
   },
   sectionTitle: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '700',
     color: '#FFFFFF',
+    fontFamily: 'Inter',
   },
   scoreRow: {
     flexDirection: 'row',
@@ -100,7 +101,8 @@ const styles = StyleSheet.create({
   teamName: {
     color: '#FFFFFF',
     fontWeight: '700',
-    fontSize: 16,
+    fontSize: 14,
+    fontFamily: 'Inter',
   },
   scoreCenter: {
     alignItems: 'center',
@@ -110,12 +112,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: '700',
     color: '#FFFFFF',
+    fontFamily: 'Inter',
   },
   timeText: {
     color: '#00E676',
     fontWeight: '700',
     fontSize: 12,
     textTransform: 'uppercase',
+    fontFamily: 'Inter',
   },
   statsCard: {
     padding: 16,
@@ -142,22 +146,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoLabel: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#CBD5E1',
     marginBottom: 2,
     fontWeight: '400',
+    fontFamily: 'Inter',
   },
   infoValue: {
-    fontSize: 15,
+    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: '700',
+    fontFamily: 'Inter',
   },
   tipsCard: {
     padding: 16,
     borderRadius: 20,
     gap: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255,202,40,0.3)',
+    borderColor: 'rgba(255,255,255,0.05)',
     width: '100%',
   },
   tipsHeader: {
@@ -169,5 +175,6 @@ const styles = StyleSheet.create({
     color: '#CBD5E1',
     fontSize: 14,
     lineHeight: 22,
+    fontFamily: 'Inter',
   },
 });

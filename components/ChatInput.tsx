@@ -72,7 +72,7 @@ export const ChatInput = ({
         
         <TextInput
           style={styles.input}
-          placeholder="Ask anything about the stadium..."
+          placeholder="Ask StadiumMind AI..."
           placeholderTextColor="#CBD5E1"
           value={value}
           onChangeText={onChangeText}
@@ -112,9 +112,9 @@ const styles = StyleSheet.create({
   inputCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 4,
-    paddingVertical: 4,
-    borderRadius: 24,
+    paddingHorizontal: 8,
+    height: 56,
+    borderRadius: 28,
     borderWidth: 1,
     borderColor: 'rgba(124,77,255,0.4)',
     overflow: 'hidden',
@@ -129,13 +129,12 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    minHeight: 40,
-    maxHeight: 100,
     color: '#FFF',
     fontSize: 15,
     paddingHorizontal: 8,
-    paddingTop: 10,
-    paddingBottom: 10,
+    paddingTop: 8,
+    paddingBottom: 8,
+    fontFamily: 'Inter',
   },
   actionsRight: {
     flexDirection: 'row',
@@ -143,9 +142,9 @@ const styles = StyleSheet.create({
     marginRight: 4,
   },
   voiceBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: 'rgba(0,200,255,0.1)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -154,9 +153,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#7C4DFF',
   },
   sendBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#00C8FF',
     alignItems: 'center',
     justifyContent: 'center',

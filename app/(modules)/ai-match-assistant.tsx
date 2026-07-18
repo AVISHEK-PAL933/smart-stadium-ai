@@ -207,6 +207,6 @@ const styles = StyleSheet.create({
   },
   suggestionsContainer: {
     paddingHorizontal: 8,
-    gap: 12,
+    gap: 16,
   },
 });
