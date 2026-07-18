@@ -26,16 +26,7 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
     <TouchableOpacity 
       activeOpacity={0.7} 
       onPress={() => onPress(label)} 
-      style={[
-        styles.touchable, 
-        {
-          shadowColor: meta.color,
-          shadowOffset: { width: 0, height: 0 },
-          shadowOpacity: 0.8,
-          shadowRadius: 12,
-          elevation: 10,
-        }
-      ]}
+      style={styles.touchable}
     >
       <View style={[styles.card, { borderColor: meta.color }]}>
         <LinearGradient 
