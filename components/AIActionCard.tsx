@@ -23,8 +23,21 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
   const meta = ACTION_MAP[label] || { icon: 'lightning-bolt', color: '#00C8FF', desc: 'Quick Action' };
 
   return (
-    <TouchableOpacity activeOpacity={0.7} onPress={() => onPress(label)} style={styles.touchable}>
-      <View style={styles.card}>
+    <TouchableOpacity 
+      activeOpacity={0.7} 
+      onPress={() => onPress(label)} 
+      style={[
+        styles.touchable, 
+        {
+          shadowColor: meta.color,
+          shadowOffset: { width: 0, height: 0 },
+          shadowOpacity: 0.8,
+          shadowRadius: 12,
+          elevation: 10,
+        }
+      ]}
+    >
+      <View style={[styles.card, { borderColor: meta.color }]}>
         <LinearGradient 
           colors={['rgba(8,18,35,0.85)', 'rgba(15,23,42,0.95)']} 
           style={StyleSheet.absoluteFillObject} 
@@ -52,8 +65,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 10,
     borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 1.5,
     overflow: 'hidden',
     justifyContent: 'space-between',
   },
