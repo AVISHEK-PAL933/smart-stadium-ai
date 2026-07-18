@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { Colors } from '../constants/colors';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { Marker } from './Marker';
 import { RouteOverlay } from './RouteOverlay';
 import { Theme } from '../constants/theme';
@@ -20,9 +20,7 @@ interface StadiumMapProps {
 }
 
 export const StadiumMap = ({ currentRoute, selectedDestinationId }: StadiumMapProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const [mapWidth, setMapWidth] = useState(320);
   const [mapHeight, setMapHeight] = useState(600);

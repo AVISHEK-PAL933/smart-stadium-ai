@@ -1,5 +1,6 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import { Tabs } from 'expo-router';
-import { useColorScheme, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FloatingAIAssistant } from '../../components/FloatingAIAssistant';
@@ -7,8 +8,7 @@ import React from 'react';
 import { BlurView } from 'expo-blur';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   return (
     <>

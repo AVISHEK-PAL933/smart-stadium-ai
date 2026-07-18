@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Colors } from '../constants/colors';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -15,9 +15,7 @@ import Animated, {
 import { GlassCard } from './GlassCard';
 
 export const TypingIndicator = () => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const dot1 = useSharedValue(0);
   const dot2 = useSharedValue(0);

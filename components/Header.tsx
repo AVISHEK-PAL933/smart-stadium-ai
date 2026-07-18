@@ -3,7 +3,7 @@ import { Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface HeaderProps {
@@ -12,8 +12,7 @@ interface HeaderProps {
 
 export const Header = ({ title }: HeaderProps) => {
   const insets = useSafeAreaInsets();
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   return (
     <LinearGradient

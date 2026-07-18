@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
@@ -6,7 +7,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 const KPI_CARDS = [
   {
@@ -71,9 +72,7 @@ const DEPT_PERFORMANCE = [
 ];
 
 export default function ExecutiveDashboard() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [selectedPeriod, setSelectedPeriod] = useState<'Today' | 'Week' | 'Month'>('Today');
   const maxBar = Math.max(...HOURLY_REVENUE);
 

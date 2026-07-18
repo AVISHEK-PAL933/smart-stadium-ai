@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
@@ -6,7 +7,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 type Dept = 'All' | 'Security' | 'Medical' | 'F&B' | 'Cleaning' | 'Ticketing';
 
@@ -115,9 +116,7 @@ const DEPT_COLORS: Record<string, string> = {
 };
 
 export default function StaffManagement() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [dept, setDept] = useState<Dept>('All');
 
   const filtered = dept === 'All' ? STAFF : STAFF.filter((s) => s.dept === dept);

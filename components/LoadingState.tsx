@@ -2,11 +2,10 @@ import React from 'react';
 import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 
 export const LoadingState = ({ message = 'Loading...' }: { message?: string }) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   return (
     <View style={[styles.container, { backgroundColor: Colors[theme].background }]}>

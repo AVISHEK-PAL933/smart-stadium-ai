@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../components/Header';
 import { Colors } from '../../constants/colors';
 import { mockAnalyticsData } from '../../data/mockAnalyticsData';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 // Import BI Components
 import { ExecutiveKPIDashboard } from '../../components/analytics/ExecutiveKPIDashboard';
@@ -20,6 +22,8 @@ import { AIExecutiveAssistant } from '../../components/analytics/AIExecutiveAssi
 export default function ExecutiveAnalyticsScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient colors={['#071321', '#040914']} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="Executive Analytics & BI" />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>

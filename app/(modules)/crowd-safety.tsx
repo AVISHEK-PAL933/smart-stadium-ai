@@ -9,6 +9,7 @@ import {
   Alert,
   Platform,
   Linking,
+  Image,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -237,9 +238,17 @@ export default function CrowdSafety() {
 
       {/* Heatmap SVG-like canvas */}
       <View style={styles.heatmapContainer}>
-        {/* Stadium oval outline */}
-        <View style={styles.stadiumOval} />
-        <View style={styles.stadiumInner} />
+        {/* Real Top-Down Stadium Image */}
+        <Image
+          source={{ uri: 'https://images.unsplash.com/photo-1459865264687-595d652de67e?q=80&w=1200&auto=format&fit=crop' }}
+          style={StyleSheet.absoluteFillObject}
+          resizeMode="cover"
+        />
+        {/* Dark overlay to make hotspots pop */}
+        <LinearGradient
+          colors={['rgba(4, 13, 26, 0.4)', 'rgba(4, 13, 26, 0.7)']}
+          style={StyleSheet.absoluteFillObject}
+        />
 
         {/* Hotspot zones */}
         {HEATMAP_ZONES.map((hz, i) => {

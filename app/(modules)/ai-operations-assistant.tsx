@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState, useRef } from 'react';
 import {
   View,
@@ -16,7 +17,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 interface Message {
   id: string;
@@ -62,9 +63,7 @@ const INITIAL_MESSAGES: Message[] = [
 ];
 
 export default function AIOperationsAssistant() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface EmptyStateProps {
@@ -14,8 +14,7 @@ export const EmptyState = ({
   title = 'Nothing here yet',
   description = 'Data will appear here once it becomes available.',
 }: EmptyStateProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   return (
     <View style={[styles.container, { backgroundColor: Colors[theme].background }]}>

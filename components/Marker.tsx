@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -20,9 +20,7 @@ interface MarkerProps {
 }
 
 export const Marker = ({ x, y, icon, isPulsing = false, color }: MarkerProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const markerColor = color || themeColors.tint;
   const pulse = useSharedValue(1);

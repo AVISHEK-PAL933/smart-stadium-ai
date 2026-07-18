@@ -3,7 +3,7 @@ import { View, StyleSheet, ViewStyle, StyleProp, ViewProps } from 'react-native'
 import { BlurView } from 'expo-blur';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { LinearGradient } from 'expo-linear-gradient';
 
 export interface GlassCardProps extends ViewProps {
@@ -20,9 +20,7 @@ export const GlassCard: React.FC<GlassCardProps> = ({
   borderColor,
   ...props
 }) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   return (
     <View style={[styles.container, style]}>

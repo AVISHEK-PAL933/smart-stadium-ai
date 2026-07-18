@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../context/GlobalProvider';
 import React from 'react';
 import { View, StyleSheet, Text, ScrollView } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';

@@ -2,13 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, Platform, Image } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 import { router } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GlassCard } from '../../components/GlassCard';
 import { AnimatedBackground } from '../../components/AnimatedBackground';
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 const QUICK_ACTIONS = [
   {
@@ -36,26 +37,7 @@ const QUICK_ACTIONS = [
     route: '/(modules)/food-ordering',
   },
   { id: 'parking', title: 'Parking', icon: 'parking', route: '/(modules)/parking' },
-  { id: 'emergency', title: 'Emergency', icon: 'alert-circle', route: '/(modules)/emergency' },
   { id: 'live-match', title: 'Live Match', icon: 'soccer', route: '/(modules)/live-match' },
-  {
-    id: 'crowd-intelligence',
-    title: 'Crowd Intel',
-    icon: 'account-group',
-    route: '/(modules)/crowd-intelligence',
-  },
-  {
-    id: 'accessibility',
-    title: 'Accessibility',
-    icon: 'human-wheelchair',
-    route: '/(modules)/accessibility',
-  },
-  {
-    id: 'multilingual-guide',
-    title: 'Language AI',
-    icon: 'translate',
-    route: '/(modules)/multilingual-guide',
-  },
   { id: 'lost-found', title: 'Lost & Found', icon: 'image-search', route: '/(modules)/lost-found' },
   {
     id: 'fan-engagement',
@@ -69,25 +51,6 @@ const QUICK_ACTIONS = [
     icon: 'shopping',
     route: '/(modules)/merchandise',
   },
-  { id: 'profile', title: 'My Profile', icon: 'account', route: '/(tabs)/profile' },
-  {
-    id: 'ai-ops-center',
-    title: 'AI Ops Hub',
-    icon: 'shield-crown',
-    route: '/(modules)/ai-ops-center',
-  },
-  {
-    id: 'smart-iot-center',
-    title: 'IoT Center',
-    icon: 'lightning-bolt',
-    route: '/(modules)/smart-iot-center',
-  },
-  {
-    id: 'executive-analytics',
-    title: 'Exec Analytics',
-    icon: 'chart-pie',
-    route: '/(modules)/executive-analytics',
-  },
   {
     id: 'smart-fan-experience',
     title: 'Fan XP',
@@ -95,36 +58,22 @@ const QUICK_ACTIONS = [
     route: '/(modules)/smart-fan-experience',
   },
   {
-    id: 'admin-mode',
-    title: 'Admin Demo',
-    icon: 'security',
-    route: '/(modules)/admin-mode',
+    id: 'translation',
+    title: 'Translation',
+    icon: 'translate',
+    route: '/(modules)/translation',
   },
   {
-    id: 'settings',
-    title: 'Settings',
-    icon: 'cog',
-    route: '/(modules)/settings',
+    id: 'accessibility',
+    title: 'Accessibility',
+    icon: 'wheelchair-accessibility',
+    route: '/(modules)/accessibility',
   },
-  {
-    id: 'help-center',
-    title: 'Help Center',
-    icon: 'help-circle',
-    route: '/(modules)/help-center',
-  },
-];
-
-const STATS = [
-  { label: 'Visitors', value: '78,450', icon: 'account-multiple-outline' },
-  { label: 'Tickets Sold', value: '98.5%', icon: 'ticket-outline' },
-  { label: 'Revenue', value: '$12.4M', icon: 'currency-usd' },
-  { label: 'Seats Occupied', value: '88%', icon: 'seat-outline' },
+  { id: 'emergency', title: 'Emergency', icon: 'alert-circle', route: '/(modules)/emergency' },
 ];
 
 export default function HomeDashboard() {
-  const colorScheme = useColorScheme();
-  const theme = 'dark'; // Force premium dark aesthetic on the dashboard
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const { width } = useWindowDimensions();
   
@@ -138,9 +87,9 @@ export default function HomeDashboard() {
   const cardWidth = (contentWidth - (cols - 1) * gap) / cols;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       <LinearGradient
-        colors={['#081223', '#0A0F1E', '#16213E']}
+        colors={[themeColors.gradientStart, themeColors.gradientEnd]}
         style={StyleSheet.absoluteFillObject}
       />
       <Image
@@ -163,15 +112,41 @@ export default function HomeDashboard() {
             <View>
               <Text style={[styles.greeting, { color: themeColors.text, fontWeight: '900', fontSize: Theme.typography.sizes.xl }]}>Smart Stadium AI</Text>
             </View>
-            <TouchableOpacity
-              onPress={() => router.push('/(modules)/notifications' as any)}
-              style={[
-                styles.iconButton,
-                { backgroundColor: themeColors.card, borderColor: themeColors.border },
-              ]}>
-              <MaterialCommunityIcons name="bell-outline" size={24} color={themeColors.text} />
-              <View style={styles.notificationBadge} />
-            </TouchableOpacity>
+            <View style={{ flexDirection: 'row', gap: Theme.spacing.m }}>
+              <TouchableOpacity
+                onPress={() => router.push('/(tabs)/profile' as any)}
+                style={[
+                  styles.iconButton,
+                  { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                ]}>
+                <MaterialCommunityIcons name="account" size={24} color={themeColors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(modules)/help-center' as any)}
+                style={[
+                  styles.iconButton,
+                  { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                ]}>
+                <MaterialCommunityIcons name="help-circle-outline" size={24} color={themeColors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(modules)/settings' as any)}
+                style={[
+                  styles.iconButton,
+                  { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                ]}>
+                <MaterialCommunityIcons name="cog" size={24} color={themeColors.text} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => router.push('/(modules)/notifications' as any)}
+                style={[
+                  styles.iconButton,
+                  { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                ]}>
+                <MaterialCommunityIcons name="bell-outline" size={24} color={themeColors.text} />
+                <View style={styles.notificationBadge} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <TouchableOpacity
@@ -190,57 +165,24 @@ export default function HomeDashboard() {
 
 
 
-        {/* Operations Command Center Banner */}
+        {/* Fan Welcome Banner */}
         <Animated.View entering={FadeInUp.delay(80)} style={styles.opsBannerContainer}>
-          <TouchableOpacity
-            onPress={() => router.push('/(modules)/ai-ops-center' as any)}
-            activeOpacity={0.85}
-            style={[styles.opsBanner, { borderColor: 'rgba(0,200,255,0.3)' }]}>
+          <View style={[styles.opsBanner, { borderColor: themeColors.border, backgroundColor: themeColors.card }]}>
             <LinearGradient
-              colors={['rgba(0,200,255,0.18)', 'rgba(124,77,255,0.18)']}
+              colors={[themeColors.tint + '10', themeColors.tint + '05']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.opsBannerGrad}
             />
             <View style={styles.opsIconWrap}>
-              <MaterialCommunityIcons name="shield-crown" size={28} color="#00C8FF" />
+              <MaterialCommunityIcons name="soccer" size={28} color={themeColors.tint} />
             </View>
             <View style={styles.opsTextWrap}>
-              <Text style={styles.opsBannerTitle}>Operations Command Center</Text>
-              <Text style={styles.opsBannerSub}>Phase 12 — AI Stadium Ops Hub</Text>
+              <Text style={[styles.opsBannerTitle, { color: themeColors.text }]}>Welcome to FIFA World Cup 2026</Text>
+              <Text style={styles.opsBannerSub}>Your AI-powered stadium companion</Text>
             </View>
-            <MaterialCommunityIcons name="arrow-right" size={20} color="#00C8FF" />
-          </TouchableOpacity>
+          </View>
         </Animated.View>
-
-        {/* Stats Grid */}
-        <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Stadium Statistics</Text>
-        <View style={styles.statsGrid}>
-          {STATS.map((stat, index) => {
-            const gradients = [
-              themeColors.cardGradient2,
-              themeColors.cardGradient3,
-              themeColors.cardGradient1,
-              ['#00E676', '#009688'],
-            ];
-            return (
-              <Animated.View
-                key={stat.label}
-                entering={FadeInUp.delay(150 + index * 50)}
-                style={styles.statsCardContainer}>
-                <GlassCard style={styles.statsCard} gradientColors={gradients[index % gradients.length] as any}>
-                  <MaterialCommunityIcons
-                    name={stat.icon as any}
-                    size={24}
-                    color="#fff"
-                  />
-                  <Text style={[styles.statsValue, { color: '#fff' }]}>{stat.value}</Text>
-                  <Text style={[styles.statsLabel, { color: 'rgba(255,255,255,0.7)' }]}>{stat.label}</Text>
-                </GlassCard>
-              </Animated.View>
-            );
-          })}
-        </View>
 
         {/* Quick Action Grid */}
         <Text style={[styles.sectionTitle, { color: themeColors.text }]}>Quick Actions</Text>
@@ -255,18 +197,18 @@ export default function HomeDashboard() {
                   style={styles.cardTouchable}
                   onPress={() => router.push(module.route as any)}>
                   <LinearGradient
-                    colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
-                    style={styles.actionCard}
+                    colors={[themeColors.card, themeColors.card]}
+                    style={[styles.actionCard, { borderColor: themeColors.border }]}
                   >
-                    <View style={styles.neonIconCircle}>
+                    <View style={[styles.neonIconCircle, { backgroundColor: themeColors.tint + '10', borderColor: themeColors.tint }]}>
                       <MaterialCommunityIcons
                         name={module.icon as any}
                         size={32}
-                        color="#00C8FF"
+                        color={themeColors.tint}
                         style={styles.neonIcon}
                       />
                     </View>
-                    <Text style={styles.actionCardTitle} numberOfLines={1}>
+                    <Text style={[styles.actionCardTitle, { color: themeColors.text }]} numberOfLines={1}>
                       {module.title}
                     </Text>
                   </LinearGradient>
@@ -288,35 +230,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(0, 200, 255, 0.3)',
-    shadowColor: '#00C8FF',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 15,
     overflow: 'hidden',
   },
   neonIconCircle: {
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: 'rgba(0, 200, 255, 0.1)',
     borderWidth: 2,
-    borderColor: 'rgba(0, 200, 255, 0.8)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
-    shadowColor: '#00C8FF',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 1,
-    shadowRadius: 20,
   },
   neonIcon: {
-    textShadowColor: '#00C8FF',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 15,
   },
   actionCardTitle: {
-    color: '#FFF',
     fontSize: 13,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -329,12 +256,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Theme.spacing.l,
     paddingBottom: 80,
-    alignItems: 'center', // centers the wrapper
+    alignItems: 'center',
   },
   contentWrapper: {
     width: '100%',
     alignSelf: 'center',
-    gap: 24, // Reduces section spacing to 24px
+    gap: 24,
   },
   heroSection: {
     position: 'relative',
@@ -390,83 +317,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: Theme.typography.sizes.m,
   },
-  bannerContainer: {
-    // Controlled by gap
-  },
-  liveBanner: {
-    padding: Theme.spacing.l,
-    borderWidth: 1,
-    borderColor: 'rgba(0, 200, 255, 0.25)',
-  },
-  bannerHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: Theme.spacing.m,
-  },
-  liveBadge: {
-    backgroundColor: '#FF5252',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 4,
-  },
-  liveText: {
-    color: '#FFF',
-    fontSize: Theme.typography.sizes.s,
-    fontWeight: '900',
-  },
-  matchTimer: {
-    color: '#00C8FF',
-    fontWeight: 'bold',
-  },
-  teamsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Theme.spacing.xl,
-    marginBottom: Theme.spacing.l,
-  },
-  team: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Theme.spacing.m,
-  },
-  teamName: {
-    fontSize: Theme.typography.sizes.l,
-    fontWeight: '900',
-    color: '#FFF',
-  },
-  teamScore: {
-    fontSize: Theme.typography.sizes.xxl,
-    fontWeight: '900',
-    color: '#FFF',
-  },
-  vs: {
-    color: 'rgba(255,255,255,0.4)',
-    fontWeight: 'bold',
-  },
-  possessionContainer: {
-    gap: 8,
-  },
-  possessionLabels: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  possessionText: {
-    color: 'rgba(255,255,255,0.6)',
-    fontSize: Theme.typography.sizes.s,
-  },
-  progressBarBg: {
-    height: 6,
-    borderRadius: 3,
-    overflow: 'hidden',
-  },
-  progressBarFill: {
-    height: '100%',
-    borderRadius: 3,
-  },
   opsBannerContainer: {
-    // Controlled by gap
   },
   opsBanner: {
     borderRadius: Theme.shapes.borderRadius.l,
@@ -493,7 +344,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   opsTextWrap: { flex: 1 },
-  opsBannerTitle: { color: '#FFF', fontSize: Theme.typography.sizes.m, fontWeight: '900' },
+  opsBannerTitle: { fontSize: Theme.typography.sizes.m, fontWeight: '900' },
   opsBannerSub: { color: 'rgba(255,255,255,0.55)', fontSize: 11, marginTop: 2 },
   sectionTitle: {
     fontSize: Theme.typography.sizes.l,
@@ -509,6 +360,14 @@ const styles = StyleSheet.create({
   },
   statsCardContainer: {
     width: '47%',
+  },
+  statsIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   statsCard: {
     padding: Theme.spacing.m,

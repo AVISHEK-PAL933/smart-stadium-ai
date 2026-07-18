@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -8,11 +9,15 @@ import {
   TextInput,
   Platform,
   Alert,
+  Image,
+  Modal,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
+
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -25,9 +30,7 @@ interface IncidentButton {
 }
 
 export default function EmergencyHelp() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   // Active tab selection
   const [activeTab, setActiveTab] = useState<
@@ -38,6 +41,10 @@ export default function EmergencyHelp() {
   const [sosActive, setSosActive] = useState(false);
   const [sosCountdown, setSosCountdown] = useState(10);
   const [activeIncidentDispatch, setActiveIncidentDispatch] = useState<string | null>(null);
+  
+  // Incident Modal State
+  const [isIncidentModalVisible, setIncidentModalVisible] = useState(false);
+  const [selectedIncident, setSelectedIncident] = useState<IncidentButton | null>(null);
 
   // Evacuation route selection
   const [selectedPath, setSelectedPath] = useState<'FASTEST' | 'ACCESSIBLE' | 'ALT'>('FASTEST');
@@ -80,22 +87,25 @@ export default function EmergencyHelp() {
   };
 
   const handleTriggerIncident = (incident: IncidentButton) => {
-    setActiveIncidentDispatch(incident.title);
+    setSelectedIncident(incident);
+    setIncidentModalVisible(true);
+  };
+
+  const confirmIncidentDispatch = () => {
+    if (!selectedIncident) return;
+    
+    setActiveIncidentDispatch(selectedIncident.title);
     setSosActive(true);
     setSosCountdown(10);
+    setIncidentModalVisible(false);
 
     // Add to submitted reports
     const newRep = {
       id: `REP-${Math.floor(1000 + Math.random() * 9000)}`,
-      type: incident.title,
+      type: selectedIncident.title,
       status: 'DISPATCHED',
     };
     setSubmittedReports((prev) => [newRep, ...prev]);
-
-    showAlert(
-      `${incident.title} Dispatched`,
-      `A dispatch ticket has been opened for ${incident.title} at your seat Section 112.`
-    );
   };
 
   const handleCancelSOS = () => {
@@ -165,7 +175,18 @@ export default function EmergencyHelp() {
   ];
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#1A0505', '#120202', '#2B0A0A']}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?q=80&w=2000&auto=format&fit=crop' }}
+        style={[StyleSheet.absoluteFillObject, { opacity: 0.08 }]}
+        resizeMode="cover"
+      />
+      <AnimatedBackground />
+
       <Header title="Crowd Safety & SOS" />
 
       {/* Dispatch status bar */}
@@ -206,30 +227,31 @@ export default function EmergencyHelp() {
         {activeTab === 'DASHBOARD' && (
           <View style={styles.tabContent}>
             {/* SOS Trigger Card */}
-            <GlassCard
+            <LinearGradient
+              colors={sosActive ? ['rgba(239, 83, 80, 0.4)', 'rgba(183, 28, 28, 0.15)'] : ['rgba(239, 83, 80, 0.1)', 'rgba(183, 28, 28, 0.02)']}
               style={[
                 styles.sosCard,
-                sosActive && { borderColor: '#EF5350' },
+                { borderColor: sosActive ? '#EF5350' : 'rgba(239, 83, 80, 0.3)', borderWidth: 1 }
               ]}
-              gradientColors={sosActive ? ['rgba(239, 83, 80, 0.4)', 'rgba(183, 28, 28, 0.15)'] : undefined}>
+            >
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={handleTriggerSOS}
-                style={[styles.sosCircle, sosActive && { backgroundColor: '#B71C1C' }]}>
+                style={[styles.sosCircle, sosActive && { backgroundColor: '#B71C1C', shadowColor: '#EF5350', shadowOpacity: 1, shadowRadius: 20 }]}>
                 <Text style={styles.sosCircleText}>{sosActive ? 'ALERTING' : 'SOS'}</Text>
               </TouchableOpacity>
-              <Text style={[styles.sosCardTitle, { color: themeColors.text }]}>
+              <Text style={[styles.sosCardTitle, { color: '#FFFFFF' }]}>
                 {sosActive ? 'DISPATCHING RESPONDERS' : 'Broadcast SOS Signal'}
               </Text>
-              <Text style={[styles.sosCardSub, { color: themeColors.icon }]}>
+              <Text style={[styles.sosCardSub, { color: 'rgba(255, 255, 255, 0.6)' }]}>
                 {sosActive
                   ? 'Responders are navigating to Section 112, Row M, Seat 42.'
                   : 'Tap to instantly alert medical, security, and safety wardens to your seat location.'}
               </Text>
-            </GlassCard>
+            </LinearGradient>
 
             {/* Incident Types Grid */}
-            <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+            <Text style={[styles.sectionHeading, { color: '#FFFFFF' }]}>
               Report Specific Emergencies
             </Text>
             <View style={styles.incidentsGrid}>
@@ -240,10 +262,10 @@ export default function EmergencyHelp() {
                   onPress={() => handleTriggerIncident(incident)}
                   style={[
                     styles.incidentCardBtn,
-                    { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                    { backgroundColor: 'rgba(239, 83, 80, 0.05)', borderColor: 'rgba(239, 83, 80, 0.2)' },
                   ]}>
                   <View
-                    style={[styles.iconWrapperCircle, { backgroundColor: incident.color + '20' }]}>
+                    style={[styles.iconWrapperCircle, { backgroundColor: incident.color + '33', shadowColor: incident.color, shadowOpacity: 0.5, shadowRadius: 10 }]}>
                     <MaterialCommunityIcons
                       name={incident.icon as any}
                       size={24}
@@ -251,7 +273,7 @@ export default function EmergencyHelp() {
                     />
                   </View>
                   <Text
-                    style={[styles.incidentCardTitle, { color: themeColors.text }]}
+                    style={[styles.incidentCardTitle, { color: '#FFFFFF' }]}
                     numberOfLines={1}>
                     {incident.title}
                   </Text>
@@ -260,29 +282,55 @@ export default function EmergencyHelp() {
             </View>
 
             {/* Live Crowd Intelligence Metrics */}
-            <GlassCard style={styles.metricsCard}>
+            <LinearGradient 
+              colors={['rgba(239, 83, 80, 0.1)', 'rgba(183, 28, 28, 0.02)']}
+              style={[styles.metricsCard, { borderColor: 'rgba(239, 83, 80, 0.3)', borderWidth: 1 }]}
+            >
               <Text
                 style={[
                   styles.sectionHeading,
-                  { color: themeColors.text, marginBottom: Theme.spacing.s },
+                  { color: '#FFFFFF', marginBottom: Theme.spacing.s },
                 ]}>
-                🏟 Live Crowd Stats
+                🏟 Live Crowd Stats Map
               </Text>
-              <View style={styles.gridRow}>
-                <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
-                  <Text style={[styles.cellVal, { color: '#00E676' }]}>Low</Text>
-                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Crowd Density</Text>
+
+              <View style={styles.miniMapGraphic}>
+                {/* Real Stadium Image Background */}
+                <Image
+                  source={{ uri: 'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1200&auto=format&fit=crop' }}
+                  style={StyleSheet.absoluteFillObject}
+                  resizeMode="cover"
+                />
+                {/* Dark Overlay for readability */}
+                <LinearGradient
+                  colors={['rgba(0,0,0,0.7)', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.8)']}
+                  style={StyleSheet.absoluteFillObject}
+                />
+
+                {/* Left/West Stand - Density */}
+                <View style={[styles.miniMapNode, { left: 15, top: '42%' }]}>
+                  <Text style={[styles.miniMapNodeVal, { color: '#00E676' }]}>Low</Text>
+                  <Text style={styles.miniMapNodeLabel}>Density</Text>
                 </View>
-                <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
-                  <Text style={[styles.cellVal, { color: '#FFD700' }]}>Moderate</Text>
-                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Congestion</Text>
+
+                {/* Top/North Gate - Congestion */}
+                <View style={[styles.miniMapNode, { left: '42%', top: 15 }]}>
+                  <Text style={[styles.miniMapNodeVal, { color: '#FFD700' }]}>Mod</Text>
+                  <Text style={styles.miniMapNodeLabel}>Congest</Text>
                 </View>
-                <View style={[styles.gridCell, { borderColor: themeColors.border }]}>
-                  <Text style={[styles.cellVal, { color: themeColors.text }]}>4.5 min</Text>
-                  <Text style={[styles.cellLabel, { color: themeColors.icon }]}>Evac Duration</Text>
+
+                {/* Right/East Exit - Evacuation */}
+                <View style={[styles.miniMapNode, { right: 15, top: '42%' }]}>
+                  <Text style={[styles.miniMapNodeVal, { color: '#FFFFFF' }]}>4.5m</Text>
+                  <Text style={styles.miniMapNodeLabel}>Evac</Text>
+                </View>
+                
+                {/* Center targeting reticle */}
+                <View style={styles.targetingReticle}>
+                  <View style={styles.reticleDot} />
                 </View>
               </View>
-            </GlassCard>
+            </LinearGradient>
           </View>
         )}
 
@@ -480,6 +528,49 @@ export default function EmergencyHelp() {
           </View>
         )}
       </ScrollView>
+
+      {/* Incident Dispatch Modal */}
+      <Modal
+        visible={isIncidentModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setIncidentModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <LinearGradient
+            colors={['#2B0A0A', '#1A0505']}
+            style={styles.modalContent}
+          >
+            {selectedIncident && (
+              <>
+                <View style={[styles.modalIconBg, { backgroundColor: selectedIncident.color + '22' }]}>
+                  <MaterialCommunityIcons name={selectedIncident.icon as any} size={48} color={selectedIncident.color} />
+                </View>
+                <Text style={styles.modalTitle}>Dispatch {selectedIncident.title}?</Text>
+                <Text style={styles.modalSub}>
+                  This will immediately alert the stadium command center and dispatch responders to your verified seat location (Sec 112, Row M).
+                </Text>
+                
+                <View style={styles.modalActions}>
+                  <TouchableOpacity 
+                    style={styles.modalCancelBtn} 
+                    onPress={() => setIncidentModalVisible(false)}
+                  >
+                    <Text style={styles.modalCancelText}>Cancel</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={[styles.modalConfirmBtn, { backgroundColor: selectedIncident.color, shadowColor: selectedIncident.color, shadowOpacity: 0.8, shadowRadius: 15 }]} 
+                    onPress={confirmIncidentDispatch}
+                  >
+                    <Text style={styles.modalConfirmText}>Confirm Dispatch</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
+          </LinearGradient>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -563,16 +654,55 @@ const styles = StyleSheet.create({
   incidentCardTitle: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
 
   metricsCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
-  gridRow: { flexDirection: 'row', justifyContent: 'space-between', gap: Theme.spacing.s },
-  gridCell: {
-    flex: 1,
-    paddingVertical: Theme.spacing.s,
-    alignItems: 'center',
-    borderRadius: 16,
+  miniMapGraphic: {
+    height: 180,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.2)',
     borderWidth: 1,
+    borderColor: 'rgba(239, 83, 80, 0.1)',
+    position: 'relative',
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  cellVal: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
-  cellLabel: { fontSize: 8, fontWeight: 'bold', opacity: 0.6 },
+  miniMapNode: {
+    position: 'absolute',
+    backgroundColor: 'rgba(239, 83, 80, 0.4)',
+    borderWidth: 1,
+    borderColor: 'rgba(239, 83, 80, 0.8)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 55,
+    zIndex: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+  },
+  miniMapNodeVal: { fontSize: 12, fontWeight: '900' },
+  miniMapNodeLabel: { fontSize: 8, fontWeight: 'bold', color: 'rgba(255,255,255,0.9)', marginTop: 2 },
+  targetingReticle: {
+    position: 'absolute',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 83, 80, 0.5)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1,
+  },
+  reticleDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#EF5350',
+    shadowColor: '#EF5350',
+    shadowOpacity: 1,
+    shadowRadius: 10,
+  },
 
   mapCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
   pathSelectorRow: { flexDirection: 'row', justifyContent: 'space-between', gap: Theme.spacing.s },
@@ -673,4 +803,62 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: Theme.spacing.l,
+  },
+  modalContent: {
+    width: '100%',
+    padding: Theme.spacing.xl,
+    borderRadius: 24,
+    borderWidth: 1,
+    borderColor: '#EF5350',
+    alignItems: 'center',
+  },
+  modalIconBg: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Theme.spacing.l,
+  },
+  modalTitle: {
+    color: '#FFFFFF',
+    fontSize: Theme.typography.sizes.l,
+    fontWeight: '900',
+    textAlign: 'center',
+    marginBottom: Theme.spacing.s,
+  },
+  modalSub: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: Theme.typography.sizes.s,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: Theme.spacing.xl,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: Theme.spacing.m,
+    width: '100%',
+  },
+  modalCancelBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
+    alignItems: 'center',
+  },
+  modalCancelText: { color: '#FFFFFF', fontWeight: 'bold' },
+  modalConfirmBtn: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 16,
+    alignItems: 'center',
+  },
+  modalConfirmText: { color: '#FFFFFF', fontWeight: 'bold' },
 });

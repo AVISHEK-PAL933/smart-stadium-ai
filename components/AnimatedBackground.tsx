@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../context/GlobalProvider';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, useWindowDimensions } from 'react-native';
 import Animated, {

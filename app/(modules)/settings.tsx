@@ -10,26 +10,28 @@ import { useGlobalContext, AppTheme } from '../../context/GlobalProvider';
 import { StorageService, StorageKeys } from '../../services/storage';
 import { Toast } from '../../components/Toast';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
-const SettingRow = ({ icon, label, type, value, onToggle, onPress, loading }: any) => (
-  <TouchableOpacity style={styles.settingRow} onPress={type === 'switch' ? undefined : onPress} disabled={type === 'switch' || loading} activeOpacity={0.7}>
+const SettingRow = ({ icon, label, type, value, onToggle, onPress, loading, themeColors }: any) => (
+  <TouchableOpacity style={[styles.settingRow, { borderBottomColor: themeColors.border }]} onPress={type === 'switch' ? undefined : onPress} disabled={type === 'switch' || loading} activeOpacity={0.7}>
     <View style={styles.settingLabelContainer}>
-      <Ionicons name={icon} size={20} color="rgba(255,255,255,0.7)" style={styles.settingIcon} />
-      <Text style={styles.settingLabel}>{label}</Text>
+      <Ionicons name={icon} size={20} color={themeColors.icon} style={styles.settingIcon} />
+      <Text style={[styles.settingLabel, { color: themeColors.text }]}>{label}</Text>
     </View>
     {type === 'switch' ? (
-      <Switch value={value} onValueChange={onToggle} disabled={loading} thumbColor="#00e5ff" trackColor={{ false: '#767577', true: 'rgba(0,229,255,0.5)' }} />
+      <Switch value={value} onValueChange={onToggle} disabled={loading} thumbColor={themeColors.tint} trackColor={{ false: '#767577', true: themeColors.tint + '50' }} />
     ) : (
       <View style={styles.settingValueContainer}>
-        {value && <Text style={styles.settingValue}>{value}</Text>}
-        <Ionicons name="chevron-forward" size={16} color="rgba(255,255,255,0.5)" />
+        {value && <Text style={[styles.settingValue, { color: themeColors.textSecondary }]}>{value}</Text>}
+        <Ionicons name="chevron-forward" size={16} color={themeColors.icon} />
       </View>
     )}
   </TouchableOpacity>
 );
 
 export default function SettingsScreen() {
-  const { themePref, changeTheme, language, changeLanguage, setRole } = useGlobalContext();
+  const { themePref, changeTheme, language, changeLanguage, setRole, theme, themeColors } = useGlobalContext();
   
   const [demoMode, setDemoMode] = useState(true);
   const [notifications, setNotifications] = useState(true);
@@ -70,39 +72,41 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <LinearGradient colors={[themeColors.gradientStart, themeColors.gradientEnd]} style={StyleSheet.absoluteFillObject} />
+      {theme === 'dark' && <AnimatedBackground />}
       <Header title="Settings" />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <GlassCard style={styles.section}>
-            <Text style={styles.sectionTitle}>App Settings</Text>
-            <SettingRow icon="moon" label="Dark Theme" type="switch" value={themePref === 'dark' || themePref === 'system'} onToggle={toggleTheme} />
-            <SettingRow icon="language" label="Language" type="nav" value={language} onPress={() => setLangModalVisible(true)} />
-            <SettingRow icon="notifications" label="Push Notifications" type="switch" value={notifications} onToggle={toggleNotifications} />
-            <SettingRow icon="accessibility" label="Accessibility" type="nav" onPress={() => router.push('/(modules)/accessibility' as any)} />
+            <Text style={[styles.sectionTitle, { color: themeColors.tint }]}>App Settings</Text>
+            <SettingRow icon="moon" label="Dark Theme" type="switch" value={theme === 'dark'} onToggle={toggleTheme} themeColors={themeColors} />
+            <SettingRow icon="language" label="Language" type="nav" value={language} onPress={() => setLangModalVisible(true)} themeColors={themeColors} />
+            <SettingRow icon="notifications" label="Push Notifications" type="switch" value={notifications} onToggle={toggleNotifications} themeColors={themeColors} />
+            <SettingRow icon="accessibility" label="Accessibility" type="nav" onPress={() => router.push('/(modules)/accessibility' as any)} themeColors={themeColors} />
           </GlassCard>
 
           <GlassCard style={styles.section}>
-            <Text style={styles.sectionTitle}>Account & Payments</Text>
-            <SettingRow icon="person" label="Profile Information" type="nav" onPress={() => router.push('/(tabs)/profile')} />
-            <SettingRow icon="card" label="Payment Methods" type="nav" onPress={() => router.push('/(modules)/payment-methods' as any)} />
-            <SettingRow icon="shield-checkmark" label="Security & Privacy" type="nav" onPress={() => router.push('/(modules)/security-privacy' as any)} />
+            <Text style={[styles.sectionTitle, { color: themeColors.tint }]}>Account & Payments</Text>
+            <SettingRow icon="person" label="Profile Information" type="nav" onPress={() => router.push('/(tabs)/profile')} themeColors={themeColors} />
+            <SettingRow icon="card" label="Payment Methods" type="nav" onPress={() => router.push('/(modules)/payment-methods' as any)} themeColors={themeColors} />
+            <SettingRow icon="shield-checkmark" label="Security & Privacy" type="nav" onPress={() => router.push('/(modules)/security-privacy' as any)} themeColors={themeColors} />
           </GlassCard>
           
           <GlassCard style={styles.section}>
-            <Text style={styles.sectionTitle}>Support & About</Text>
-            <SettingRow icon="help-circle" label="Help & Support" type="nav" onPress={() => router.push('/(modules)/support-center' as any)} />
+            <Text style={[styles.sectionTitle, { color: themeColors.tint }]}>Support & About</Text>
+            <SettingRow icon="help-circle" label="Help & Support" type="nav" onPress={() => router.push('/(modules)/support-center' as any)} themeColors={themeColors} />
             
             <View style={styles.aboutContainer}>
-              <Text style={styles.aboutTitle}>Smart Stadium AI</Text>
-              <Text style={styles.aboutText}>Version 1.0.0 (Build 42)</Text>
-              <Text style={styles.aboutText}>Built for FIFA World Cup 2026</Text>
-              <Text style={styles.aboutText}>Last Updated: Today</Text>
+              <Text style={[styles.aboutTitle, { color: themeColors.tint }]}>Smart Stadium AI</Text>
+              <Text style={[styles.aboutText, { color: themeColors.textSecondary }]}>Version 1.0.0 (Build 42)</Text>
+              <Text style={[styles.aboutText, { color: themeColors.textSecondary }]}>Built for FIFA World Cup 2026</Text>
+              <Text style={[styles.aboutText, { color: themeColors.textSecondary }]}>Last Updated: Today</Text>
             </View>
           </GlassCard>
 
-          <TouchableOpacity style={styles.logoutBtn} onPress={() => { setRole(null); router.replace('/login'); }}>
-            <Text style={styles.logoutText}>Log Out</Text>
+          <TouchableOpacity style={[styles.logoutBtn, { borderColor: themeColors.danger + '50', backgroundColor: themeColors.danger + '10' }]} onPress={() => { setRole(null); router.replace('/login'); }}>
+            <Text style={[styles.logoutText, { color: themeColors.danger }]}>Log Out</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -110,16 +114,16 @@ export default function SettingsScreen() {
       {/* Language Modal */}
       <Modal visible={langModalVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Language</Text>
+          <View style={[styles.modalContent, { backgroundColor: themeColors.card }]}>
+            <Text style={[styles.modalTitle, { color: themeColors.text }]}>Select Language</Text>
             {LANGUAGES.map((lang) => (
-              <TouchableOpacity key={lang} style={styles.langItem} onPress={() => handleLangSelect(lang)}>
-                <Text style={[styles.langText, language === lang && styles.langActive]}>{lang}</Text>
-                {language === lang && <Ionicons name="checkmark" size={20} color="#00e5ff" />}
+              <TouchableOpacity key={lang} style={[styles.langItem, { borderBottomColor: themeColors.border }]} onPress={() => handleLangSelect(lang)}>
+                <Text style={[styles.langText, { color: themeColors.text }, language === lang && { color: themeColors.tint, fontWeight: 'bold' }]}>{lang}</Text>
+                {language === lang && <Ionicons name="checkmark" size={20} color={themeColors.tint} />}
               </TouchableOpacity>
             ))}
-            <TouchableOpacity style={styles.closeBtn} onPress={() => setLangModalVisible(false)}>
-              <Text style={styles.closeBtnText}>Cancel</Text>
+            <TouchableOpacity style={[styles.closeBtn, { backgroundColor: themeColors.border }]} onPress={() => setLangModalVisible(false)}>
+              <Text style={[styles.closeBtnText, { color: themeColors.text }]}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -133,7 +137,6 @@ export default function SettingsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.dark.background,
   },
   scrollView: {
     flex: 1,

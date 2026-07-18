@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
@@ -6,7 +7,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 import { GlassCard } from '../../components/GlassCard';
 
 const ZONES = [
@@ -85,9 +86,7 @@ const ALERTS = [
 ];
 
 export default function CrowdAnalytics() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [view, setView] = useState<'zones' | 'flow' | 'alerts'>('zones');
 
   const totalCurrent = ZONES.reduce((a, z) => a + z.current, 0);

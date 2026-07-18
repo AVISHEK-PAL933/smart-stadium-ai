@@ -1,37 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { auth, signInWithEmailAndPassword, GoogleAuthProvider, signInWithCredential, db, doc, getDoc } from '../services/firebase';
+import { auth, createUserWithEmailAndPassword, db, setDoc, doc } from '../services/firebase';
 
-export default function LoginScreen() {
+export default function SignupScreen() {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [country, setCountry] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
 
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password.');
+  const handleSignup = async () => {
+    if (!name || !email || !password || !confirmPassword) {
+      Alert.alert('Error', 'Please fill in all required fields.');
       return;
     }
-    
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match.');
+      return;
+    }
+    if (!acceptedTerms) {
+      Alert.alert('Terms', 'Please accept the Terms & Conditions.');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
       
+      // Save initial user profile in Firestore
+      // Notice: We don't set a role yet so they are forced to role-selection
+      await setDoc(doc(db, 'users', user.uid), {
+        name,
+        email,
+        phone,
+        country,
+        role: null, // Force role selection
+        createdAt: new Date().toISOString()
+      });
+
+      // Navigate to Role Selection
       router.replace('/role-selection');
     } catch (error: any) {
-      Alert.alert('Login Failed', error.message || 'Check your credentials and try again.');
+      Alert.alert('Signup Failed', error.message);
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleGoogleLogin = async () => {
-    Alert.alert('Google Login', 'Google Login requires native Google Sign-In setup. This is a placeholder for web.');
   };
 
   return (
@@ -44,23 +65,34 @@ export default function LoginScreen() {
         style={StyleSheet.absoluteFillObject}
       />
       
-      <View style={styles.content}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Animated.View entering={FadeInUp.duration(800)} style={styles.header}>
           <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
             <MaterialCommunityIcons name="arrow-left" size={24} color="#FFF" />
           </TouchableOpacity>
-          <Text style={styles.brandTitle}>Welcome Back</Text>
-          <Text style={styles.brandSubtitle}>Sign in to your account</Text>
+          <Text style={styles.brandTitle}>Create Account</Text>
+          <Text style={styles.brandSubtitle}>Join the StadiumMind experience</Text>
         </Animated.View>
 
         <Animated.View entering={FadeInDown.duration(800).delay(200)}>
           <View style={styles.glassCard}>
             
             <View style={styles.inputContainer}>
+              <MaterialCommunityIcons name="account-outline" size={20} color="#8A99AF" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name *"
+                placeholderTextColor="#8A99AF"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
               <MaterialCommunityIcons name="email-outline" size={20} color="#8A99AF" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Email Address"
+                placeholder="Email Address *"
                 placeholderTextColor="#8A99AF"
                 keyboardType="email-address"
                 autoCapitalize="none"
@@ -70,10 +102,33 @@ export default function LoginScreen() {
             </View>
 
             <View style={styles.inputContainer}>
+              <MaterialCommunityIcons name="phone-outline" size={20} color="#8A99AF" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Phone Number"
+                placeholderTextColor="#8A99AF"
+                keyboardType="phone-pad"
+                value={phone}
+                onChangeText={setPhone}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <MaterialCommunityIcons name="earth" size={20} color="#8A99AF" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Country"
+                placeholderTextColor="#8A99AF"
+                value={country}
+                onChangeText={setCountry}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
               <MaterialCommunityIcons name="lock-outline" size={20} color="#8A99AF" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="Password"
+                placeholder="Password *"
                 placeholderTextColor="#8A99AF"
                 secureTextEntry
                 value={password}
@@ -81,21 +136,32 @@ export default function LoginScreen() {
               />
             </View>
 
-            <View style={styles.row}>
-              <TouchableOpacity style={styles.rememberBtn} onPress={() => setRememberMe(!rememberMe)}>
+            <View style={styles.inputContainer}>
+              <MaterialCommunityIcons name="lock-check-outline" size={20} color="#8A99AF" style={styles.inputIcon} />
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm Password *"
+                placeholderTextColor="#8A99AF"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
+
+            <View style={styles.termsRow}>
+              <TouchableOpacity style={styles.checkbox} onPress={() => setAcceptedTerms(!acceptedTerms)}>
                 <MaterialCommunityIcons 
-                  name={rememberMe ? "checkbox-marked" : "checkbox-blank-outline"} 
+                  name={acceptedTerms ? "checkbox-marked" : "checkbox-blank-outline"} 
                   size={20} 
-                  color={rememberMe ? "#00C8FF" : "#8A99AF"} 
+                  color={acceptedTerms ? "#00C8FF" : "#8A99AF"} 
                 />
-                <Text style={styles.rememberText}>Remember Me</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => Alert.alert('Forgot Password', 'Password reset instructions sent (mock).')}>
-                <Text style={styles.forgotText}>Forgot Password?</Text>
+                <Text style={styles.termsText}>
+                  I agree to the <Text style={styles.linkText}>Terms & Conditions</Text>
+                </Text>
               </TouchableOpacity>
             </View>
 
-            <TouchableOpacity activeOpacity={0.8} onPress={handleLogin} disabled={isLoading}>
+            <TouchableOpacity activeOpacity={0.8} onPress={handleSignup} disabled={isLoading}>
               <LinearGradient
                 colors={['#00C8FF', '#0072FF']}
                 start={{ x: 0, y: 0 }}
@@ -106,34 +172,24 @@ export default function LoginScreen() {
                   <ActivityIndicator color="#FFF" />
                 ) : (
                   <>
-                    <Text style={styles.primaryButtonText}>Login</Text>
+                    <Text style={styles.primaryButtonText}>Create Account</Text>
                     <MaterialCommunityIcons name="arrow-right" size={20} color="#FFF" />
                   </>
                 )}
               </LinearGradient>
             </TouchableOpacity>
 
-            <View style={styles.dividerRow}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>OR</Text>
-              <View style={styles.divider} />
-            </View>
-
-            <TouchableOpacity style={styles.googleButton} activeOpacity={0.7} onPress={handleGoogleLogin}>
-              <MaterialCommunityIcons name="google" size={20} color="#FFF" />
-              <Text style={styles.googleButtonText}>Continue with Google</Text>
-            </TouchableOpacity>
-
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={() => router.push('/signup')}>
-                <Text style={styles.footerLink}>Sign Up</Text>
+              <Text style={styles.footerText}>Already have an account? </Text>
+              <TouchableOpacity onPress={() => router.push('/login')}>
+                <Text style={styles.footerLink}>Login</Text>
               </TouchableOpacity>
             </View>
 
           </View>
         </Animated.View>
-      </View>
+        <View style={{height: 40}} />
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
@@ -143,16 +199,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#081223',
   },
-  content: {
-    flex: 1,
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
+    paddingTop: 60,
+    paddingBottom: 40,
     maxWidth: 600,
     width: '100%',
     alignSelf: 'center',
   },
   header: {
-    marginBottom: 40,
+    marginBottom: 32,
   },
   backButton: {
     width: 40,
@@ -201,25 +259,22 @@ const styles = StyleSheet.create({
     fontSize: 16,
     height: '100%',
   },
-  row: {
+  termsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 32,
   },
-  rememberBtn: {
+  checkbox: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-  rememberText: {
+  termsText: {
     color: '#8A99AF',
     fontSize: 14,
   },
-  forgotText: {
+  linkText: {
     color: '#00C8FF',
-    fontSize: 14,
-    fontWeight: '600',
   },
   gradientButton: {
     flexDirection: 'row',
@@ -233,38 +288,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 16,
     fontWeight: 'bold',
-  },
-  dividerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 24,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  dividerText: {
-    color: '#8A99AF',
-    paddingHorizontal: 16,
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  googleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    gap: 12,
-  },
-  googleButtonText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: '600',
   },
   footer: {
     flexDirection: 'row',

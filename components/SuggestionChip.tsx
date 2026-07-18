@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 
 interface SuggestionChipProps {
   label: string;
@@ -10,9 +10,7 @@ interface SuggestionChipProps {
 }
 
 export const SuggestionChip = ({ label, onPress }: SuggestionChipProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   // Strip emoji for query if wanted, or just send full label
   const handlePress = () => {

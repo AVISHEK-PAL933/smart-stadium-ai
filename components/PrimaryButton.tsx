@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import Animated, { useAnimatedStyle, withSpring, useSharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -16,8 +16,7 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const PrimaryButton = ({ title, onPress, style }: PrimaryButtonProps) => {
   const scale = useSharedValue(1);
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],

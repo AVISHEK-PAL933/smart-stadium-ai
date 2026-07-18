@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
 import { NavigationRoute } from '../services/navigationService';
@@ -32,9 +32,7 @@ export const DestinationCard = ({
   onNextStep,
   onCancel,
 }: DestinationCardProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const currentInstruction = currentRoute.instructions[activeStep];
   const isLastStep = activeStep === currentRoute.instructions.length - 1;

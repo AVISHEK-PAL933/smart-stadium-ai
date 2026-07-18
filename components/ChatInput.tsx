@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../context/GlobalProvider';
 import React, { useEffect } from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';

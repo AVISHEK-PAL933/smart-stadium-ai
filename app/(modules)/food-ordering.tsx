@@ -10,8 +10,8 @@ import {
   Platform,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
 import { Header } from '../../components/Header';
+import { useGlobalContext } from '../../context/GlobalProvider';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -27,9 +27,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { FOOD_CATEGORIES, FOOD_ITEMS, FoodItem } from '../../services/foodService';
 
 export default function FoodOrdering() {
-  const colorScheme = useColorScheme();
-  const theme = 'light'; // Force light/warm theme for food UI
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   // AI Assistant routing filter params
   const params = useLocalSearchParams<{ filter?: string }>();

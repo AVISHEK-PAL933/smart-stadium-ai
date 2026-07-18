@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from './GlassCard';
 
@@ -15,9 +15,7 @@ interface DeliveryTrackerProps {
 }
 
 export const DeliveryTracker = ({ status, seat, estMinutes }: DeliveryTrackerProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const steps: { label: string; icon: string; key: DeliveryStatus }[] = [
     { label: 'Chef Preparing', icon: 'chef-hat', key: 'PREPARING' },

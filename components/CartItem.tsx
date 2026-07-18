@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { CartItem as ICartItem, CartCustomization } from '../hooks/useCart';
 
@@ -13,9 +13,7 @@ interface CartItemProps {
 }
 
 export const CartItem = ({ item, onUpdateQty, onRemove }: CartItemProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const customizationText = () => {
     const addons = [];

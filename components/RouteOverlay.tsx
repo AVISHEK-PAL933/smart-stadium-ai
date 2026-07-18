@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../context/GlobalProvider';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Polyline, Defs, Filter, FeDropShadow } from 'react-native-svg';

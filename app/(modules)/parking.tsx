@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import {
   View,
@@ -7,18 +8,20 @@ import {
   TouchableOpacity,
   Platform,
   Alert,
+  TextInput,
+  Image,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
+
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 export default function ParkingAssistant() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   // Tabs: 'PARKING' | 'TRANSIT' | 'TRAFFIC' | 'EV'
   const [activeTab, setActiveTab] = useState<'PARKING' | 'TRANSIT' | 'TRAFFIC' | 'EV'>('PARKING');
@@ -35,10 +38,12 @@ export default function ParkingAssistant() {
   // Flash car indicator
   const [carFlashed, setCarFlashed] = useState(false);
 
-  // AI chat / voice help
-  const [aiResponse, setAiResponse] = useState(
-    "Tap 'Find Best Parking' to locate open slots based on stadium entry Gate D."
-  );
+  // Chatbot State
+  const [chatMessages, setChatMessages] = useState<{role: 'user' | 'bot', text: string}[]>([
+    { role: 'bot', text: 'Hi! Ask me which parking place is empty or full!' }
+  ]);
+  const [inputText, setInputText] = useState('');
+  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
 
   const parkingZonesData = [
     {
@@ -107,7 +112,6 @@ export default function ParkingAssistant() {
   const handleReserve = (zoneName: string) => {
     setSelectedZone(zoneName);
     setIsReserved(true);
-    setAiResponse(`Reserved successfully in ${zoneName}! Your QR entry code is ready.`);
     showAlert(
       'Reservation Complete',
       `Your parking spot in ${zoneName} has been booked. Cost added to Stadium Wallet.`
@@ -128,14 +132,29 @@ export default function ParkingAssistant() {
     showAlert('EV Slot Booked', 'EV charging station reserved in Zone A Stall 14.');
   };
 
-  const handleFindBestParking = () => {
-    setAiResponse(
-      'AI Recommendation: Zone B has the best balance of spaces (120 left) and proximity to your Ticket Gate D (8 min walk).'
-    );
-    showAlert(
-      'AI Recommendation',
-      'Zone B (East) is recommended for your Gate D ticket. 8 mins walk.'
-    );
+  const handleSendMessage = () => {
+    if (!inputText.trim()) return;
+    
+    const newMessages = [...chatMessages, { role: 'user' as const, text: inputText }];
+    setChatMessages(newMessages);
+    setInputText('');
+
+    setTimeout(() => {
+      let botResponse = "I'm not sure about that.";
+      const lowerInput = inputText.toLowerCase();
+
+      if (lowerInput.includes('empty') || lowerInput.includes('available')) {
+        const availableZones = parkingZonesData.filter(z => z.available > 0).map(z => `${z.name} (${z.available})`).join(', ');
+        botResponse = `Available spaces: ${availableZones}`;
+      } else if (lowerInput.includes('full')) {
+        const fullZones = parkingZonesData.filter(z => z.available === 0).map(z => z.name).join(', ');
+        botResponse = fullZones ? `Full zones: ${fullZones}` : 'No zones are currently full.';
+      } else {
+        botResponse = "You can ask me which parking zones are 'empty' or 'full'.";
+      }
+
+      setChatMessages(msgs => [...msgs, { role: 'bot' as const, text: botResponse }]);
+    }, 500);
   };
 
   const showAlert = (title: string, msg: string) => {
@@ -147,11 +166,22 @@ export default function ParkingAssistant() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#081223', '#0A0F1E', '#16213E']}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?q=80&w=2000&auto=format&fit=crop' }}
+        style={[StyleSheet.absoluteFillObject, { opacity: 0.08 }]}
+        resizeMode="cover"
+      />
+      <AnimatedBackground />
+
       <Header title="Smart Parking & Transit" />
 
       {/* Live Alerts Announcement */}
-      <View style={styles.trafficAlertBar}>
+      <View style={[styles.trafficAlertBar, { backgroundColor: 'rgba(94, 53, 177, 0.9)' }]}>
         <MaterialCommunityIcons name="bus-clock" size={16} color="#FFFFFF" />
         <Text style={styles.alertBarText}>
           Traffic Advisory: Heavy congestion on Route 3 Eastbound. Suggested detour via Service Rd.
@@ -167,12 +197,12 @@ export default function ParkingAssistant() {
               onPress={() => setActiveTab(tab)}
               style={[
                 styles.tabBtn,
-                activeTab === tab && [styles.activeTab, { borderBottomColor: themeColors.tint }],
+                activeTab === tab && [styles.activeTab, { borderBottomColor: '#00F2FE' }],
               ]}>
               <Text
                 style={[
                   styles.tabBtnText,
-                  { color: activeTab === tab ? themeColors.text : themeColors.icon },
+                  { color: activeTab === tab ? '#FFFFFF' : 'rgba(255,255,255,0.5)' },
                 ]}>
                 {tab}
               </Text>
@@ -182,28 +212,7 @@ export default function ParkingAssistant() {
 
         {activeTab === 'PARKING' && (
           <View style={styles.tabContent}>
-            {/* AI Parking Assistant recommendation Panel */}
-            <GlassCard style={styles.aiAssCard}>
-              <View style={styles.aiAssHeader}>
-                <MaterialCommunityIcons name="robot" size={24} color={themeColors.tint} />
-                <Text style={[styles.aiAssTitle, { color: themeColors.text }]}>
-                  AI Parking Advisor
-                </Text>
-              </View>
-              <Text style={[styles.aiAssBody, { color: themeColors.text }]}>{aiResponse}</Text>
-              <View style={styles.aiBtnRow}>
-                <TouchableOpacity
-                  onPress={handleFindBestParking}
-                  style={[styles.aiActionBtn, { backgroundColor: themeColors.tint }]}>
-                  <Text style={styles.aiBtnLabel}>Recommend Parking</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => handleReserve('Zone B')}
-                  style={[styles.aiActionBtn, { borderColor: themeColors.border, borderWidth: 1 }]}>
-                  <Text style={[styles.aiBtnLabel, { color: themeColors.text }]}>Auto-Reserve</Text>
-                </TouchableOpacity>
-              </View>
-            </GlassCard>
+            {/* Removed inline Chatbot Interface from here, moved to floating modal/view */}
 
             {/* Active Reservation Status */}
             {isReserved && (
@@ -272,77 +281,109 @@ export default function ParkingAssistant() {
             )}
 
             {/* Live Parking Map Graphic representation */}
-            <GlassCard style={styles.mapCard}>
-              <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+            <LinearGradient 
+              colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+              style={[styles.mapCard, { borderColor: 'rgba(0, 200, 255, 0.3)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.sectionHeading, { color: '#FFFFFF' }]}>
                 Live Parking Lot Map
               </Text>
-              <View style={[styles.mapGraphicLayout, { borderColor: themeColors.border }]}>
-                {/* Zone highlights */}
-                <View
-                  style={[
-                    styles.zoneSquare,
-                    { left: '10%', top: '10%', backgroundColor: 'rgba(0, 230, 118, 0.2)' },
-                  ]}>
-                  <Text style={styles.zoneNameText}>Zone A</Text>
-                </View>
-                <View
-                  style={[
-                    styles.zoneSquare,
-                    { right: '10%', top: '10%', backgroundColor: 'rgba(0, 229, 255, 0.2)' },
-                  ]}>
-                  <Text style={styles.zoneNameText}>Zone B</Text>
+              <View style={[styles.mapGraphicLayout, { borderColor: 'rgba(0, 200, 255, 0.2)' }]}>
+                {/* Central Stadium Marker */}
+                <View style={[styles.stadiumCenter, { backgroundColor: 'rgba(0, 200, 255, 0.1)', borderColor: 'rgba(0, 200, 255, 0.5)' }]}>
+                  <MaterialCommunityIcons name="stadium" size={32} color="#00C8FF" />
+                  <Text style={{ color: '#00C8FF', fontSize: 8, fontWeight: '900', marginTop: 2, textShadowColor: '#00C8FF', textShadowRadius: 10 }}>STADIUM</Text>
                 </View>
 
-                {/* User car node */}
-                <View style={[styles.carNodePoint, { left: '60%', top: '40%' }]} />
-                <View
-                  style={[
-                    styles.routeWalkingLine,
-                    {
-                      left: '42%',
-                      top: '42%',
-                      width: 70,
-                      height: 4,
-                      backgroundColor: themeColors.tint,
-                    },
-                  ]}
-                />
+                {/* Zones distributed dynamically around the stadium based on real data */}
+                <View style={[styles.zoneMapItem, { top: 15, left: 15, backgroundColor: parkingZonesData[0].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[0].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[0].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[0].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone A</Text>
+                </View>
+                <View style={[styles.zoneMapItem, { top: 15, right: 15, backgroundColor: parkingZonesData[1].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[1].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[1].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[1].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone B</Text>
+                </View>
+                <View style={[styles.zoneMapItem, { bottom: 15, left: 15, backgroundColor: parkingZonesData[2].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[2].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[2].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[2].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone C</Text>
+                </View>
+                <View style={[styles.zoneMapItem, { bottom: 15, right: 15, backgroundColor: parkingZonesData[3].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[3].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[3].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[3].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone D</Text>
+                </View>
+                <View style={[styles.zoneMapItem, { top: '42%', left: 15, backgroundColor: parkingZonesData[4].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[4].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[4].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[4].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone E</Text>
+                </View>
+                <View style={[styles.zoneMapItem, { top: '42%', right: 15, backgroundColor: parkingZonesData[5].available === 0 ? 'rgba(255, 82, 82, 0.15)' : 'rgba(0, 200, 255, 0.15)', borderColor: parkingZonesData[5].available === 0 ? '#FF5252' : '#00C8FF' }, parkingZonesData[5].available === 0 ? styles.mapGlowRed : styles.mapGlowCyan]}>
+                   <Text style={[styles.zoneNameText, { color: parkingZonesData[5].available === 0 ? '#FF5252' : '#00C8FF' }]}>Zone F</Text>
+                </View>
+
+                {/* User car node routing shown only if reserved */}
+                {isReserved && (
+                  <>
+                    <View style={[styles.carNodePoint, { right: 25, top: 40 }]} />
+                    <View
+                      style={[
+                        styles.routeWalkingLine,
+                        {
+                          right: 35,
+                          top: 45,
+                          width: 80,
+                          height: 2,
+                          backgroundColor: '#FFD700',
+                          borderStyle: 'dashed',
+                        },
+                      ]}
+                    />
+                  </>
+                )}
               </View>
-            </GlassCard>
+            </LinearGradient>
 
             {/* Parking Zones grid lists */}
-            <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+            <Text style={[styles.sectionHeading, { color: '#FFFFFF' }]}>
               Parking Zone Availabilities
             </Text>
-            <View style={styles.zonesList}>
+            <View style={styles.zonesGrid}>
               {parkingZonesData.map((zone) => {
                 const isFull = zone.available === 0;
+                const capacityPercent = ((zone.total - zone.available) / zone.total) * 100;
+                
                 return (
-                  <View
-                    key={zone.name}
-                    style={[styles.zoneItemRow, { borderBottomColor: themeColors.border }]}>
-                    <View style={styles.zoneInfoCol}>
-                      <Text style={[styles.zoneNameTitle, { color: themeColors.text }]}>
-                        {zone.name}
+                  <LinearGradient 
+                    key={zone.name} 
+                    colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+                    style={[styles.zoneCard, isFull ? styles.zoneCardFull : styles.zoneCardOpen]}
+                  >
+                    <View style={styles.zoneCardHeader}>
+                      <Text style={[styles.zoneNameTitle, { color: '#FFFFFF' }]}>{zone.name}</Text>
+                      <View style={[styles.badge, { backgroundColor: isFull ? 'rgba(255, 82, 82, 0.2)' : 'rgba(0, 230, 118, 0.2)', borderColor: isFull ? '#FF5252' : '#00E676', borderWidth: 1 }]}>
+                         <Text style={[styles.badgeText, { color: isFull ? '#FF5252' : '#00E676' }]}>
+                           {isFull ? 'FULL' : 'OPEN'}
+                         </Text>
+                      </View>
+                    </View>
+
+                    <Text style={[styles.zoneStatsLabel, { color: 'rgba(255, 255, 255, 0.6)' }]}>
+                      {zone.type} • {zone.walkTime} walk
+                    </Text>
+
+                    <View style={styles.capacityRow}>
+                      <Text style={[styles.capacityText, { color: '#FFFFFF' }]}>
+                        {zone.available} spaces left
                       </Text>
-                      <Text style={[styles.zoneStatsLabel, { color: themeColors.icon }]}>
-                        {zone.type} • {zone.walkTime} walk
+                      <Text style={[styles.capacitySub, { color: 'rgba(255, 255, 255, 0.4)' }]}>
+                        / {zone.total}
                       </Text>
                     </View>
-                    <View style={styles.actionCol}>
-                      <Text
-                        style={[styles.zoneAvailNum, { color: isFull ? '#EF5350' : '#00E676' }]}>
-                        {isFull ? 'FULL' : `${zone.available} / ${zone.total}`}
-                      </Text>
-                      {!isFull && (
-                        <TouchableOpacity
-                          onPress={() => handleReserve(zone.name)}
-                          style={[styles.reserveBtnMini, { backgroundColor: themeColors.tint }]}>
-                          <Text style={styles.reserveBtnLabelText}>Book</Text>
-                        </TouchableOpacity>
-                      )}
+
+                    <View style={[styles.progressBarBase, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
+                      <View style={[styles.progressBarFill, { width: `${capacityPercent}%`, backgroundColor: isFull ? '#FF5252' : '#00C8FF' }]} />
                     </View>
-                  </View>
+
+                    {!isFull && (
+                      <TouchableOpacity onPress={() => handleReserve(zone.name)} style={styles.reserveBtnFull}>
+                        <Text style={styles.reserveBtnLabelText}>Book Spot - {zone.cost}</Text>
+                      </TouchableOpacity>
+                    )}
+                  </LinearGradient>
                 );
               })}
             </View>
@@ -356,7 +397,11 @@ export default function ParkingAssistant() {
             </Text>
 
             {publicTransitData.map((transit) => (
-              <GlassCard key={transit.type} style={styles.transitCard}>
+              <LinearGradient 
+                key={transit.type} 
+                colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+                style={[styles.transitCard, { borderColor: 'rgba(0, 200, 255, 0.3)', borderWidth: 1 }]}
+              >
                 <View style={styles.transitHeader}>
                   <View style={styles.transitTitleRow}>
                     <MaterialCommunityIcons
@@ -370,38 +415,41 @@ export default function ParkingAssistant() {
                               : 'car-multiple'
                       }
                       size={22}
-                      color={themeColors.tint}
+                      color="#00C8FF"
                     />
-                    <Text style={[styles.transitNameText, { color: themeColors.text }]}>
+                    <Text style={[styles.transitNameText, { color: '#FFFFFF' }]}>
                       {transit.type} • {transit.route}
                     </Text>
                   </View>
-                  <View style={styles.etaBadge}>
-                    <Text style={styles.etaBadgeText}>{transit.eta}</Text>
+                  <View style={[styles.etaBadge, { backgroundColor: 'rgba(0, 200, 255, 0.15)', borderColor: '#00C8FF', borderWidth: 1 }]}>
+                    <Text style={[styles.etaBadgeText, { color: '#00C8FF' }]}>{transit.eta}</Text>
                   </View>
                 </View>
-                <Text style={[styles.transitDepotText, { color: themeColors.icon }]}>
+                <Text style={[styles.transitDepotText, { color: 'rgba(255, 255, 255, 0.6)' }]}>
                   📍 Pickup Station: {transit.station}
                 </Text>
-              </GlassCard>
+              </LinearGradient>
             ))}
           </View>
         )}
 
         {activeTab === 'TRAFFIC' && (
           <View style={styles.tabContent}>
-            <GlassCard style={styles.trafficAlertCard}>
-              <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+            <LinearGradient 
+              colors={['rgba(255, 179, 0, 0.1)', 'rgba(255, 179, 0, 0.02)']}
+              style={[styles.trafficAlertCard, { borderColor: 'rgba(255, 179, 0, 0.3)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.sectionHeading, { color: '#FFFFFF' }]}>
                 Congestion & Closure Advisories
               </Text>
 
               <View style={styles.advisoryRow}>
-                <MaterialCommunityIcons name="alert-octagon" size={20} color="#EF5350" />
+                <MaterialCommunityIcons name="alert-octagon" size={20} color="#FF5252" />
                 <View style={styles.advInfo}>
-                  <Text style={[styles.advTitle, { color: themeColors.text }]}>
+                  <Text style={[styles.advTitle, { color: '#FFFFFF' }]}>
                     Road Closure: Route 3 ramp
                   </Text>
-                  <Text style={[styles.advSub, { color: themeColors.icon }]}>
+                  <Text style={[styles.advSub, { color: 'rgba(255, 255, 255, 0.6)' }]}>
                     Due to high match security corridor. Re-opens at 23:30.
                   </Text>
                 </View>
@@ -410,44 +458,47 @@ export default function ParkingAssistant() {
               <View style={styles.advisoryRow}>
                 <MaterialCommunityIcons name="clock-alert-outline" size={20} color="#FFB300" />
                 <View style={styles.advInfo}>
-                  <Text style={[styles.advTitle, { color: themeColors.text }]}>
+                  <Text style={[styles.advTitle, { color: '#FFFFFF' }]}>
                     Traffic delay: Stadium exit way
                   </Text>
-                  <Text style={[styles.advSub, { color: themeColors.icon }]}>
+                  <Text style={[styles.advSub, { color: 'rgba(255, 255, 255, 0.6)' }]}>
                     Congestion level high. Extra travel delay: 14 mins.
                   </Text>
                 </View>
               </View>
-            </GlassCard>
+            </LinearGradient>
           </View>
         )}
 
         {activeTab === 'EV' && (
           <View style={styles.tabContent}>
-            <GlassCard style={styles.evCard}>
-              <Text style={[styles.sectionHeading, { color: themeColors.text }]}>
+            <LinearGradient 
+              colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+              style={[styles.evCard, { borderColor: 'rgba(0, 200, 255, 0.3)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.sectionHeading, { color: '#FFFFFF' }]}>
                 Zone A Fast Chargers (EV)
               </Text>
 
               <View style={styles.evProgressRow}>
                 <View>
-                  <Text style={[styles.evTitleText, { color: themeColors.text }]}>
+                  <Text style={[styles.evTitleText, { color: '#FFFFFF' }]}>
                     Stall EV-14 Charger
                   </Text>
-                  <Text style={[styles.evSubText, { color: themeColors.icon }]}>
+                  <Text style={[styles.evSubText, { color: 'rgba(255, 255, 255, 0.6)' }]}>
                     Fast charging speed: 150 kW
                   </Text>
                 </View>
-                <Text style={[styles.evPercentText, { color: themeColors.tint }]}>
+                <Text style={[styles.evPercentText, { color: '#00C8FF' }]}>
                   {evChargingProgress}%
                 </Text>
               </View>
 
-              <View style={[styles.chargingBarBase, { backgroundColor: themeColors.border }]}>
+              <View style={[styles.chargingBarBase, { backgroundColor: 'rgba(255, 255, 255, 0.1)' }]}>
                 <View
                   style={[
                     styles.chargingBarFill,
-                    { width: `${evChargingProgress}%`, backgroundColor: themeColors.tint },
+                    { width: `${evChargingProgress}%`, backgroundColor: '#00C8FF' },
                   ]}
                 />
               </View>
@@ -455,22 +506,63 @@ export default function ParkingAssistant() {
               <View style={styles.evActions}>
                 <TouchableOpacity
                   onPress={() => setEvChargingProgress((prev) => Math.min(prev + 10, 100))}
-                  style={[styles.evActBtn, { backgroundColor: themeColors.tint }]}>
-                  <Text style={styles.evActText}>Boost Charge</Text>
+                  style={[styles.evActBtn, { backgroundColor: 'rgba(0, 200, 255, 0.15)', borderColor: '#00C8FF', borderWidth: 1 }]}>
+                  <Text style={[styles.evActText, { color: '#00C8FF' }]}>Boost Charge</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={handleBookEV}
-                  style={[styles.evActBtn, { borderColor: themeColors.border, borderWidth: 1 }]}>
-                  <Text style={[styles.evActText, { color: themeColors.text }]}>
+                  style={[styles.evActBtn, { borderColor: 'rgba(255, 255, 255, 0.2)', borderWidth: 1 }]}>
+                  <Text style={[styles.evActText, { color: '#FFFFFF' }]}>
                     {evReserved ? 'Reserved Slot' : 'Reserve Next Stall'}
                   </Text>
                 </TouchableOpacity>
               </View>
-            </GlassCard>
+            </LinearGradient>
           </View>
         )}
       </ScrollView>
+
+      {/* Floating Chatbot UI */}
+      {isChatbotOpen && (
+        <View style={[styles.floatingChatbotContainer, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
+          <View style={[styles.floatingChatHeader, { borderBottomColor: themeColors.border }]}>
+            <MaterialCommunityIcons name="robot-outline" size={20} color={themeColors.tint} />
+            <Text style={[styles.chatbotTitle, { color: themeColors.text }]}>Parking Assistant</Text>
+            <TouchableOpacity onPress={() => setIsChatbotOpen(false)} style={styles.closeChatBtn}>
+              <MaterialCommunityIcons name="close" size={20} color={themeColors.icon} />
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.chatArea} nestedScrollEnabled>
+            {chatMessages.map((msg, idx) => (
+              <View key={idx} style={[styles.chatBubble, msg.role === 'user' ? [styles.chatUser, { backgroundColor: themeColors.tint }] : [styles.chatBot, { backgroundColor: themeColors.border }]]}>
+                <Text style={{ color: msg.role === 'user' ? '#fff' : themeColors.text, fontSize: 12 }}>{msg.text}</Text>
+              </View>
+            ))}
+          </ScrollView>
+          <View style={styles.chatInputRow}>
+            <TextInput
+              style={[styles.chatInput, { color: themeColors.text, borderColor: themeColors.border }]}
+              placeholder="Ask about empty or full..."
+              placeholderTextColor={themeColors.icon}
+              value={inputText}
+              onChangeText={setInputText}
+              onSubmitEditing={handleSendMessage}
+            />
+            <TouchableOpacity onPress={handleSendMessage} style={[styles.chatSendBtn, { backgroundColor: themeColors.tint }]}>
+              <MaterialCommunityIcons name="send" size={16} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+      {/* Floating Bot Button */}
+      {!isChatbotOpen && (
+        <TouchableOpacity onPress={() => setIsChatbotOpen(true)} style={[styles.fabBot, { backgroundColor: themeColors.tint }]}>
+          <MaterialCommunityIcons name="robot" size={24} color="#FFFFFF" />
+          <Text style={[styles.fabBotText, { color: '#FFFFFF' }]}>Ask Bot</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -481,34 +573,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: Theme.spacing.s,
-    backgroundColor: '#5E35B1',
-    paddingVertical: 10,
+    paddingVertical: 12,
     paddingHorizontal: Theme.spacing.l,
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 4,
   },
   alertBarText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 9, flex: 1 },
   content: { padding: Theme.spacing.l, paddingBottom: 100 },
 
-  tabsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Theme.spacing.m },
+  tabsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Theme.spacing.m, backgroundColor: 'rgba(0,0,0,0.2)', borderRadius: 12, overflow: 'hidden' },
   tabBtn: {
     flex: 1,
     alignItems: 'center',
-    paddingVertical: Theme.spacing.s,
-    borderBottomWidth: 2,
+    paddingVertical: Theme.spacing.m,
+    borderBottomWidth: 3,
     borderBottomColor: 'transparent',
   },
   activeTab: { borderBottomWidth: 2 },
   tabBtnText: { fontSize: 10, fontWeight: 'bold' },
   tabContent: { gap: Theme.spacing.m },
 
-  aiAssCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.s },
-  aiAssHeader: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.s },
-  aiAssTitle: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
-  aiAssBody: { fontSize: Theme.typography.sizes.s, lineHeight: 18 },
-  aiBtnRow: { flexDirection: 'row', gap: Theme.spacing.s, marginTop: 4 },
-  aiActionBtn: { flex: 1, paddingVertical: 10, borderRadius: 12, alignItems: 'center' },
-  aiBtnLabel: { fontSize: 9, fontWeight: 'bold', color: '#FFFFFF' },
+  chatbotCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.s },
+  chatbotHeader: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.s, marginBottom: 4 },
+  chatbotTitle: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold', flex: 1 },
+  chatArea: { maxHeight: 250, paddingVertical: 4 },
+  chatBubble: { padding: 10, borderRadius: 12, marginBottom: 8, maxWidth: '85%' },
+  chatUser: { alignSelf: 'flex-end', borderBottomRightRadius: 4 },
+  chatBot: { alignSelf: 'flex-start', borderBottomLeftRadius: 4 },
+  chatInputRow: { flexDirection: 'row', gap: 8, alignItems: 'center', marginTop: 4, paddingBottom: 8 },
+  chatInput: { flex: 1, borderWidth: 1, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 6, fontSize: 12 },
+  chatSendBtn: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  fabBot: { position: 'absolute', bottom: 30, right: 20, flexDirection: 'row', gap: 6, paddingHorizontal: 20, paddingVertical: 14, borderRadius: 100, alignItems: 'center', justifyContent: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.15, shadowOffset: { width: 0, height: 4 }, shadowRadius: 12 },
+  fabBotText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 13 },
+  floatingChatbotContainer: { position: 'absolute', bottom: 30, right: 20, left: 20, borderWidth: 1, borderRadius: 24, padding: 16, elevation: 12, shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 8 }, shadowRadius: 20, maxHeight: 400 },
+  floatingChatHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingBottom: 10, borderBottomWidth: 1, marginBottom: 8 },
+  closeChatBtn: { padding: 4 },
 
-  reservationSummaryCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
+  reservationSummaryCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.m },
   resHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   resTitle: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
   resSub: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold', opacity: 0.6 },
@@ -541,66 +645,122 @@ const styles = StyleSheet.create({
   },
   flashBtnLabel: { fontSize: 8, fontWeight: 'bold' },
 
-  mapCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.s },
+  mapCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.s, shadowColor: '#00C8FF', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.1, shadowRadius: 15, overflow: 'hidden' },
   sectionHeading: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
   mapGraphicLayout: {
-    height: 140,
-    borderRadius: 20,
+    height: 220,
+    borderRadius: 24,
     borderWidth: 1,
-    backgroundColor: '#071829',
+    backgroundColor: 'rgba(0, 200, 255, 0.05)',
+    borderColor: 'rgba(0, 200, 255, 0.2)',
     position: 'relative',
     overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  zoneSquare: { position: 'absolute', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  zoneNameText: { color: '#FFFFFF', fontSize: 8, fontWeight: 'bold' },
+  stadiumCenter: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: 'rgba(0, 200, 255, 0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 200, 255, 0.5)',
+    shadowColor: '#00C8FF',
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 15,
+  },
+  zoneMapItem: {
+    position: 'absolute',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 60,
+  },
+  mapGlowCyan: {
+    shadowColor: '#00C8FF',
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 10,
+  },
+  mapGlowRed: {
+    shadowColor: '#FF5252',
+    shadowOpacity: 0.8,
+    shadowOffset: { width: 0, height: 0 },
+    shadowRadius: 10,
+  },
+  zoneSquare: { position: 'absolute', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+  zoneNameText: { fontSize: 10, fontWeight: 'bold' },
   carNodePoint: {
     position: 'absolute',
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#FFD700',
     borderWidth: 2,
     borderColor: '#FFFFFF',
+    zIndex: 10,
   },
-  routeWalkingLine: { position: 'absolute', borderRadius: 2, filter: 'opacity(0.8)' },
+  routeWalkingLine: { position: 'absolute', opacity: 0.7, zIndex: 5 },
 
-  zonesList: { gap: 2 },
-  zoneItemRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: Theme.spacing.s,
-    borderBottomWidth: 1,
+  zonesGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: Theme.spacing.m, justifyContent: 'space-between' },
+  zoneCard: { 
+    width: '48%', 
+    padding: Theme.spacing.m, 
+    borderRadius: 24, 
+    gap: 8, 
+    minWidth: 150,
+    borderWidth: 1,
+    overflow: 'hidden',
   },
-  zoneInfoCol: { gap: 2 },
+  zoneCardOpen: {
+    borderColor: 'rgba(0, 200, 255, 0.3)',
+    shadowColor: '#00C8FF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+  },
+  zoneCardFull: {
+    borderColor: 'rgba(255, 82, 82, 0.3)',
+    shadowColor: '#FF5252',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+  },
+  zoneCardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+  badgeText: { fontSize: 8, fontWeight: '900' },
   zoneNameTitle: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
-  zoneStatsLabel: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold', opacity: 0.6 },
-  actionCol: { alignItems: 'flex-end', gap: 4 },
-  zoneAvailNum: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
-  reserveBtnMini: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
-  reserveBtnLabelText: { color: '#FFFFFF', fontSize: 8, fontWeight: 'bold' },
+  zoneStatsLabel: { fontSize: Theme.typography.sizes.s - 2, fontWeight: '500' },
+  capacityRow: { flexDirection: 'row', alignItems: 'baseline', gap: 4, marginTop: 4 },
+  capacityText: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
+  capacitySub: { fontSize: Theme.typography.sizes.s - 2 },
+  progressBarBase: { height: 6, borderRadius: 6, width: '100%', overflow: 'hidden', marginTop: 4, marginBottom: 8 },
+  progressBarFill: { height: '100%', borderRadius: 6 },
+  reserveBtnFull: { paddingVertical: 10, borderRadius: 16, alignItems: 'center', backgroundColor: 'rgba(0, 200, 255, 0.15)', borderWidth: 1, borderColor: 'rgba(0, 200, 255, 0.5)' },
+  reserveBtnLabelText: { color: '#00C8FF', fontSize: 11, fontWeight: 'bold' },
 
-  transitCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.s },
+  transitCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.s, overflow: 'hidden' },
   transitHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   transitTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Theme.spacing.s },
   transitNameText: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
-  etaBadge: {
-    backgroundColor: '#EF6C00',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-  },
-  etaBadgeText: { color: '#FFFFFF', fontSize: 9, fontWeight: 'bold' },
-  transitDepotText: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
+  etaBadge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 12 },
+  etaBadgeText: { color: '#00C8FF', fontSize: 10, fontWeight: '900' },
+  transitDepotText: { fontSize: Theme.typography.sizes.s - 2, fontWeight: '500' },
 
-  trafficAlertCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
+  trafficAlertCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.m, overflow: 'hidden' },
   advisoryRow: { flexDirection: 'row', gap: Theme.spacing.m, alignItems: 'center' },
   advInfo: { gap: 2, flex: 1 },
   advTitle: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold' },
   advSub: { fontSize: Theme.typography.sizes.s - 2, lineHeight: 16 },
 
-  evCard: { padding: Theme.spacing.m, borderRadius: 20, gap: Theme.spacing.m },
-  evProgressRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  evCard: { padding: Theme.spacing.m, borderRadius: 24, gap: Theme.spacing.m, overflow: 'hidden' },
+  evProgressRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   evTitleText: { fontSize: Theme.typography.sizes.s, fontWeight: 'bold' },
   evSubText: { fontSize: Theme.typography.sizes.s - 2, fontWeight: 'bold', opacity: 0.6 },
   evPercentText: { fontSize: Theme.typography.sizes.m, fontWeight: '900' },

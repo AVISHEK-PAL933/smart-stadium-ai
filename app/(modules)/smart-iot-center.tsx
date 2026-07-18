@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../components/Header';
 import { mockIotData } from '../../data/mockIotData';
 import { Colors } from '../../constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 // Import Components
 import { LiveIoTSensorDashboard } from '../../components/iot/LiveIoTSensorDashboard';
@@ -20,6 +22,8 @@ import { AIRecommendationsPanel } from '../../components/iot/AIRecommendationsPa
 export default function SmartIoTCenterScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient colors={['#071321', '#040914']} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="IoT & Sustainability Platform" />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>

@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import {
   View,
@@ -14,7 +15,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 type NotifChannel = 'All Fans' | 'Section A' | 'VIP' | 'Staff' | 'Emergency';
 type NotifType = 'Info' | 'Warning' | 'Emergency' | 'Promo';
@@ -90,9 +91,7 @@ const CHANNEL_CONFIG: Record<NotifChannel, { color: string }> = {
 };
 
 export default function NotificationCenter() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [tab, setTab] = useState<'history' | 'compose'>('history');
   const [composeTitle, setComposeTitle] = useState('');
   const [composeMsg, setComposeMsg] = useState('');

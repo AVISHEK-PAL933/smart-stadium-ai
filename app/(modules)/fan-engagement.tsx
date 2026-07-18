@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
@@ -8,7 +9,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { useColorScheme } from 'react-native';
+
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { Header } from '../../components/Header';
@@ -25,6 +26,7 @@ import Animated, {
   FadeInDown,
   SlideInRight,
 } from 'react-native-reanimated';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -294,9 +296,7 @@ function AnimatedBadge({
   const [justUnlocked, setJustUnlocked] = useState(false);
   const scale = useSharedValue(1);
   const glow = useSharedValue(unlocked ? 1 : 0.3);
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const animStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -374,9 +374,7 @@ function PollBar({
 }) {
   const pct = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
   const width = useSharedValue(0);
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   useEffect(() => {
     if (voted) {
@@ -427,9 +425,7 @@ function SpinWheel({ onResult }: { onResult: (prize: string) => void }) {
   const rotation = useSharedValue(0);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<string | null>(null);
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const spin = () => {
     if (spinning) return;
@@ -636,9 +632,7 @@ const GOAL_CELLS = [
 ];
 
 function PenaltyShootout() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [score, setScore] = useState({ you: 0, keeper: 0 });
   const [round, setRound] = useState(0);
   const [history, setHistory] = useState<{ cell: number; saved: boolean }[]>([]);
@@ -738,9 +732,7 @@ function PenaltyShootout() {
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function FanEngagement() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const [activeTab, setActiveTab] = useState<Tab>('FANZONE');
 
@@ -1702,6 +1694,8 @@ export default function FanEngagement() {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <LinearGradient colors={[themeColors.gradientStart, themeColors.gradientEnd]} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="🎮 Fan Engagement" />
 
       {/* Tab Scroller */}

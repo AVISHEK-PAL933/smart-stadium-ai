@@ -6,6 +6,8 @@ import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { GlassCard } from '../../components/GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 export default function HelpCenterScreen() {
   const faqs = [
@@ -16,6 +18,8 @@ export default function HelpCenterScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient colors={['#071321', '#040914']} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="Help Center" />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>

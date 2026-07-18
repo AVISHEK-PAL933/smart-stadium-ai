@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import {
   View,
@@ -14,7 +15,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 type Severity = 'Critical' | 'High' | 'Medium' | 'Low';
 type Status = 'Active' | 'Assigned' | 'Resolved';
@@ -97,9 +98,7 @@ const STATUS_CONFIG: Record<Status, { color: string }> = {
 };
 
 export default function IncidentManagement() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [filter, setFilter] = useState<'All' | Status>('All');
   const [selected, setSelected] = useState<string | null>(null);
   const [search, setSearch] = useState('');

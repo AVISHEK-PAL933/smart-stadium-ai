@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { RatingStars } from './RatingStars';
 import { FoodItem } from '../services/foodService';
@@ -13,9 +13,7 @@ interface FoodCardProps {
 }
 
 export const FoodCard = ({ item, onPress }: FoodCardProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   return (
     <TouchableOpacity

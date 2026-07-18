@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -9,7 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
+
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
 import { Theme } from '../../constants/theme';
@@ -25,9 +26,7 @@ import Animated, {
 import { router } from 'expo-router';
 
 export default function SmartTicket() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const [isOfflineMode, setIsOfflineMode] = useState(false);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

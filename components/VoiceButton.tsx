@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -17,9 +17,7 @@ interface VoiceButtonProps {
 }
 
 export const VoiceButton = ({ isListening, onPress }: VoiceButtonProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const scale = useSharedValue(1);
 

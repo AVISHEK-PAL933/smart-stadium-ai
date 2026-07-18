@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header } from '../../components/Header';
 import { mockOpsData } from '../../data/mockOpsData';
 import { Colors } from '../../constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 // Import Components
 import { LiveStatusCards } from '../../components/ops/LiveStatusCards';
@@ -21,6 +23,8 @@ import { AIInsightsPanel } from '../../components/ops/AIInsightsPanel';
 export default function AIOpsCenterScreen() {
   return (
     <SafeAreaView style={styles.container}>
+      <LinearGradient colors={['#071321', '#040914']} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="AI Operations Command Center"  />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>

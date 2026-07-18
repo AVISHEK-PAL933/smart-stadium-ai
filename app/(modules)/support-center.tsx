@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,11 +8,11 @@ import { Theme } from '../../constants/theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../components/GlassCard';
 import { Toast } from '../../components/Toast';
-import { useColorScheme } from 'react-native';
+
 
 const SupportRow = ({ icon, label, onPress }: any) => {
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+  const { theme, themeColors } = useGlobalContext();
+  
   
   return (
     <TouchableOpacity style={styles.row} onPress={onPress}>
@@ -25,9 +26,7 @@ const SupportRow = ({ icon, label, onPress }: any) => {
 };
 
 export default function SupportCenter() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');

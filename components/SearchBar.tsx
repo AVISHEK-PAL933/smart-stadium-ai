@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 interface SearchBarProps {
@@ -18,9 +18,7 @@ export const SearchBar = ({
   onVoicePress,
   placeholder = 'Search menus...',
 }: SearchBarProps) => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   return (
     <View

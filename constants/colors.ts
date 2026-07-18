@@ -4,7 +4,9 @@ const tintColorDark = '#00C8FF'; // Neon blue
 export const Colors = {
   light: {
     text: '#11181C',
+    textSecondary: '#687076',
     background: '#F8FAFC',
+    secondaryBackground: '#FFFFFF',
     tint: tintColorLight,
     icon: '#687076',
     tabIconDefault: '#687076',
@@ -12,6 +14,10 @@ export const Colors = {
     card: '#FFFFFF',
     border: '#E2E8F0',
     accent: tintColorLight,
+    secondary: '#3B82F6',
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
     gradientStart: '#005CE6',
     gradientEnd: '#3B82F6',
     cardGradient1: ['#14213D', '#1E3A8A'],
@@ -20,24 +26,24 @@ export const Colors = {
   },
   dark: {
     text: '#FFFFFF',
-    textSecondary: '#AAB6C8',
-    background: '#081223', // Deep navy
+    textSecondary: '#B8C4D9',
+    background: '#071321', 
     secondaryBackground: '#0F172A',
-    tint: tintColorDark,
-    icon: '#AAB6C8',
+    tint: '#00C8FF',
+    icon: '#B8C4D9',
     tabIconDefault: '#8F9BB3',
-    tabIconSelected: tintColorDark,
-    card: 'rgba(20, 33, 61, 0.4)', // Premium glassmorphism base
-    border: 'rgba(0, 200, 255, 0.3)', // Neon blue border
-    accent: '#7C4DFF', // Purple accent
-    secondary: '#5B6CFF',
+    tabIconSelected: '#00C8FF',
+    card: '#121D33',
+    border: 'rgba(255, 255, 255, 0.05)', 
+    accent: '#00C8FF', 
+    secondary: '#6C63FF',
     success: '#00E676',
     warning: '#FFC107',
     danger: '#FF5252',
-    gradientStart: '#081223',
+    gradientStart: '#071321',
     gradientEnd: '#00C8FF',
-    cardGradient1: ['#14213D', '#1E3A8A'],
-    cardGradient2: ['#0F4C75', '#00C8FF'],
-    cardGradient3: ['#3B1D5A', '#7C4DFF'],
+    cardGradient1: ['rgba(18,29,51,0.95)', 'rgba(18,29,51,0.85)'],
+    cardGradient2: ['rgba(0,200,255,0.1)', 'rgba(18,29,51,0.9)'],
+    cardGradient3: ['rgba(108,99,255,0.1)', 'rgba(18,29,51,0.9)'],
   },
 };

@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { router } from 'expo-router';
@@ -6,7 +7,7 @@ import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
-import { useColorScheme } from 'react-native';
+
 
 type ReportCat = 'All' | 'Operations' | 'Safety' | 'Revenue' | 'Attendance';
 
@@ -113,9 +114,7 @@ const STATUS_CONFIG: Record<string, { color: string; icon: string }> = {
 };
 
 export default function Reports() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const [cat, setCat] = useState<ReportCat>('All');
 
   const filtered = cat === 'All' ? REPORTS : REPORTS.filter((r) => r.category === cat);

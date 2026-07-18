@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch, TextInput, Alert, Image } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
+
 import { Header } from '../../components/Header';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -12,15 +13,32 @@ import { GlassCard } from '../../components/GlassCard';
 import Animated, { FadeInUp } from 'react-native-reanimated';
 
 export default function ProfileScreen() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
-  const { role, setRole } = useGlobalContext();
+  const { role, setRole, theme, themeColors, changeTheme } = useGlobalContext();
 
-  const [userName, setUserName] = useState(role === 'user' ? 'John Doe' : 'Guest User');
+  const [userName, setUserName] = useState(role === 'fan' ? 'John Doe' : 'Guest User');
   const [isEditing, setIsEditing] = useState(false);
   const [pushEnabled, setPushEnabled] = useState(true);
-  const [darkEnabled, setDarkEnabled] = useState(theme === 'dark');
+  const [avatarUri, setAvatarUri] = useState<string | null>(null);
+
+  const handlePickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      Alert.alert('Permission Required', 'You need to allow camera roll permissions to change your avatar.');
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!pickerResult.canceled && pickerResult.assets && pickerResult.assets.length > 0) {
+      setAvatarUri(pickerResult.assets[0].uri);
+    }
+  };
 
   const handleLogout = () => {
     setRole(null);
@@ -39,15 +57,20 @@ export default function ProfileScreen() {
       icon: 'theme-light-dark', 
       title: 'Dark Mode', 
       type: 'switch', 
-      value: darkEnabled, 
-      onToggle: () => setDarkEnabled(!darkEnabled) 
+      value: theme === 'dark', 
+      onToggle: () => changeTheme(theme === 'dark' ? 'light' : 'dark') 
     },
     { 
       icon: 'translate', 
-      title: 'Language', 
+      title: 'Language AI', 
       type: 'link', 
-      value: 'English (US)',
-      onPress: () => Alert.alert('Language', 'Language options will be available soon.')
+      onPress: () => router.push('/(modules)/multilingual-guide' as any)
+    },
+    { 
+      icon: 'human-wheelchair', 
+      title: 'Accessibility', 
+      type: 'link',
+      onPress: () => router.push('/(modules)/accessibility' as any)
     },
     { 
       icon: 'credit-card', 
@@ -74,10 +97,13 @@ export default function ProfileScreen() {
       <Header title="Profile & Settings" />
       <ScrollView contentContainerStyle={styles.content}>
         <Animated.View entering={FadeInUp.delay(100)} style={styles.headerSection}>
-          <View style={styles.avatarContainer}>
-            <MaterialCommunityIcons name="account-circle" size={100} color={themeColors.tint} />
-            <View style={[styles.badge, { backgroundColor: '#39FF14' }]} />
-          </View>
+          <TouchableOpacity style={styles.avatarContainer} onPress={handlePickImage} activeOpacity={0.8}>
+            <Image source={avatarUri ? { uri: avatarUri } : require('../../assets/user_avatar.png')} style={styles.avatarImage} />
+            <View style={[styles.badge, { backgroundColor: '#39FF14', borderColor: themeColors.background }]} />
+            <View style={[styles.editBadge, { backgroundColor: themeColors.tint, borderColor: themeColors.background }]}>
+              <MaterialCommunityIcons name="camera" size={14} color="#FFF" />
+            </View>
+          </TouchableOpacity>
           {isEditing ? (
             <TextInput
               style={[styles.nameInput, { color: themeColors.text, borderColor: themeColors.border }]}
@@ -94,7 +120,7 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           )}
           <Text style={[styles.role, { color: themeColors.icon }]}>
-            {role === 'user' ? 'FIFA VIP Member' : 'Temporary Access'}
+            {role === 'fan' ? 'FIFA VIP Member' : 'Temporary Access'}
           </Text>
         </Animated.View>
 
@@ -133,9 +159,9 @@ export default function ProfileScreen() {
                     />
                   ) : (
                     <>
-                      {item.value && (
+                      {item.value !== undefined && item.value !== null && (
                         <Text style={[styles.settingValue, { color: themeColors.icon }]}>
-                          {item.value as string}
+                          {String(item.value)}
                         </Text>
                       )}
                       <MaterialCommunityIcons
@@ -163,16 +189,27 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: Theme.spacing.l, paddingBottom: 100 },
   headerSection: { alignItems: 'center', marginBottom: Theme.spacing.xxl },
-  avatarContainer: { position: 'relative', marginBottom: Theme.spacing.m },
+  avatarContainer: { position: 'relative', marginBottom: Theme.spacing.m, alignItems: 'center', justifyContent: 'center' },
+  avatarImage: { width: 100, height: 100, borderRadius: 50 },
   badge: {
     position: 'absolute',
     bottom: 5,
-    right: 10,
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    borderWidth: 2,
-    borderColor: '#070A13',
+    right: 5,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    borderWidth: 3,
+  },
+  editBadge: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 3,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   name: { fontSize: Theme.typography.sizes.xxl, fontWeight: 'bold' },
   nameRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },

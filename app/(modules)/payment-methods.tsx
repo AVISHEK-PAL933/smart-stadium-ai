@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -7,7 +8,7 @@ import { Theme } from '../../constants/theme';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { GlassCard } from '../../components/GlassCard';
 import { Toast } from '../../components/Toast';
-import { useColorScheme } from 'react-native';
+
 
 const PAYMENT_OPTIONS = [
   { id: '1', type: 'Visa', last4: '4242', icon: 'credit-card', isDefault: true },
@@ -23,9 +24,7 @@ export default function PaymentMethods() {
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const showToast = (msg: string) => {
     setToastMessage(msg);

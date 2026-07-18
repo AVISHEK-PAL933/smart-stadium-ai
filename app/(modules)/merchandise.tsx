@@ -1,3 +1,4 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState, useCallback } from 'react';
 import {
   View,
@@ -8,7 +9,7 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
-import { useColorScheme } from 'react-native';
+
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { Header } from '../../components/Header';
@@ -24,6 +25,7 @@ import Animated, {
   FadeInDown,
   SlideInRight,
 } from 'react-native-reanimated';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -367,9 +369,7 @@ function ProductCard({
   onWishlist: () => void;
   wishlisted: boolean;
 }) {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const scale = useSharedValue(1);
 
   const animStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
@@ -444,9 +444,7 @@ const ORDER_STEPS = [
 ];
 
 function OrderTimeline({ status }: { status: Order['status'] }) {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
   const currentIdx = ORDER_STEPS.findIndex((s) => s.key === status);
 
   return (
@@ -536,9 +534,7 @@ function FlashTimer() {
 // ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function MerchandiseStore() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   const [activeTab, setActiveTab] = useState<Tab>('STORE');
   const [selectedProduct, setSelectedProduct] = useState<Product>(PRODUCTS[0]);
@@ -1858,6 +1854,8 @@ export default function MerchandiseStore() {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <LinearGradient colors={['#071321', '#040914']} style={StyleSheet.absoluteFillObject} />
+      <AnimatedBackground />
       <Header title="🛍 FIFA Merch Store" />
 
       {/* Tab bar */}

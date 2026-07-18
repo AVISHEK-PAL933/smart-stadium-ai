@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
-import { useColorScheme } from 'react-native';
+import { useGlobalContext } from '../context/GlobalProvider';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -18,8 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export const FloatingAIAssistant = () => {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const { theme } = useGlobalContext();
 
   const scale = useSharedValue(1);
   const glow = useSharedValue(0.5);

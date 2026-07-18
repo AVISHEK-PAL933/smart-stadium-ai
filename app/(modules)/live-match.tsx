@@ -1,9 +1,12 @@
+import { useGlobalContext } from '../../context/GlobalProvider';
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Text, TouchableOpacity, Image } from 'react-native';
 import { Colors } from '../../constants/colors';
-import { useColorScheme } from 'react-native';
+
 import { Header } from '../../components/Header';
 import { GlassCard } from '../../components/GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
+import { AnimatedBackground } from '../../components/AnimatedBackground';
 import { Theme } from '../../constants/theme';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -18,9 +21,7 @@ import {
 } from '../../services/matchService';
 
 export default function LiveMatch() {
-  const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-  const themeColors = Colors[theme];
+  const { theme, themeColors } = useGlobalContext();
 
   // Active View tabs: 'STATS' | 'LINEUPS' | 'COMMENTARY'
   const [activeTab, setActiveTab] = useState<'STATS' | 'LINEUPS' | 'COMMENTARY'>('STATS');
@@ -51,13 +52,39 @@ export default function LiveMatch() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
+      {/* Premium Dark Space Background */}
+      <LinearGradient
+        colors={['#081223', '#040D1A', '#0D1B2A']}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?q=80&w=2000&auto=format&fit=crop' }}
+        style={[StyleSheet.absoluteFillObject, { opacity: 0.08 }]}
+        resizeMode="cover"
+      />
+      <AnimatedBackground />
+
       <Header title="Live Match Updates" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* Match Header Scoreboard Card */}
-        <GlassCard style={styles.scoreCard}>
+        <LinearGradient 
+          colors={['rgba(0, 200, 255, 0.15)', 'rgba(0, 200, 255, 0.05)']}
+          style={[styles.scoreCard, { borderColor: 'rgba(0, 200, 255, 0.4)', borderWidth: 1 }]}
+        >
+          {/* Authentic Pitch Background */}
+          <Image
+            source={{ uri: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?q=80&w=1200' }}
+            style={[StyleSheet.absoluteFillObject, { borderRadius: 24, opacity: 0.3 }]}
+            resizeMode="cover"
+          />
+          <LinearGradient
+            colors={['rgba(8,18,35,0.7)', 'rgba(8,18,35,0.9)']}
+            style={[StyleSheet.absoluteFillObject, { borderRadius: 24 }]}
+          />
+
           <View style={styles.stadiumRow}>
-            <Text style={[styles.stadiumText, { color: themeColors.icon }]}>
+            <Text style={[styles.stadiumText, { color: '#8F9BB3' }]}>
               📍 MetLife Stadium • Group Stage
             </Text>
             <View style={styles.liveIndicator}>
@@ -69,33 +96,33 @@ export default function LiveMatch() {
           <View style={styles.teamsRow}>
             {/* Brazil */}
             <View style={styles.teamBox}>
-              <View style={[styles.squadLogoCircle, { backgroundColor: '#FFD54F' }]}>
-                <MaterialCommunityIcons name="soccer" size={32} color="#00C853" />
+              <View style={[styles.squadLogoCircle, { backgroundColor: 'rgba(255, 213, 79, 0.1)', borderColor: '#FFD54F', borderWidth: 2 }]}>
+                <Image source={{ uri: 'https://flagcdn.com/w320/br.png' }} style={styles.flagImage} />
               </View>
-              <Text style={[styles.teamName, { color: themeColors.text }]}>BRAZIL</Text>
+              <Text style={[styles.teamName, { color: '#FFFFFF' }]}>BRAZIL</Text>
             </View>
 
             {/* Score */}
             <View style={styles.scoreBox}>
-              <Text style={[styles.scoreValue, { color: themeColors.text }]}>1 - 1</Text>
-              <Text style={[styles.aggregateText, { color: themeColors.icon }]}>Group A</Text>
+              <Text style={[styles.scoreValue, { color: '#00C8FF', textShadowColor: '#00C8FF', textShadowRadius: 10 }]}>1 - 1</Text>
+              <Text style={[styles.aggregateText, { color: '#8F9BB3' }]}>Group A</Text>
             </View>
 
             {/* Argentina */}
             <View style={styles.teamBox}>
-              <View style={[styles.squadLogoCircle, { backgroundColor: '#80D8FF' }]}>
-                <MaterialCommunityIcons name="soccer" size={32} color="#0D47A1" />
+              <View style={[styles.squadLogoCircle, { backgroundColor: 'rgba(128, 216, 255, 0.1)', borderColor: '#80D8FF', borderWidth: 2 }]}>
+                <Image source={{ uri: 'https://flagcdn.com/w320/ar.png' }} style={styles.flagImage} />
               </View>
-              <Text style={[styles.teamName, { color: themeColors.text }]}>ARGENTINA</Text>
+              <Text style={[styles.teamName, { color: '#FFFFFF' }]}>ARGENTINA</Text>
             </View>
           </View>
 
           {/* Quick Weather & Match Info */}
-          <View style={[styles.refRow, { borderTopColor: themeColors.border }]}>
-            <Text style={[styles.refText, { color: themeColors.icon }]}>Ref: Wilmar Roldan</Text>
-            <Text style={[styles.refText, { color: themeColors.icon }]}>☁ 24°C • Att: 82,500</Text>
+          <View style={[styles.refRow, { borderTopColor: 'rgba(255,255,255,0.1)' }]}>
+            <Text style={[styles.refText, { color: '#8F9BB3' }]}>Ref: Wilmar Roldan</Text>
+            <Text style={[styles.refText, { color: '#8F9BB3' }]}>☁ 24°C • Att: 82,500</Text>
           </View>
-        </GlassCard>
+        </LinearGradient>
 
         {/* Clickable Horizontal Events Timeline */}
         <View style={styles.timelineContainer}>
@@ -116,12 +143,12 @@ export default function LiveMatch() {
                   style={[
                     styles.timelineNode,
                     {
-                      backgroundColor: isActive ? themeColors.tint : themeColors.card,
-                      borderColor: isActive ? '#FFFFFF' : themeColors.border,
+                      backgroundColor: isActive ? 'rgba(0, 200, 255, 0.3)' : 'rgba(0, 200, 255, 0.05)',
+                      borderColor: isActive ? '#00C8FF' : 'rgba(0, 200, 255, 0.2)',
                     },
                   ]}>
                   <Text
-                    style={[styles.nodeMin, { color: isActive ? '#FFFFFF' : themeColors.tint }]}>
+                    style={[styles.nodeMin, { color: isActive ? '#FFFFFF' : '#00C8FF' }]}>
                     {event.minute}'
                   </Text>
                   <MaterialCommunityIcons
@@ -138,7 +165,7 @@ export default function LiveMatch() {
                     color={isActive ? '#FFFFFF' : event.type === 'GOAL' ? '#00E676' : '#FFD700'}
                   />
                   <Text
-                    style={[styles.nodeTitle, { color: isActive ? '#FFFFFF' : themeColors.text }]}>
+                    style={[styles.nodeTitle, { color: isActive ? '#FFFFFF' : '#FFFFFF' }]}>
                     {event.type}
                   </Text>
                 </TouchableOpacity>
@@ -152,20 +179,20 @@ export default function LiveMatch() {
               entering={FadeInUp}
               style={[
                 styles.highlightedEventCard,
-                { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                { backgroundColor: 'rgba(0, 200, 255, 0.1)', borderColor: '#00C8FF' },
               ]}>
               <View style={styles.highlightHeader}>
-                <Text style={[styles.highlightTime, { color: themeColors.tint }]}>
+                <Text style={[styles.highlightTime, { color: '#00C8FF' }]}>
                   Event Detail ({COMMENTARY_EVENTS[activeEventIndex].minute}')
                 </Text>
                 <TouchableOpacity onPress={() => setActiveEventIndex(null)}>
-                  <MaterialCommunityIcons name="close" size={16} color={themeColors.text} />
+                  <MaterialCommunityIcons name="close" size={16} color="#FFFFFF" />
                 </TouchableOpacity>
               </View>
-              <Text style={[styles.highlightName, { color: themeColors.text }]}>
+              <Text style={[styles.highlightName, { color: '#FFFFFF' }]}>
                 {COMMENTARY_EVENTS[activeEventIndex].title}
               </Text>
-              <Text style={[styles.highlightBody, { color: themeColors.icon }]}>
+              <Text style={[styles.highlightBody, { color: 'rgba(255, 255, 255, 0.7)' }]}>
                 {COMMENTARY_EVENTS[activeEventIndex].body}
               </Text>
             </Animated.View>
@@ -197,14 +224,17 @@ export default function LiveMatch() {
         {activeTab === 'STATS' && (
           <View style={styles.tabContent}>
             {/* AI Summary Card */}
-            <GlassCard style={styles.summaryCard}>
-              <Text style={[styles.summaryHeader, { color: themeColors.text }]}>
+            <LinearGradient 
+              colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+              style={[styles.summaryCard, { borderColor: 'rgba(0, 200, 255, 0.3)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.summaryHeader, { color: '#FFFFFF' }]}>
                 🎙 AI Match Summary
               </Text>
-              <Text style={[styles.summaryBody, { color: themeColors.icon }]}>
+              <Text style={[styles.summaryBody, { color: 'rgba(255, 255, 255, 0.7)' }]}>
                 {AI_MATCH_SUMMARY}
               </Text>
-            </GlassCard>
+            </LinearGradient>
 
             {/* Statistics comparison bars */}
             <View style={styles.statsList}>
@@ -324,26 +354,29 @@ export default function LiveMatch() {
             </View>
 
             {/* Voting Fan Poll */}
-            <GlassCard style={styles.pollCard}>
-              <Text style={[styles.pollHeader, { color: themeColors.text }]}>
+            <LinearGradient 
+              colors={['rgba(13, 71, 161, 0.2)', 'rgba(13, 71, 161, 0.05)']}
+              style={[styles.pollCard, { borderColor: 'rgba(13, 71, 161, 0.4)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.pollHeader, { color: '#FFFFFF' }]}>
                 Who will win this match?
               </Text>
               {!userVoted ? (
                 <View style={styles.pollOptionsRow}>
                   <TouchableOpacity
                     onPress={() => handleVote('home')}
-                    style={[styles.pollOptionBtn, { borderColor: themeColors.border }]}>
-                    <Text style={[styles.pollOptionText, { color: themeColors.text }]}>Brazil</Text>
+                    style={[styles.pollOptionBtn, { borderColor: 'rgba(0,200,255,0.3)', backgroundColor: 'rgba(0,200,255,0.1)' }]}>
+                    <Text style={[styles.pollOptionText, { color: '#FFFFFF' }]}>Brazil</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleVote('draw')}
-                    style={[styles.pollOptionBtn, { borderColor: themeColors.border }]}>
-                    <Text style={[styles.pollOptionText, { color: themeColors.text }]}>Draw</Text>
+                    style={[styles.pollOptionBtn, { borderColor: 'rgba(255,255,255,0.2)', backgroundColor: 'rgba(255,255,255,0.05)' }]}>
+                    <Text style={[styles.pollOptionText, { color: '#FFFFFF' }]}>Draw</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleVote('away')}
-                    style={[styles.pollOptionBtn, { borderColor: themeColors.border }]}>
-                    <Text style={[styles.pollOptionText, { color: themeColors.text }]}>
+                    style={[styles.pollOptionBtn, { borderColor: 'rgba(0,200,255,0.3)', backgroundColor: 'rgba(0,200,255,0.1)' }]}>
+                    <Text style={[styles.pollOptionText, { color: '#FFFFFF' }]}>
                       Argentina
                     </Text>
                   </TouchableOpacity>
@@ -351,84 +384,87 @@ export default function LiveMatch() {
               ) : (
                 <View style={styles.pollResults}>
                   <View style={styles.resultItem}>
-                    <Text style={[styles.resultLabel, { color: themeColors.text }]}>Brazil</Text>
-                    <View style={[styles.resultBarBase, { backgroundColor: themeColors.border }]}>
+                    <Text style={[styles.resultLabel, { color: '#FFFFFF' }]}>Brazil</Text>
+                    <View style={[styles.resultBarBase, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
                       <View
                         style={[
                           styles.resultBarFill,
                           {
                             width: `${getVotePercentage(pollVotes.home)}%`,
-                            backgroundColor: themeColors.tint,
+                            backgroundColor: '#00C8FF',
                           },
                         ]}
                       />
                     </View>
-                    <Text style={[styles.resultPercent, { color: themeColors.tint }]}>
+                    <Text style={[styles.resultPercent, { color: '#00C8FF' }]}>
                       {getVotePercentage(pollVotes.home)}%
                     </Text>
                   </View>
 
                   <View style={styles.resultItem}>
-                    <Text style={[styles.resultLabel, { color: themeColors.text }]}>Draw</Text>
-                    <View style={[styles.resultBarBase, { backgroundColor: themeColors.border }]}>
+                    <Text style={[styles.resultLabel, { color: '#FFFFFF' }]}>Draw</Text>
+                    <View style={[styles.resultBarBase, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
                       <View
                         style={[
                           styles.resultBarFill,
                           {
                             width: `${getVotePercentage(pollVotes.draw)}%`,
-                            backgroundColor: themeColors.icon,
+                            backgroundColor: '#8F9BB3',
                           },
                         ]}
                       />
                     </View>
-                    <Text style={[styles.resultPercent, { color: themeColors.icon }]}>
+                    <Text style={[styles.resultPercent, { color: '#8F9BB3' }]}>
                       {getVotePercentage(pollVotes.draw)}%
                     </Text>
                   </View>
 
                   <View style={styles.resultItem}>
-                    <Text style={[styles.resultLabel, { color: themeColors.text }]}>Argentina</Text>
-                    <View style={[styles.resultBarBase, { backgroundColor: themeColors.border }]}>
+                    <Text style={[styles.resultLabel, { color: '#FFFFFF' }]}>Argentina</Text>
+                    <View style={[styles.resultBarBase, { backgroundColor: 'rgba(255,255,255,0.1)' }]}>
                       <View
                         style={[
                           styles.resultBarFill,
                           {
                             width: `${getVotePercentage(pollVotes.away)}%`,
-                            backgroundColor: themeColors.tint,
+                            backgroundColor: '#00C8FF',
                           },
                         ]}
                       />
                     </View>
-                    <Text style={[styles.resultPercent, { color: themeColors.tint }]}>
+                    <Text style={[styles.resultPercent, { color: '#00C8FF' }]}>
                       {getVotePercentage(pollVotes.away)}%
                     </Text>
                   </View>
                 </View>
               )}
-            </GlassCard>
+            </LinearGradient>
 
             {/* MOTM AI Confidence */}
-            <GlassCard style={styles.motmCard}>
-              <Text style={[styles.pollHeader, { color: themeColors.text, marginBottom: 4 }]}>
+            <LinearGradient 
+              colors={['rgba(124, 77, 255, 0.2)', 'rgba(124, 77, 255, 0.05)']}
+              style={[styles.motmCard, { borderColor: 'rgba(124, 77, 255, 0.4)', borderWidth: 1 }]}
+            >
+              <Text style={[styles.pollHeader, { color: '#FFFFFF', marginBottom: 4 }]}>
                 AI Man of the Match Predictor
               </Text>
               <View style={styles.motmRow}>
                 <View style={styles.motmPlayerInfo}>
-                  <View style={[styles.numCircle, { backgroundColor: themeColors.tint }]}>
+                  <View style={[styles.numCircle, { backgroundColor: '#7C4DFF' }]}>
                     <Text style={styles.numText}>10</Text>
                   </View>
                   <View>
-                    <Text style={[styles.motmName, { color: themeColors.text }]}>Lionel Messi</Text>
-                    <Text style={[styles.motmClub, { color: themeColors.icon }]}>
+                    <Text style={[styles.motmName, { color: '#FFFFFF' }]}>Lionel Messi</Text>
+                    <Text style={[styles.motmClub, { color: 'rgba(255,255,255,0.6)' }]}>
                       Argentina • FWD
                     </Text>
                   </View>
                 </View>
-                <View style={styles.confidenceBadge}>
-                  <Text style={styles.confidenceText}>82% AI Confidence</Text>
+                <View style={[styles.confidenceBadge, { backgroundColor: 'rgba(124, 77, 255, 0.2)' }]}>
+                  <Text style={[styles.confidenceText, { color: '#7C4DFF' }]}>82% AI Confidence</Text>
                 </View>
               </View>
-            </GlassCard>
+            </LinearGradient>
           </View>
         )}
 
@@ -506,24 +542,25 @@ export default function LiveMatch() {
               {COMMENTARY_EVENTS.slice()
                 .reverse()
                 .map((event, idx) => (
-                  <View
+                  <LinearGradient
                     key={idx}
+                    colors={['rgba(255, 255, 255, 0.05)', 'rgba(255, 255, 255, 0.01)']}
                     style={[
                       styles.commentaryCardItem,
-                      { backgroundColor: themeColors.card, borderColor: themeColors.border },
+                      { borderColor: 'rgba(255,255,255,0.1)', borderWidth: 1 },
                     ]}>
                     <View style={styles.commentaryHeaderRow}>
-                      <View style={styles.commentaryMinBadge}>
-                        <Text style={styles.comMinText}>{event.minute}'</Text>
+                      <View style={[styles.commentaryMinBadge, { backgroundColor: '#00C8FF' }]}>
+                        <Text style={[styles.comMinText, { color: '#FFFFFF' }]}>{event.minute}'</Text>
                       </View>
-                      <Text style={[styles.comTypeTitle, { color: themeColors.text }]}>
+                      <Text style={[styles.comTypeTitle, { color: '#FFFFFF' }]}>
                         {event.title}
                       </Text>
                     </View>
-                    <Text style={[styles.comBodyText, { color: themeColors.icon }]}>
+                    <Text style={[styles.comBodyText, { color: 'rgba(255,255,255,0.7)' }]}>
                       {event.body}
                     </Text>
-                  </View>
+                  </LinearGradient>
                 ))}
             </View>
           </View>
@@ -674,11 +711,17 @@ const styles = StyleSheet.create({
   },
   teamBox: { alignItems: 'center', gap: 6, width: '30%' },
   squadLogoCircle: {
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  flagImage: {
+    width: 60,
+    height: 60,
+    resizeMode: 'cover',
   },
   teamName: { fontSize: Theme.typography.sizes.s, fontWeight: '900', letterSpacing: 1 },
   scoreBox: { alignItems: 'center', gap: 2 },
