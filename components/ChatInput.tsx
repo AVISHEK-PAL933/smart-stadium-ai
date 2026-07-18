@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, TouchableOpacity, Alert, Platform } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Animated, {
   useSharedValue,
@@ -48,24 +50,61 @@ export const ChatInput = ({
     shadowOffset: { width: 0, height: 0 },
   }));
 
-  const handleMockAction = () => {
-    // Just a UI mock action, we don't have APIs for this yet as per implementation plan
+  const handlePlusAction = async () => {
+    try {
+      const result = await DocumentPicker.getDocumentAsync({
+        type: '*/*',
+        copyToCacheDirectory: true,
+      });
+
+      if (!result.canceled) {
+        if (Platform.OS === 'web') {
+          window.alert('Document attached successfully.');
+        } else {
+          Alert.alert('Success', 'Document attached successfully.');
+        }
+      }
+    } catch (error) {
+      if (Platform.OS === 'web') {
+        window.alert('Error picking document.');
+      } else {
+        Alert.alert('Error', 'Failed to pick document.');
+      }
+    }
+  };
+
+  const handleImageAction = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        if (Platform.OS === 'web') {
+          window.alert('Image uploaded successfully.');
+        } else {
+          Alert.alert('Success', 'Image uploaded successfully.');
+        }
+      }
+    } catch (error) {
+      if (Platform.OS === 'web') {
+        window.alert('Error picking image.');
+      } else {
+        Alert.alert('Error', 'Failed to pick image.');
+      }
+    }
   };
 
   return (
     <Animated.View entering={FadeInUp.delay(500)} style={styles.container}>
       <View style={styles.inputCard}>
-        <LinearGradient
-          colors={['rgba(8,18,35,0.95)', 'rgba(15,23,42,0.95)']}
-          style={StyleSheet.absoluteFillObject}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        />
         <View style={styles.actionsLeft}>
-          <TouchableOpacity onPress={handleMockAction} style={styles.iconBtn}>
+          <TouchableOpacity onPress={handlePlusAction} style={styles.iconBtn}>
             <MaterialCommunityIcons name="plus-circle-outline" size={24} color="#CBD5E1" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={handleMockAction} style={styles.iconBtn}>
+          <TouchableOpacity onPress={handleImageAction} style={styles.iconBtn}>
             <MaterialCommunityIcons name="image-outline" size={24} color="#CBD5E1" />
           </TouchableOpacity>
         </View>
@@ -76,7 +115,10 @@ export const ChatInput = ({
           placeholderTextColor="#CBD5E1"
           value={value}
           onChangeText={onChangeText}
-          multiline
+          multiline={false}
+          onSubmitEditing={onSend}
+          blurOnSubmit={false}
+          returnKeyType="send"
           maxLength={250}
         />
 
@@ -116,7 +158,8 @@ const styles = StyleSheet.create({
     height: 56,
     borderRadius: 28,
     borderWidth: 1,
-    borderColor: 'rgba(124,77,255,0.4)',
+    borderColor: 'rgba(255,255,255,0.15)',
+    backgroundColor: '#16213E',
     overflow: 'hidden',
   },
   actionsLeft: {

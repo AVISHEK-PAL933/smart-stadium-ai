@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Alert, Platform } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import Animated, { FadeIn, useSharedValue, useAnimatedStyle, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
@@ -24,9 +24,37 @@ export const AIHeader = () => {
     opacity: pulse.value === 1.2 ? 0.6 : 1,
   }));
 
+  const handleBack = () => {
+    try {
+      if (router.canGoBack()) {
+        router.back();
+      } else {
+        router.navigate('/');
+      }
+    } catch (error) {
+      router.navigate('/');
+    }
+  };
+
+  const handleNotifications = () => {
+    if (Platform.OS === 'web') {
+      window.alert('Notifications:\n• Match starts in 15 minutes\n• Food order ready\n• Parking updated');
+      return;
+    }
+    Alert.alert('Notifications Drawer', '• Match starts in 15 minutes\n• Food order ready\n• Parking updated');
+  };
+
+  const handleSettings = () => {
+    if (Platform.OS === 'web') {
+      window.alert('Settings:\n• Theme\n• Notifications\n• Language\n• Privacy\n• Support');
+      return;
+    }
+    Alert.alert('Settings', '• Theme\n• Notifications\n• Language\n• Privacy\n• Support');
+  };
+
   return (
     <Animated.View entering={FadeIn.duration(500)} style={styles.container}>
-      <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
+      <TouchableOpacity style={styles.backBtn} onPress={handleBack}>
         <MaterialCommunityIcons name="arrow-left" size={24} color="#FFF" />
       </TouchableOpacity>
       
@@ -44,10 +72,10 @@ export const AIHeader = () => {
       </View>
 
       <View style={styles.rightActions}>
-        <TouchableOpacity style={styles.iconBtn}>
+        <TouchableOpacity style={styles.iconBtn} onPress={handleNotifications}>
           <MaterialCommunityIcons name="bell-outline" size={22} color="#FFF" />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.iconBtn}>
+        <TouchableOpacity style={styles.iconBtn} onPress={handleSettings}>
           <MaterialCommunityIcons name="cog-outline" size={22} color="#FFF" />
         </TouchableOpacity>
       </View>

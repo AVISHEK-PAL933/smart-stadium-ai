@@ -42,7 +42,6 @@ export const AIActionCard = ({ label, onPress }: AIActionCardProps) => {
 
 const styles = StyleSheet.create({
   touchable: {
-    marginRight: 12,
   },
   card: {
     width: 150,

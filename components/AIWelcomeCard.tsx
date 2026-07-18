@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { GlassCard } from './GlassCard';
+import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence } from 'react-native-reanimated';
 
-export const AIWelcomeCard = () => {
+interface AIWelcomeCardProps {
+  onSuggestionPress?: (text: string) => void;
+}
+
+export const AIWelcomeCard = ({ onSuggestionPress }: AIWelcomeCardProps) => {
   const float = useSharedValue(0);
 
   React.useEffect(() => {
@@ -24,7 +28,13 @@ export const AIWelcomeCard = () => {
 
   return (
     <Animated.View entering={FadeInDown.duration(600)} style={styles.wrapper}>
-      <GlassCard style={styles.card} gradientColors={['#16213E', '#16213E']}>
+      <View style={styles.card}>
+        <LinearGradient 
+          colors={['#16213E', '#0F172A']} 
+          style={StyleSheet.absoluteFillObject} 
+          start={{x:0, y:0}} 
+          end={{x:1, y:1}} 
+        />
         <View style={styles.headerRow}>
           <View style={styles.avatarBox}>
             <MaterialCommunityIcons name="robot-outline" size={24} color="#FFFFFF" />
@@ -40,12 +50,18 @@ export const AIWelcomeCard = () => {
         </Text>
 
         <View style={styles.featureGrid}>
-          <View style={styles.feature}><Text style={styles.featureText}>Navigation</Text></View>
-          <View style={styles.feature}><Text style={styles.featureText}>Tickets</Text></View>
-          <View style={styles.feature}><Text style={styles.featureText}>Live Match</Text></View>
-          <View style={styles.feature}><Text style={styles.featureText}>Support</Text></View>
+          {['Navigation', 'Tickets', 'Live Match', 'Support'].map((item) => (
+            <TouchableOpacity 
+              key={item} 
+              style={styles.feature}
+              onPress={() => onSuggestionPress?.(item)}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.featureText}>{item}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
-      </GlassCard>
+      </View>
     </Animated.View>
   );
 };
@@ -53,18 +69,18 @@ export const AIWelcomeCard = () => {
 const styles = StyleSheet.create({
   wrapper: {
     padding: 12,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     width: '100%',
+    marginBottom: 8,
   },
   card: {
     padding: 16,
-    borderRadius: 18,
+    borderRadius: 20,
+    borderBottomLeftRadius: 4,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.08)',
-    width: '100%',
-    maxWidth: 600,
-    height: 180,
-    justifyContent: 'center',
+    maxWidth: '85%',
+    overflow: 'hidden',
   },
   headerRow: {
     flexDirection: 'row',
@@ -86,8 +102,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '700',
     color: '#FFFFFF',
     fontFamily: 'Inter',
   },

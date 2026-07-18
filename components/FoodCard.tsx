@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity, Image } from 'react-native';
 import { Colors } from '../constants/colors';
 import { Theme } from '../constants/theme';
 import { useColorScheme } from 'react-native';
@@ -21,10 +21,10 @@ export const FoodCard = ({ item, onPress }: FoodCardProps) => {
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      style={[styles.card, { backgroundColor: 'rgba(255, 112, 67, 0.05)', borderColor: 'rgba(255,112,67,0.3)' }]}>
-      {/* Icon Graphic Container */}
-      <View style={[styles.iconWrapper, { backgroundColor: 'rgba(255, 112, 67, 0.15)' }]}>
-        <MaterialCommunityIcons name={item.icon as any} size={48} color="#FF7043" />
+      style={[styles.card, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+      {/* Food Photography Container */}
+      <View style={styles.imageWrapper}>
+        <Image source={{ uri: item.image }} style={styles.foodImage} />
 
         {/* Vegetarian Badge */}
         <View
@@ -85,12 +85,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
     marginBottom: Theme.spacing.m,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 3,
   },
-  iconWrapper: {
-    height: 110,
-    alignItems: 'center',
-    justifyContent: 'center',
+  imageWrapper: {
+    height: 120,
     position: 'relative',
+  },
+  foodImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
   },
   vegBadge: {
     position: 'absolute',

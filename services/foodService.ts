@@ -9,6 +9,7 @@ export interface FoodItem {
   isVegetarian: boolean;
   isAvailable: boolean;
   icon: string;
+  image: string;
   description: string;
 }
 
@@ -39,6 +40,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: false,
     isAvailable: true,
     icon: 'hamburger',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&auto=format&fit=crop',
     description: 'Flame-grilled angus beef patty with cheese, tomato & special stadium sauce.',
   },
   {
@@ -52,6 +54,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'pizza',
+    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?q=80&w=600&auto=format&fit=crop',
     description: 'Fresh mozzarella, tomato sauce and fresh basil on a thin wood-fired crust.',
   },
   {
@@ -65,6 +68,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: false,
     isAvailable: true,
     icon: 'pizza',
+    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?q=80&w=600&auto=format&fit=crop',
     description: 'Spicy pepperoni slices, mozzarella cheese, and rich marinara sauce.',
   },
   {
@@ -78,6 +82,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: false,
     isAvailable: true,
     icon: 'hamburger',
+    image: 'https://images.unsplash.com/photo-1612392062631-94dd858cba88?q=80&w=600&auto=format&fit=crop',
     description: 'Traditional jumbo beef frank topped with mustard, ketchup, and pickle relish.',
   },
   {
@@ -91,6 +96,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'popcorn',
+    image: 'https://images.unsplash.com/photo-1585647347384-2593bc35786b?q=80&w=600&auto=format&fit=crop',
     description: 'Freshly popped warm bucket of movie-style butter popcorn.',
   },
   {
@@ -104,6 +110,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'cheese',
+    image: 'https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?q=80&w=600&auto=format&fit=crop',
     description: 'Crispy corn tortilla chips loaded with hot cheese sauce, jalapenos & sour cream.',
   },
   {
@@ -117,6 +124,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'french-fries',
+    image: 'https://images.unsplash.com/photo-1576107232684-1279f390859f?q=80&w=600&auto=format&fit=crop',
     description: 'Golden, crispy, salted shoe-string cut potatoes served with garlic dip.',
   },
   {
@@ -130,6 +138,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: false,
     isAvailable: true,
     icon: 'bread-slice',
+    image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?q=80&w=600&auto=format&fit=crop',
     description: 'Toasted bread loaded with grilled chicken breast, lettuce, tomato & mayo.',
   },
   {
@@ -143,6 +152,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'cake',
+    image: 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?q=80&w=600&auto=format&fit=crop',
     description: 'Rich, moist chocolate cake with warm hot fudge sauce overlay.',
   },
   {
@@ -156,6 +166,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'leaf',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=600&auto=format&fit=crop',
     description:
       'Fresh organic greens, red quinoa, cherry tomatoes, cucumbers & lemon vinaigrette.',
   },
@@ -170,6 +181,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'coffee',
+    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=600&auto=format&fit=crop',
     description: 'Freshly brewed arabica espresso beans served piping hot.',
   },
   {
@@ -183,6 +195,7 @@ export const FOOD_ITEMS: FoodItem[] = [
     isVegetarian: true,
     isAvailable: true,
     icon: 'glass-cocktail',
+    image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=600&auto=format&fit=crop',
     description: 'Chilled carbonated soft drink served in a souvenir cup.',
   },
 ];

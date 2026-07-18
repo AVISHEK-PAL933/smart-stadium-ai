@@ -7,7 +7,7 @@ export interface AIResponse {
 const MOCK_ANSWERS: Record<string, AIResponse> = {
   seat: {
     answer:
-      "Your reserved seat is located in Section 112, Row M, Seat 42. I've loaded the indoor path overlay map for you.",
+      "Your currently linked ticket is in Section 112, Row M, Seat 42. I've loaded the indoor path overlay map for you.",
     actionType: 'NAVIGATE',
     actionPayload: { destId: 'seat' },
   },
@@ -88,7 +88,45 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
   // Simulate network latency
   await new Promise((resolve) => setTimeout(resolve, 1200));
 
-  const lowerQuery = query.toLowerCase();
+  const lowerQuery = query.toLowerCase().trim();
+
+  // Natural conversational greetings
+  if (
+    lowerQuery === 'hi' ||
+    lowerQuery === 'hello' ||
+    lowerQuery === 'hey' ||
+    lowerQuery === 'how are you' ||
+    lowerQuery === 'how are you?' ||
+    lowerQuery === 'hi there' ||
+    lowerQuery === 'hello there' ||
+    lowerQuery === 'good morning' ||
+    lowerQuery === 'good afternoon' ||
+    lowerQuery === 'good evening' ||
+    lowerQuery === 'whats up' ||
+    lowerQuery === "what's up"
+  ) {
+    return {
+      answer: "Hi there! 👋 I'm your StadiumMind AI assistant. I'm having a great day at the stadium! I'm here to help you navigate, find food, locate your seat, or give you live match updates. How can I make your match-day experience better?",
+    };
+  }
+
+  const sectionMatch = lowerQuery.match(/section\s*(\d+)/);
+  const dynamicSection = sectionMatch ? sectionMatch[1] : null;
+
+  if (dynamicSection && (lowerQuery.includes('where') || lowerQuery.includes('find') || lowerQuery.includes('navigate') || lowerQuery.includes('go to'))) {
+    return {
+      answer: `Of course! I can guide you to Section ${dynamicSection}. I've just loaded the fastest walking route on your map.`,
+      actionType: 'NAVIGATE',
+      actionPayload: { destId: `section_${dynamicSection}` },
+    };
+  }
+
+  if (lowerQuery.includes('other section') || lowerQuery.includes('another section') || lowerQuery.includes('any section')) {
+    return {
+      answer: "Yes, definitely! You can explore facilities, order food, and get directions to absolutely any section in the stadium. Which section are you looking for?",
+      actionType: 'NAVIGATE'
+    };
+  }
 
   if (lowerQuery.includes('seat') || lowerQuery.includes('chair') || lowerQuery.includes('sit')) {
     return MOCK_ANSWERS['seat'];
@@ -157,11 +195,20 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
     lowerQuery.includes('food') ||
     lowerQuery.includes('concession') ||
     lowerQuery.includes('drink') ||
-    lowerQuery.includes('eat')
+    lowerQuery.includes('eat') ||
+    lowerQuery.includes('order') ||
+    lowerQuery.includes('menu')
   ) {
+    if (dynamicSection) {
+      return {
+        answer: `Absolutely! There are fantastic food options available right near Section ${dynamicSection}. I've opened the menu so you can order directly to that seat.`,
+        actionType: 'FOOD',
+        actionPayload: { filter: `Section ${dynamicSection}` },
+      };
+    }
     return {
       answer:
-        'Opening the concessions menu. Order warm food directly to Section 112, Row M, Seat 42!',
+        "I'd love to help you get some food! I'm opening the concessions menu now. You can order warm food and cold drinks directly to your seat.",
       actionType: 'FOOD',
     };
   }
@@ -267,6 +314,6 @@ export const askAIAssistant = async (query: string): Promise<AIResponse> => {
 
   return {
     answer:
-      "I'm not sure about that stadium facility. Try asking about your seat, ticket, gate A navigation, or emergency services.",
+      "I'm not exactly sure how to help with that specifically! But I'd love to assist you with stadium navigation, finding great food, managing your ticket, or giving you live match updates. Could you try rephrasing your question?",
   };
 };

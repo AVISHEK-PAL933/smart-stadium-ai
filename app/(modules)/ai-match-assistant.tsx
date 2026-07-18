@@ -7,7 +7,6 @@ import { useChat } from '../../hooks/useChat';
 import { useSpeech } from '../../hooks/useSpeech';
 import { router } from 'expo-router';
 import { AIHeader } from '../../components/AIHeader';
-import { AIInfoPanel } from '../../components/AIInfoPanel';
 import { AIActionCard } from '../../components/AIActionCard';
 import { AIWelcomeCard } from '../../components/AIWelcomeCard';
 
@@ -111,8 +110,9 @@ export default function AIMatchAssistant() {
       >
         <View style={[styles.mainSplit, !isDesktop && styles.mobileLayout]}>
           
-          {/* Left Chat Area */}
-          <View style={[styles.chatPanel, isDesktop && { flex: 7 }]}>
+          {/* Central Chat Area */}
+          <View style={styles.chatPanelWrapper}>
+            <View style={styles.chatPanel}>
             <ScrollView
               ref={scrollViewRef}
               contentContainerStyle={styles.scrollContent}
@@ -121,7 +121,7 @@ export default function AIMatchAssistant() {
               <View style={styles.messagesContainer}>
                 {messages.length <= 1 ? (
                   // Intercept the default initial message with the beautiful welcome card
-                  <AIWelcomeCard />
+                  <AIWelcomeCard onSuggestionPress={sendMessage} />
                 ) : (
                   messages.map((msg, index) => {
                     // Skip the initial invisible bot welcome message if there are real messages
@@ -141,7 +141,7 @@ export default function AIMatchAssistant() {
                 {isTyping && <TypingIndicator />}
               </View>
 
-              {/* Suggestions Horizontal Scroll inside chat scroll, below messages */}
+              {/* Suggestions Horizontal Scroll */}
               {messages.length <= 1 && (
                 <View style={styles.suggestionsWrapper}>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.suggestionsContainer}>
@@ -162,13 +162,7 @@ export default function AIMatchAssistant() {
             />
           </View>
 
-          {/* Right Info Panel (Desktop Only) */}
-          {isDesktop && (
-            <View style={{ flex: 3 }}>
-              <AIInfoPanel />
-            </View>
-          )}
-
+          </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -190,12 +184,17 @@ const styles = StyleSheet.create({
   mobileLayout: {
     flexDirection: 'column',
   },
+  chatPanelWrapper: {
+    flex: 1,
+    width: '100%',
+  },
   chatPanel: {
+    width: '100%',
     flex: 1,
     position: 'relative',
   },
   scrollContent: {
-    padding: 20,
+    padding: 16,
     paddingBottom: 40,
   },
   messagesContainer: {

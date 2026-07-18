@@ -9,6 +9,7 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export const AnimatedBackground = () => {
   const { width, height } = useWindowDimensions();
@@ -25,6 +26,10 @@ export const AnimatedBackground = () => {
   const orb3X = useSharedValue(width * 0.2);
   const orb3Y = useSharedValue(height * 0.8);
   const orb3Scale = useSharedValue(0.8);
+
+  const orb1Rotation = useSharedValue(0);
+  const orb2Rotation = useSharedValue(0);
+  const orb3Rotation = useSharedValue(0);
 
   useEffect(() => {
     // Orb 1 animation
@@ -104,13 +109,30 @@ export const AnimatedBackground = () => {
       -1,
       true
     );
-  }, [width, height, orb1X, orb1Y, orb1Scale, orb2X, orb2Y, orb2Scale, orb3X, orb3Y, orb3Scale]);
+
+    orb1Rotation.value = withRepeat(
+      withTiming(360, { duration: 40000, easing: Easing.linear }),
+      -1,
+      false
+    );
+    orb2Rotation.value = withRepeat(
+      withTiming(-360, { duration: 50000, easing: Easing.linear }),
+      -1,
+      false
+    );
+    orb3Rotation.value = withRepeat(
+      withTiming(360, { duration: 35000, easing: Easing.linear }),
+      -1,
+      false
+    );
+  }, [width, height]);
 
   const style1 = useAnimatedStyle(() => ({
     transform: [
       { translateX: orb1X.value },
       { translateY: orb1Y.value },
       { scale: orb1Scale.value },
+      { rotate: `${orb1Rotation.value}deg` }
     ],
   }));
 
@@ -119,6 +141,7 @@ export const AnimatedBackground = () => {
       { translateX: orb2X.value },
       { translateY: orb2Y.value },
       { scale: orb2Scale.value },
+      { rotate: `${orb2Rotation.value}deg` }
     ],
   }));
 
@@ -127,6 +150,7 @@ export const AnimatedBackground = () => {
       { translateX: orb3X.value },
       { translateY: orb3Y.value },
       { scale: orb3Scale.value },
+      { rotate: `${orb3Rotation.value}deg` }
     ],
   }));
 
@@ -139,6 +163,7 @@ export const AnimatedBackground = () => {
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 1, y: 1 }}
         />
+        <MaterialCommunityIcons name="soccer" size={300} color="rgba(255,255,255,0.03)" style={styles.iconCenter} />
       </Animated.View>
       <Animated.View style={[styles.orb, styles.orb2, style2]}>
         <LinearGradient
@@ -147,6 +172,7 @@ export const AnimatedBackground = () => {
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 1, y: 1 }}
         />
+        <MaterialCommunityIcons name="soccer" size={400} color="rgba(255,255,255,0.02)" style={styles.iconCenter} />
       </Animated.View>
       <Animated.View style={[styles.orb, styles.orb3, style3]}>
         <LinearGradient
@@ -155,6 +181,7 @@ export const AnimatedBackground = () => {
           start={{ x: 0.5, y: 0.5 }}
           end={{ x: 1, y: 1 }}
         />
+        <MaterialCommunityIcons name="soccer" size={350} color="rgba(255,255,255,0.02)" style={styles.iconCenter} />
       </Animated.View>
     </View>
   );
@@ -164,6 +191,11 @@ const styles = StyleSheet.create({
   orb: {
     position: 'absolute',
     borderRadius: 9999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconCenter: {
+    position: 'absolute',
   },
   orb1: {
     width: 300,

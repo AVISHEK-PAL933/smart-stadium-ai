@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, TextInput, useWindowDimensions, Platform, Image } from 'react-native';
 import { Colors } from '../../constants/colors';
 import { Theme } from '../../constants/theme';
 import { useColorScheme } from 'react-native';
@@ -123,7 +123,7 @@ const STATS = [
 
 export default function HomeDashboard() {
   const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const theme = 'dark'; // Force premium dark aesthetic on the dashboard
   const themeColors = Colors[theme];
 
   const { width } = useWindowDimensions();
@@ -138,7 +138,16 @@ export default function HomeDashboard() {
   const cardWidth = (contentWidth - (cols - 1) * gap) / cols;
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={['#081223', '#0A0F1E', '#16213E']}
+        style={StyleSheet.absoluteFillObject}
+      />
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1518605368461-1e1e38ce8058?q=80&w=2000&auto=format&fit=crop' }}
+        style={[StyleSheet.absoluteFillObject, { opacity: 0.08 }]}
+        resizeMode="cover"
+      />
       <AnimatedBackground />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={[styles.contentWrapper, { maxWidth: maxContentWidth }]}>
@@ -245,19 +254,22 @@ export default function HomeDashboard() {
                   activeOpacity={0.7}
                   style={styles.cardTouchable}
                   onPress={() => router.push(module.route as any)}>
-                  <GlassCard style={styles.card} gradientColors={['rgba(255,255,255,0.05)', 'rgba(255,255,255,0.01)']}>
-                    <View style={styles.iconCircle}>
+                  <LinearGradient
+                    colors={['rgba(0, 200, 255, 0.1)', 'rgba(0, 200, 255, 0.02)']}
+                    style={styles.actionCard}
+                  >
+                    <View style={styles.neonIconCircle}>
                       <MaterialCommunityIcons
                         name={module.icon as any}
-                        size={28}
-                        color={themeColors.tint}
-                        style={styles.icon}
+                        size={32}
+                        color="#00C8FF"
+                        style={styles.neonIcon}
                       />
                     </View>
-                    <Text style={[styles.cardTitle, { color: themeColors.text }]} numberOfLines={1}>
+                    <Text style={styles.actionCardTitle} numberOfLines={1}>
                       {module.title}
                     </Text>
-                  </GlassCard>
+                  </LinearGradient>
                 </TouchableOpacity>
               </Animated.View>
             ))}
@@ -269,14 +281,46 @@ export default function HomeDashboard() {
 }
 
 const styles = StyleSheet.create({
-  iconCircle: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 200, 255, 0.15)',
+  actionCard: {
+    borderRadius: 24,
+    paddingVertical: 24,
+    paddingHorizontal: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Theme.spacing.s,
+    borderWidth: 1,
+    borderColor: 'rgba(0, 200, 255, 0.3)',
+    shadowColor: '#00C8FF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    overflow: 'hidden',
+  },
+  neonIconCircle: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(0, 200, 255, 0.1)',
+    borderWidth: 2,
+    borderColor: 'rgba(0, 200, 255, 0.8)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 16,
+    shadowColor: '#00C8FF',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 1,
+    shadowRadius: 20,
+  },
+  neonIcon: {
+    textShadowColor: '#00C8FF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 15,
+  },
+  actionCardTitle: {
+    color: '#FFF',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    letterSpacing: 0.5,
   },
   container: {
     flex: 1,
@@ -486,22 +530,5 @@ const styles = StyleSheet.create({
   },
   cardTouchable: {
     flex: 1,
-  },
-  card: {
-    borderRadius: Theme.shapes.borderRadius.xl,
-    padding: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  icon: {
-    textShadowColor: 'rgba(0, 200, 255, 0.6)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
-  },
-  cardTitle: {
-    fontSize: Theme.typography.sizes.s,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    letterSpacing: 0.5,
   },
 });

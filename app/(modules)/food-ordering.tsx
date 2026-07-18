@@ -28,7 +28,7 @@ import { FOOD_CATEGORIES, FOOD_ITEMS, FoodItem } from '../../services/foodServic
 
 export default function FoodOrdering() {
   const colorScheme = useColorScheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+  const theme = 'light'; // Force light/warm theme for food UI
   const themeColors = Colors[theme];
 
   // AI Assistant routing filter params
@@ -151,7 +151,7 @@ export default function FoodOrdering() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+    <View style={[styles.container, { backgroundColor: '#FCF8F5' }]}>
       <Header
         title={
           currentStep === 'MENU'
